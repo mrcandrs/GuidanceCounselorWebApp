@@ -29,10 +29,10 @@ const Login = () => {
 
   return (
     <div className="login-container">
-        <div classname="login-header">
-            <div classname="logo">🎓</div>
-            <h1 class="login-title">Guidance Portal</h1>
-            <p class="login-subtitle">Counselor Access Dashboard</p>
+        <div className="login-header">
+            <div className="logo">🎓</div>
+            <h1 className="login-title">Guidance Portal</h1>
+            <p className="login-subtitle">Counselor Access Dashboard</p>
         </div>
 
       <form onSubmit={handleLogin} className="login-form">
@@ -41,7 +41,7 @@ const Login = () => {
 
         <div className="form-group">
           <label>Email</label>
-          <div style="position: relative;">
+          <div style={{ position: "relative"}}>
           <input
             type="email"
             required
@@ -49,7 +49,7 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
           />
-          <span class="input-icon">👤</span>
+          <span className="input-icon">👤</span>
           </div>
         </div>
 
@@ -63,13 +63,13 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
           />
-          <span class="input-icon">🔒</span>
-          <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+          <span className="input-icon">🔒</span>
+          <button type="button" className="password-toggle" onClick={togglePassword}>👁️</button>
           </div>
         </div>
 
         <button type="submit" className="login-btn">
-          <span class="loading-spinner" id="loadingSpinner"></span>
+          <span className="loading-spinner" id="loadingSpinner"></span>
           <span id="buttonText">Login</span>
         </button>
       </form>
