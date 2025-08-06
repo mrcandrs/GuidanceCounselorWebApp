@@ -1,49 +1,54 @@
 import React, { useState } from 'react';
+import api from '../services/api'; //axios instance
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
 
-export default function Login() {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/counselor/login', {
+        email,
+        password
+      });
 
-      if (response.status === 200) {
-        //Save token or user data to localStorage
-        localStorage.setItem('token', response.data.token);
-        navigate('/dashboard');
-      }
+      const token = response.data.token;
+
+      localStorage.setItem('authToken', token); // Store the token
+      navigate('/dashboard'); // Go to dashboard after login
     } catch (err) {
-      setError('Invalid login credentials.');
+      console.error(err);
+      setError('Invalid credentials. Please try again.');
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: 'auto' }}>
+    <div className="login-container">
       <h2>Guidance Counselor Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
           required
-        /><br /><br />
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
           required
-        /><br /><br />
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {error && <p style={{ color: 'red' }}>{error}</p>}
         <button type="submit">Login</button>
       </form>
     </div>
   );
-}
+};
+
+export default Login;
