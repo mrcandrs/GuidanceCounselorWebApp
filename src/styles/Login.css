@@ -238,7 +238,6 @@
             border-left: 4px solid var(--danger);
             margin-bottom: 1rem;
             font-size: 0.9rem;
-            display: none;
         }
 
         .success-message {

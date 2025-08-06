@@ -46,8 +46,8 @@ const Login = () => {
     <div className="login-container">
       <div className="login-header">
         <div className="logo">🎓</div>
-        <h1 className="login-title">Guidance Portal</h1>
-        <p className="login-subtitle">Counselor Access Dashboard</p>
+        <h1 className="login-title">STI Tarlac Guidance Office</h1>
+        <p className="login-subtitle">Guidance Counselor WebApp</p>
       </div>
 
       <form onSubmit={handleLogin} className="login-form">
@@ -58,6 +58,7 @@ const Login = () => {
           <div style={{ position: 'relative' }}>
             <input
               type="email"
+              className="form-control"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -73,6 +74,7 @@ const Login = () => {
             <input
               ref={passwordInputRef}
               type="password"
+              className="form-control"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -83,7 +85,7 @@ const Login = () => {
           </div>
         </div>
 
-        <button type="submit" className="login-btn">
+        <button type="submit" className="login-button">
           <span className="loading-spinner" id="loadingSpinner"></span>
           <span id="buttonText">Login</span>
         </button>
