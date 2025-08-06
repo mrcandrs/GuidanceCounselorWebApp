@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../services/api'; //axios instance
 import { useNavigate } from 'react-router-dom';
+import '../../styles/Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -28,24 +29,34 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h2>Guidance Counselor Login</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          required
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          required
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Login</button>
+      <form onSubmit={handleLogin} className="login-form">
+        <h2>Counselor Login</h2>
+
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <button type="submit" className="login-btn">Login</button>
       </form>
     </div>
   );
