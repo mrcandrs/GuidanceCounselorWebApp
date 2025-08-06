@@ -29,13 +29,19 @@ const Login = () => {
 
   return (
     <div className="login-container">
+        <div classname="login-header">
+            <div classname="logo">🎓</div>
+            <h1 class="login-title">Guidance Portal</h1>
+            <p class="login-subtitle">Counselor Access Dashboard</p>
+        </div>
+
       <form onSubmit={handleLogin} className="login-form">
-        <h2>Counselor Login</h2>
 
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
         <div className="form-group">
           <label>Email</label>
+          <div style="position: relative;">
           <input
             type="email"
             required
@@ -43,10 +49,13 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
           />
+          <span class="input-icon">👤</span>
+          </div>
         </div>
 
         <div className="form-group">
           <label>Password</label>
+          <div style="position: relative;">
           <input
             type="password"
             required
@@ -54,9 +63,15 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
           />
+          <span class="input-icon">🔒</span>
+          <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+          </div>
         </div>
 
-        <button type="submit" className="login-btn">Login</button>
+        <button type="submit" className="login-btn">
+          <span class="loading-spinner" id="loadingSpinner"></span>
+          <span id="buttonText">Login</span>
+        </button>
       </form>
     </div>
   );
