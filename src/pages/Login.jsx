@@ -35,6 +35,14 @@ const Login = () => {
   };
 
   return (
+    <div className="login-wrapper">
+    <div className="floating-shapes">
+        <div className="shape"></div>
+        <div className="shape"></div>
+        <div className="shape"></div>
+    </div>
+
+
     <div className="login-container">
       <div className="login-header">
         <div className="logo">🎓</div>
@@ -80,6 +88,7 @@ const Login = () => {
           <span id="buttonText">Login</span>
         </button>
       </form>
+      </div>
     </div>
   );
 };
