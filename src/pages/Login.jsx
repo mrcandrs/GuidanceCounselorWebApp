@@ -11,7 +11,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/counselor/login', {
+      const response = await api.post('https://guidanceofficeapi-production.up.railway.app/api/counselor/login', {
         email,
         password
       });
