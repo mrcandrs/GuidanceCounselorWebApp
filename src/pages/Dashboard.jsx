@@ -224,6 +224,49 @@ const GuidanceDashboard = () => {
     </div>
   );
 
+  const renderMoodInsights = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Student Mood Insights</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Overall Mood Distribution</h3>
+          <div className="space-y-3">
+            {moodData.map((mood, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: mood.color }}></div>
+                  <span className="text-sm font-medium">{mood.mood}</span>
+                </div>
+                <span className="text-sm text-gray-600">{mood.count} students</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Weekly Trends</h3>
+          <div className="text-center py-8">
+            <TrendingUp size={48} className="mx-auto text-gray-400 mb-4" />
+            <p className="text-gray-500">Mood trend chart would be displayed here</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Alerts</h3>
+          <div className="space-y-3">
+            <div className="p-3 bg-red-50 border-l-4 border-red-400 rounded">
+              <p className="text-sm text-red-700">5 students reported feeling anxious this week</p>
+            </div>
+            <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+              <p className="text-sm text-yellow-700">Stress levels increased by 15% compared to last week</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
       case 'students':
