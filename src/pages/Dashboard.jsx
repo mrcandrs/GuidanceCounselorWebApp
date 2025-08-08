@@ -25,13 +25,13 @@ const GuidanceDashboard = () => {
   ];
 
   const sidebarItems = [
-    { id: 'students', icon: Users, label: 'Students List' },
-    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
-    { id: 'endorsement', icon: FileText, label: 'Endorsement Forms' },
-    { id: 'consultation', icon: ClipboardList, label: 'Consultation Forms' },
-    { id: 'notes', icon: Edit, label: 'Counseling Notes' },
-    { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
-    { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
+    { id: 'students', label: 'Students List' },
+    { id: 'appointments', label: 'Appointment Approval' },
+    { id: 'endorsement', label: 'Endorsement Forms' },
+    { id: 'consultation', label: 'Consultation Forms' },
+    { id: 'notes', label: 'Counseling Notes' },
+    { id: 'pass', label: 'Guidance Pass' },
+    { id: 'mood', label: 'Mood Insights' },
   ];
 
   const renderStudentsList = () => (
