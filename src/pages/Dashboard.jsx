@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, CheckSquare, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
 
 const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students'); //similar to onCreate 
@@ -25,13 +26,13 @@ const GuidanceDashboard = () => {
   ];
 
   const sidebarItems = [
-    { id: 'students', label: 'Students List' },
-    { id: 'appointments', label: 'Appointment Approval' },
-    { id: 'endorsement', label: 'Endorsement Forms' },
-    { id: 'consultation', label: 'Consultation Forms' },
-    { id: 'notes', label: 'Counseling Notes' },
-    { id: 'pass', label: 'Guidance Pass' },
-    { id: 'mood', label: 'Mood Insights' },
+    { id: 'students', icon: Users, label: 'Students List' },
+    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
+    { id: 'endorsement', icon: FileText, label: 'Endorsement Forms' },
+    { id: 'consultation', icon: ClipboardList, label: 'Consultation Forms' },
+    { id: 'notes', icon: Edit, label: 'Counseling Notes' },
+    { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
+    { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
   ];
 
   const renderStudentsList = () => (
