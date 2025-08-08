@@ -1,5 +1,24 @@
 import React, { useState } from 'react';
-import { Users, TrendingUp, FileText, Calendar, ClipboardList, CheckSquare, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
+import { 
+  Users, 
+  TrendingUp, 
+  FileText, 
+  Calendar, 
+  ClipboardList, 
+  UserCheck, 
+  Plus, 
+  Search, 
+  Filter, 
+  Bell, 
+  Settings, 
+  LogOut, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  Check, 
+  X, 
+  Clock 
+} from 'lucide-react';
 
 const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
@@ -37,7 +56,7 @@ const GuidanceDashboard = () => {
     { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
   ];
 
-  const renderStudentsList = () => (
+  const StudentsListView = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Students List</h2>
@@ -126,7 +145,7 @@ const GuidanceDashboard = () => {
     </div>
   );
 
-  const renderMoodInsights = () => (
+  const MoodInsightsView = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-gray-800">Student Mood Insights</h2>
       
@@ -169,7 +188,7 @@ const GuidanceDashboard = () => {
     </div>
   );
 
-  const renderAppointmentApproval = () => (
+  const AppointmentApprovalView = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Appointment Approval</h2>
@@ -241,7 +260,7 @@ const GuidanceDashboard = () => {
     </div>
   );
 
-  const renderGenericForm = (title, description) => (
+  const GenericFormView = ({ title, description }) => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
       
@@ -272,21 +291,21 @@ const GuidanceDashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'students':
-        return renderStudentsList();
+        return <StudentsListView />;
       case 'mood':
-        return renderMoodInsights();
+        return <MoodInsightsView />;
       case 'appointments':
-        return renderAppointmentApproval();
+        return <AppointmentApprovalView />;
       case 'endorsement':
-        return renderGenericForm('Endorsement Forms', 'Manage custody and endorsement forms for students.');
+        return <GenericFormView title="Endorsement Forms" description="Manage custody and endorsement forms for students." />;
       case 'consultation':
-        return renderGenericForm('Consultation Forms', 'Create and manage consultation and conference forms.');
+        return <GenericFormView title="Consultation Forms" description="Create and manage consultation and conference forms." />;
       case 'notes':
-        return renderGenericForm('Counseling Notes', 'Keep track of guidance and counseling session notes.');
+        return <GenericFormView title="Counseling Notes" description="Keep track of guidance and counseling session notes." />;
       case 'pass':
-        return renderGenericForm('Guidance Pass', 'Generate guidance passes for approved students.');
+        return <GenericFormView title="Guidance Pass" description="Generate guidance passes for approved students." />;
       default:
-        return renderStudentsList();
+        return <StudentsListView />;
     }
   };
 
