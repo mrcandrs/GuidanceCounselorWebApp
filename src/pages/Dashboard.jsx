@@ -312,13 +312,13 @@ const GuidanceDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
+      <div className="w-64 bg-white shadow-lg flex flex-col relative">
         <div className="p-6 bg-gradient-to-r from-blue-600 to-blue-700">
           <h1 className="text-xl font-bold text-white">Guidance Portal</h1>
           <p className="text-blue-100 text-sm">Counselor Dashboard</p>
         </div>
         
-        <nav className="mt-6">
+        <nav className="flex-1 mt-6">
           {sidebarItems.map((item) => (
             <button
               key={item.id}
@@ -333,7 +333,7 @@ const GuidanceDashboard = () => {
           ))}
         </nav>
         
-        <div className="absolute bottom-0 w-64 p-6 border-t">
+        <div className="p-6 border-t mt-auto">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
               GC
