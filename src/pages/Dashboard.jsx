@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Users, TrendingUp, FileText, Calendar, ClipboardList, CheckSquare, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
 
 const GuidanceDashboard = () => {
-  const [activeTab, setActiveTab] = useState('students'); //similar to onCreate 
-  const [searchTerm, setSearchTerm] = useState(''); //for search
-
+  const [activeTab, setActiveTab] = useState('students');
+  const [searchTerm, setSearchTerm] = useState('');
+  
   // Sample data
   const students = [
     { id: 1, name: 'John Doe', grade: '12', section: 'A', status: 'Active', lastMood: 'Happy', consultations: 3 },
@@ -20,19 +20,21 @@ const GuidanceDashboard = () => {
   ];
 
   const moodData = [
-    { mood: 'Mild', count: 45, color: '#22c55e' },
-    { mood: 'Moderate', count: 32, color: '#64748b' },
-    { mood: 'High', count: 28, color: '#f59e0b' },
+    { mood: 'Happy', count: 45, color: '#22c55e' },
+    { mood: 'Neutral', count: 32, color: '#64748b' },
+    { mood: 'Stressed', count: 28, color: '#f59e0b' },
+    { mood: 'Anxious', count: 15, color: '#ef4444' },
+    { mood: 'Sad', count: 8, color: '#8b5cf6' },
   ];
 
   const sidebarItems = [
     { id: 'students', icon: Users, label: 'Students List' },
-    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
+    { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
     { id: 'endorsement', icon: FileText, label: 'Endorsement Forms' },
     { id: 'consultation', icon: ClipboardList, label: 'Consultation Forms' },
     { id: 'notes', icon: Edit, label: 'Counseling Notes' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
-    { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
+    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
   ];
 
   const renderStudentsList = () => (
@@ -119,6 +121,49 @@ const GuidanceDashboard = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMoodInsights = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Student Mood Insights</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Overall Mood Distribution</h3>
+          <div className="space-y-3">
+            {moodData.map((mood, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: mood.color }}></div>
+                  <span className="text-sm font-medium">{mood.mood}</span>
+                </div>
+                <span className="text-sm text-gray-600">{mood.count} students</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Weekly Trends</h3>
+          <div className="text-center py-8">
+            <TrendingUp size={48} className="mx-auto text-gray-400 mb-4" />
+            <p className="text-gray-500">Mood trend chart would be displayed here</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Alerts</h3>
+          <div className="space-y-3">
+            <div className="p-3 bg-red-50 border-l-4 border-red-400 rounded">
+              <p className="text-sm text-red-700">5 students reported feeling anxious this week</p>
+            </div>
+            <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+              <p className="text-sm text-yellow-700">Stress levels increased by 15% compared to last week</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -219,49 +264,6 @@ const GuidanceDashboard = () => {
         <div className="text-center py-12 text-gray-500">
           <FileText size={48} className="mx-auto mb-4 text-gray-300" />
           <p>No {title.toLowerCase()} found. Click "Create New" to get started.</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderMoodInsights = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">Student Mood Insights</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Overall Mood Distribution</h3>
-          <div className="space-y-3">
-            {moodData.map((mood, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: mood.color }}></div>
-                  <span className="text-sm font-medium">{mood.mood}</span>
-                </div>
-                <span className="text-sm text-gray-600">{mood.count} students</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Weekly Trends</h3>
-          <div className="text-center py-8">
-            <TrendingUp size={48} className="mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-500">Mood trend chart would be displayed here</p>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Alerts</h3>
-          <div className="space-y-3">
-            <div className="p-3 bg-red-50 border-l-4 border-red-400 rounded">
-              <p className="text-sm text-red-700">5 students reported feeling anxious this week</p>
-            </div>
-            <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-              <p className="text-sm text-yellow-700">Stress levels increased by 15% compared to last week</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
