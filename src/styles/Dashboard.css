@@ -138,7 +138,6 @@
   display: flex;
   flex-direction: column;
   flex: 1 0 auto; /* Don't allow shrinking (0) */
-  overflow-x: auto; /* Allow horizontal scroll if needed */
   min-width: calc(100% - 256px); /* Account for sidebar width */
 }
 
@@ -209,8 +208,6 @@
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  min-width: 100%; /* Force full width */
-  display: block; /* Prevent flex weirdness */
 }
 
 /* Page Layout */
@@ -489,9 +486,8 @@
 /* Grid Layouts */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(300px, 1fr));
-  width: 100vw; /* Force viewport width */
-  margin-left: calc(-1 * (100vw - 100%)); /* Adjust for scrollbar */
+  gap: 24px;
+  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
 }
 
 .grid-cols-1 {
