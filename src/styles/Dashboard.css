@@ -326,6 +326,9 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
+  width: 100%; /* Ensure cards take full width of their container */
+  /*max-width: 400px;Set a maximum width for the cards */
+  /*margin: 0 auto; /* Center the cards */
 }
 
 .card-title {
@@ -482,7 +485,7 @@
 .grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
 }
 
 .grid-cols-1 {
