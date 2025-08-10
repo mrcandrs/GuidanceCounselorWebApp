@@ -78,6 +78,7 @@ const GuidanceDashboard = () => {
         </button>
       </div>
       
+      <div className="grid grid-cols-3">
       <div className="card">
         <div className="search-container">
           <div className="search-input-container">
@@ -152,6 +153,7 @@ const GuidanceDashboard = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 
   const MoodInsightsView = () => (
@@ -211,7 +213,7 @@ const GuidanceDashboard = () => {
         </button>
       </div>
       
-      <div className="grid grid-cols-2">
+      <div className="grid grid-cols-3">
         <div className="card">
           <h3 className="card-title">Pending Appointments</h3>
           <div>
@@ -283,6 +285,7 @@ const GuidanceDashboard = () => {
     <div className="page-container">
       <h2 className="page-title">{title}</h2>
       
+      <div className="grid grid-cols-3">
       <div className="card">
         <p style={{ color: '#6b7280', marginBottom: '24px' }}>{description}</p>
         
@@ -305,6 +308,7 @@ const GuidanceDashboard = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 
   const renderContent = () => {
