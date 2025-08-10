@@ -716,3 +716,22 @@
     padding: 16px;
   }
 }
+
+/* Prevent shrinking on all pages */
+.dashboard-container {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar {
+  flex-shrink: 0;
+}
+
+.main-content,
+.page-container {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
