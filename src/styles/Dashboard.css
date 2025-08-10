@@ -216,6 +216,9 @@
   flex-direction: column;
   gap: 24px;
   max-width: 1200px; /* Set a maximum width for the container */
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
 }
 
 .page-header {
@@ -489,6 +492,7 @@
   display: grid;
   gap: 24px;
   grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
+  width: 100%;
 }
 
 .grid-cols-1 {
@@ -500,8 +504,6 @@
 }
 
 .grid-cols-3 {
-  display: grid;
-  gap: 24px;
   grid-template-columns: repeat(3, 1fr);
 }
 
