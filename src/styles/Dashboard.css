@@ -139,6 +139,8 @@
   flex-direction: column;
   padding: 24px;
   overflow-y: auto;
+  flex-grow: 1;
+  outline: 2px solid red;
 }
 
 .header {
@@ -216,8 +218,11 @@
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   margin: 0;
   padding: 24px;
+  outline: 2px solid blue;
 }
 
 .page-header {

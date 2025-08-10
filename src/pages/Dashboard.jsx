@@ -207,7 +207,7 @@ const GuidanceDashboard = () => {
   <div className="page-container appointment-view">
     <div className="page-header">
       <h2 className="page-title">Appointment Approval</h2>
-      <button className="primary-button">
+      <button className="primary-button"> 
         <Calendar size={20} />
         Set Available Times
       </button>
