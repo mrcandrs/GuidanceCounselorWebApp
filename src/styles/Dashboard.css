@@ -640,7 +640,7 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .grid-cols-3 {
+  .grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -650,6 +650,7 @@
     width: 200px;
   }
   
+  .grid,
   .grid-cols-2,
   .grid-cols-3 {
     grid-template-columns: 1fr;
