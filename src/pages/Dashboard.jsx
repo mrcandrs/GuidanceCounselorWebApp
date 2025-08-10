@@ -49,12 +49,12 @@ const GuidanceDashboard = () => {
 
   const sidebarItems = [
     { id: 'students', icon: Users, label: 'Students List' },
-    { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
+    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
     { id: 'endorsement', icon: FileText, label: 'Endorsement Forms' },
     { id: 'consultation', icon: ClipboardList, label: 'Consultation Forms' },
     { id: 'notes', icon: Edit, label: 'Counseling Notes' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
-    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
+    { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
   ];
 
   const getMoodBadgeClass = (mood) => {
@@ -103,7 +103,7 @@ const GuidanceDashboard = () => {
             <thead className="table-header">
               <tr>
                 <th className="table-header-cell">Student</th>
-                <th className="table-header-cell">Grade & Section</th>
+                <th className="table-header-cell">Program & Section</th>
                 <th className="table-header-cell">Last Mood</th>
                 <th className="table-header-cell">Consultations</th>
                 <th className="table-header-cell">Actions</th>
