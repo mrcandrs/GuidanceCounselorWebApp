@@ -681,8 +681,5 @@
   
   .content {
     padding: 16px;
-    width: 100%;
-    max-width: 1200px; /* Match Mood Insights */
-    margin: 0 auto;    /* Center content horizontally */
   }
 }
