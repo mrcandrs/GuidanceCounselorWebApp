@@ -137,7 +137,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Prevent shrinking */
+  flex: 1 0 auto; /* Don't allow shrinking (0) */
+  min-width: calc(100% - 256px); /* Account for sidebar width */
 }
 
 .header {
@@ -207,6 +208,8 @@
   flex: 1;
   padding: 24px;
   overflow-y: auto;
+  min-width: 100%; /* Force full width */
+  display: block; /* Prevent flex weirdness */
 }
 
 /* Page Layout */
@@ -329,8 +332,6 @@
   padding: 24px;
   width: 100%; /* Ensure cards take full width of their container */
   max-width: 1200px; /*Set a maximum width for the cards */
-  min-width: 300px; /* Prevent cards from shrinking below this */
-  overflow: hidden; /* Contain contents */
   margin: 0 auto; /* Center the cards */
 }
 
@@ -488,10 +489,7 @@
 .grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(3, minmax(300px, 1fr)); /* Enforce min widths */
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden; /* Prevent container collapse */
+  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
 }
 
 .grid-cols-1 {
