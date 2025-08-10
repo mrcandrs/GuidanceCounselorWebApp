@@ -541,6 +541,12 @@
   margin-bottom: 16px;
 }
 
+.appointment-view .card {
+  max-width: none;
+  margin: 0;
+  width: 100%;
+}
+
 .appointment-header {
   display: flex;
   justify-content: space-between;
