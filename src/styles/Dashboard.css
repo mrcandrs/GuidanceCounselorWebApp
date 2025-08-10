@@ -12,13 +12,18 @@
 }
 
 /* Sidebar Styles */
+/* Sidebar fixed on left */
 .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh; /* full viewport height */
   width: 256px;
-  background-color: white;
+  z-index: 20; /* above main content */
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  background-color: white;
   display: flex;
   flex-direction: column;
-  position: relative;
 }
 
 .sidebar-header {
@@ -133,7 +138,9 @@
 }
 
 /* Main Content Styles */
+/* Main content with left margin equal to sidebar width */
 .main-content {
+  margin-left: 256px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -141,6 +148,7 @@
   overflow-y: auto;
   flex-grow: 1;
   outline: 2px solid red;
+  transition: margin-left 0.3s ease;
 }
 
 .header {
@@ -681,13 +689,13 @@
   }
 }
 
+/* On smaller screens, reset sidebar to relative and remove main content margin */
 @media (max-width: 640px) {
   .sidebar {
+    position: relative;
     width: 100%;
-    position: fixed;
-    z-index: 10;
-    transform: translateX(-100%);
-    transition: transform 0.3s;
+    height: auto;
+    box-shadow: none;
   }
   
   .sidebar.open {
@@ -696,6 +704,7 @@
   
   .main-content {
     margin-left: 0;
+    padding: 16px;
   }
   
   .content {
