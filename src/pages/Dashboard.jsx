@@ -27,10 +27,10 @@ const GuidanceDashboard = () => {
   
   // Sample data
   const students = [
-    { id: 1, name: 'John Doe', grade: '12', section: 'A', status: 'Active', lastMood: 'Happy', consultations: 3 },
-    { id: 2, name: 'Jane Smith', grade: '11', section: 'B', status: 'Active', lastMood: 'Stressed', consultations: 1 },
-    { id: 3, name: 'Mike Johnson', grade: '10', section: 'C', status: 'Active', lastMood: 'Neutral', consultations: 5 },
-    { id: 4, name: 'Sarah Wilson', grade: '12', section: 'A', status: 'Active', lastMood: 'Anxious', consultations: 2 },
+    { id: 1, name: 'John Doe', grade: '12', section: 'A', status: 'Active', lastMood: 'MILD', consultations: 3 },
+    { id: 2, name: 'Jane Smith', grade: '11', section: 'B', status: 'Active', lastMood: 'MODERATE', consultations: 1 },
+    { id: 3, name: 'Mike Johnson', grade: '10', section: 'C', status: 'Active', lastMood: 'HIGH', consultations: 5 },
+    { id: 4, name: 'Sarah Wilson', grade: '12', section: 'A', status: 'Active', lastMood: 'MODERATE', consultations: 2 },
   ];
 
   const pendingAppointments = [
@@ -40,11 +40,9 @@ const GuidanceDashboard = () => {
   ];
 
   const moodData = [
-    { mood: 'Happy', count: 45, color: '#22c55e' },
-    { mood: 'Neutral', count: 32, color: '#64748b' },
-    { mood: 'Stressed', count: 28, color: '#f59e0b' },
-    { mood: 'Anxious', count: 15, color: '#ef4444' },
-    { mood: 'Sad', count: 8, color: '#8b5cf6' },
+    { mood: 'MILD', count: 45, color: '#34C759' },
+    { mood: 'MODERATE', count: 32, color: '#009951' },
+    { mood: 'HIGH', count: 28, color: '#1B5E20' },
   ];
 
   const sidebarItems = [
@@ -59,12 +57,12 @@ const GuidanceDashboard = () => {
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
-      case 'Happy':
-        return 'mood-badge mood-happy';
-      case 'Stressed':
-        return 'mood-badge mood-stressed';
-      case 'Anxious':
-        return 'mood-badge mood-anxious';
+      case 'MILD':
+        return 'mood-badge mood-mild';
+      case 'MODERATE':
+        return 'mood-badge mood-moderate';
+      case 'HIGH':
+        return 'mood-badge mood-high';
       default:
         return 'mood-badge mood-neutral';
     }
