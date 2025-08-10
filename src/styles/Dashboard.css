@@ -541,10 +541,11 @@
   margin-bottom: 16px;
 }
 
+/* Fix card widths inside Appointment Approval view */
 .appointment-view .card {
-  max-width: none;
-  margin: 0;
-  width: 100%;
+  max-width: none !important;
+  margin: 0 !important;
+  width: 100% !important;
 }
 
 .appointment-header {
