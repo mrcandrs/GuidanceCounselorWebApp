@@ -329,6 +329,8 @@
   padding: 24px;
   width: 100%; /* Ensure cards take full width of their container */
   max-width: 1200px; /*Set a maximum width for the cards */
+  min-width: 300px; /* Prevent cards from shrinking below this */
+  overflow: hidden; /* Contain contents */
   margin: 0 auto; /* Center the cards */
 }
 
@@ -486,7 +488,10 @@
 .grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
+  grid-template-columns: repeat(3, minmax(300px, 1fr)); /* Enforce min widths */
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Prevent container collapse */
 }
 
 .grid-cols-1 {
