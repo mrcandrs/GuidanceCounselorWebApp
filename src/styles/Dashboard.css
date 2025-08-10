@@ -137,7 +137,6 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
 
 .header {
@@ -207,8 +206,6 @@
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  width: 100%;
-  max-width: 100%;
 }
 
 /* Page Layout */
@@ -216,8 +213,6 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%; /* ensure full width */
-  max-width: 100%; /* remove any max width constraints */
 }
 
 .page-header {
@@ -331,9 +326,6 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
 }
 
 .card-title {
@@ -490,7 +482,6 @@
 .grid {
   display: grid;
   gap: 24px;
-  width: 100%; /* ensure full width */
 }
 
 .grid-cols-1 {
@@ -600,11 +591,9 @@
 
 /* Empty State */
 .empty-state {
-  width: 100%;
   text-align: center;
   padding: 48px 0;
   color: #6b7280;
-  min-height: 200px; /* optional, for consistent height */
 }
 
 .empty-icon {
