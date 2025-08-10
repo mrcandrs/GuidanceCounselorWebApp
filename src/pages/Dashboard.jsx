@@ -56,85 +56,534 @@ const GuidanceDashboard = () => {
     { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
   ];
 
+  const styles = {
+    container: {
+      minHeight: '100vh',
+      backgroundColor: '#f3f4f6',
+      display: 'flex',
+      fontFamily: 'Arial, sans-serif'
+    },
+    sidebar: {
+      width: '256px',
+      backgroundColor: 'white',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative'
+    },
+    sidebarHeader: {
+      padding: '24px',
+      background: 'linear-gradient(to right, #0477BF, #0369a1)',
+      color: 'white'
+    },
+    sidebarTitle: {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      margin: '0 0 4px 0'
+    },
+    sidebarSubtitle: {
+      fontSize: '14px',
+      color: '#bfdbfe',
+      margin: 0
+    },
+    nav: {
+      flex: 1,
+      marginTop: '24px'
+    },
+    navButton: {
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      padding: '12px 24px',
+      border: 'none',
+      backgroundColor: 'transparent',
+      textAlign: 'left',
+      cursor: 'pointer',
+      transition: 'all 0.2s',
+      fontSize: '14px'
+    },
+    navButtonActive: {
+      backgroundColor: '#dbeafe',
+      borderRight: '4px solid #0477BF',
+      color: '#0477BF'
+    },
+    navButtonHover: {
+      backgroundColor: '#f9fafb'
+    },
+    userSection: {
+      padding: '24px',
+      borderTop: '1px solid #e5e7eb',
+      marginTop: 'auto'
+    },
+    userInfo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      marginBottom: '16px'
+    },
+    userAvatar: {
+      width: '40px',
+      height: '40px',
+      backgroundColor: '#0477BF',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontWeight: 'bold'
+    },
+    userName: {
+      fontWeight: '500',
+      color: '#1f2937',
+      margin: '0 0 2px 0',
+      fontSize: '14px'
+    },
+    userEmail: {
+      fontSize: '12px',
+      color: '#6b7280',
+      margin: 0
+    },
+    userActions: {
+      display: 'flex',
+      gap: '8px'
+    },
+    userActionButton: {
+      flex: 1,
+      padding: '8px',
+      border: 'none',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    settingsButton: {
+      backgroundColor: '#f3f4f6'
+    },
+    logoutButton: {
+      backgroundColor: '#fef2f2',
+      color: '#dc2626'
+    },
+    mainContent: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column'
+    },
+    header: {
+      backgroundColor: 'white',
+      boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+      borderBottom: '1px solid #e5e7eb',
+      padding: '16px 24px'
+    },
+    headerContent: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+    headerTitle: {
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#1f2937',
+      margin: '0 0 4px 0'
+    },
+    headerSubtitle: {
+      fontSize: '14px',
+      color: '#6b7280',
+      margin: 0
+    },
+    headerActions: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px'
+    },
+    notificationButton: {
+      position: 'relative',
+      padding: '8px',
+      border: 'none',
+      backgroundColor: 'transparent',
+      cursor: 'pointer',
+      color: '#6b7280'
+    },
+    notificationBadge: {
+      position: 'absolute',
+      top: '-4px',
+      right: '-4px',
+      width: '12px',
+      height: '12px',
+      backgroundColor: '#ef4444',
+      borderRadius: '50%'
+    },
+    headerAvatar: {
+      width: '32px',
+      height: '32px',
+      backgroundColor: '#F2E205',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#1f2937',
+      fontWeight: 'bold'
+    },
+    content: {
+      flex: 1,
+      padding: '24px',
+      overflowY: 'auto'
+    },
+    pageContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '24px'
+    },
+    pageHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+    pageTitle: {
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: '#1f2937',
+      margin: 0
+    },
+    primaryButton: {
+      backgroundColor: '#0477BF',
+      color: 'white',
+      border: 'none',
+      padding: '8px 16px',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      fontSize: '14px',
+      fontWeight: '500'
+    },
+    card: {
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      padding: '24px'
+    },
+    cardTitle: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: '#1f2937',
+      margin: '0 0 16px 0'
+    },
+    searchContainer: {
+      display: 'flex',
+      gap: '16px',
+      marginBottom: '24px'
+    },
+    searchInputContainer: {
+      flex: 1,
+      position: 'relative'
+    },
+    searchInput: {
+      width: '100%',
+      padding: '8px 8px 8px 40px',
+      border: '1px solid #d1d5db',
+      borderRadius: '8px',
+      fontSize: '14px',
+      outline: 'none'
+    },
+    searchIcon: {
+      position: 'absolute',
+      left: '12px',
+      top: '8px',
+      color: '#9ca3af'
+    },
+    filterButton: {
+      backgroundColor: '#f3f4f6',
+      border: 'none',
+      padding: '8px 16px',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      fontSize: '14px'
+    },
+    table: {
+      width: '100%',
+      borderCollapse: 'collapse'
+    },
+    tableHeader: {
+      backgroundColor: '#f9fafb'
+    },
+    tableHeaderCell: {
+      padding: '12px 24px',
+      textAlign: 'left',
+      fontSize: '12px',
+      fontWeight: '500',
+      color: '#6b7280',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em'
+    },
+    tableRow: {
+      borderBottom: '1px solid #e5e7eb',
+      cursor: 'pointer'
+    },
+    tableCell: {
+      padding: '16px 24px',
+      fontSize: '14px'
+    },
+    studentInfo: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    studentAvatar: {
+      width: '40px',
+      height: '40px',
+      backgroundColor: '#0477BF',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontWeight: 'bold',
+      marginRight: '16px'
+    },
+    studentName: {
+      fontWeight: '500',
+      color: '#1f2937',
+      margin: '0 0 2px 0'
+    },
+    studentStatus: {
+      fontSize: '12px',
+      color: '#6b7280',
+      margin: 0
+    },
+    moodBadge: {
+      padding: '2px 8px',
+      fontSize: '12px',
+      fontWeight: '600',
+      borderRadius: '9999px'
+    },
+    actionButtons: {
+      display: 'flex',
+      gap: '12px'
+    },
+    actionButton: {
+      border: 'none',
+      backgroundColor: 'transparent',
+      cursor: 'pointer',
+      padding: '4px'
+    },
+    grid: {
+      display: 'grid',
+      gap: '24px'
+    },
+    gridCols1: {
+      gridTemplateColumns: '1fr'
+    },
+    gridCols2: {
+      gridTemplateColumns: 'repeat(2, 1fr)'
+    },
+    gridCols3: {
+      gridTemplateColumns: 'repeat(3, 1fr)'
+    },
+    moodItem: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: '12px'
+    },
+    moodIndicator: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px'
+    },
+    moodDot: {
+      width: '16px',
+      height: '16px',
+      borderRadius: '50%'
+    },
+    appointmentCard: {
+      border: '1px solid #e5e7eb',
+      borderRadius: '8px',
+      padding: '16px',
+      marginBottom: '16px'
+    },
+    appointmentHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: '12px'
+    },
+    appointmentActions: {
+      display: 'flex',
+      gap: '8px'
+    },
+    approveButton: {
+      backgroundColor: '#10b981',
+      color: 'white',
+      border: 'none',
+      padding: '8px',
+      borderRadius: '4px',
+      cursor: 'pointer'
+    },
+    rejectButton: {
+      backgroundColor: '#ef4444',
+      color: 'white',
+      border: 'none',
+      padding: '8px',
+      borderRadius: '4px',
+      cursor: 'pointer'
+    },
+    appointmentMeta: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+      fontSize: '12px',
+      color: '#6b7280'
+    },
+    timeSlotGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: '8px'
+    },
+    timeSlotButton: {
+      border: '1px solid #d1d5db',
+      backgroundColor: 'white',
+      padding: '8px 12px',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '12px'
+    },
+    formGroup: {
+      marginBottom: '16px'
+    },
+    label: {
+      display: 'block',
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#374151',
+      marginBottom: '8px'
+    },
+    input: {
+      width: '100%',
+      padding: '8px 12px',
+      border: '1px solid #d1d5db',
+      borderRadius: '8px',
+      fontSize: '14px',
+      outline: 'none'
+    },
+    emptyState: {
+      textAlign: 'center',
+      padding: '48px 0',
+      color: '#6b7280'
+    },
+    emptyIcon: {
+      margin: '0 auto 16px',
+      color: '#d1d5db'
+    },
+    alertCard: {
+      padding: '12px',
+      borderRadius: '4px',
+      marginBottom: '12px'
+    },
+    alertRed: {
+      backgroundColor: '#fef2f2',
+      borderLeft: '4px solid #f87171'
+    },
+    alertYellow: {
+      backgroundColor: '#fffbeb',
+      borderLeft: '4px solid #fbbf24'
+    }
+  };
+
+  const getMoodBadgeStyle = (mood) => {
+    const baseStyle = { ...styles.moodBadge };
+    switch (mood) {
+      case 'Happy':
+        return { ...baseStyle, backgroundColor: '#dcfce7', color: '#166534' };
+      case 'Stressed':
+        return { ...baseStyle, backgroundColor: '#fef3c7', color: '#92400e' };
+      case 'Anxious':
+        return { ...baseStyle, backgroundColor: '#fecaca', color: '#991b1b' };
+      default:
+        return { ...baseStyle, backgroundColor: '#f3f4f6', color: '#374151' };
+    }
+  };
+
   const StudentsListView = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Students List</h2>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+    <div style={styles.pageContainer}>
+      <div style={styles.pageHeader}>
+        <h2 style={styles.pageTitle}>Students List</h2>
+        <button style={styles.primaryButton}>
           <Plus size={20} />
           Add Student
         </button>
       </div>
       
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+      <div style={styles.card}>
+        <div style={styles.searchContainer}>
+          <div style={styles.searchInputContainer}>
+            <Search style={styles.searchIcon} size={20} />
             <input
               type="text"
               placeholder="Search students..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={styles.searchInput}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg flex items-center gap-2">
+          <button style={styles.filterButton}>
             <Filter size={20} />
             Filter
           </button>
         </div>
         
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
+        <div style={{ overflowX: 'auto' }}>
+          <table style={styles.table}>
+            <thead style={styles.tableHeader}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade & Section</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Mood</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Consultations</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th style={styles.tableHeaderCell}>Student</th>
+                <th style={styles.tableHeaderCell}>Grade & Section</th>
+                <th style={styles.tableHeaderCell}>Last Mood</th>
+                <th style={styles.tableHeaderCell}>Consultations</th>
+                <th style={styles.tableHeaderCell}>Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody>
               {students.map((student) => (
-                <tr key={student.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                <tr key={student.id} style={styles.tableRow}>
+                  <td style={styles.tableCell}>
+                    <div style={styles.studentInfo}>
+                      <div style={styles.studentAvatar}>
                         {student.name.charAt(0)}
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                        <div className="text-sm text-gray-500">{student.status}</div>
+                      <div>
+                        <div style={styles.studentName}>{student.name}</div>
+                        <div style={styles.studentStatus}>{student.status}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900">Grade {student.grade} - {student.section}</span>
+                  <td style={styles.tableCell}>
+                    Grade {student.grade} - {student.section}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      student.lastMood === 'Happy' ? 'bg-green-100 text-green-800' :
-                      student.lastMood === 'Stressed' ? 'bg-yellow-100 text-yellow-800' :
-                      student.lastMood === 'Anxious' ? 'bg-red-100 text-red-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                  <td style={styles.tableCell}>
+                    <span style={getMoodBadgeStyle(student.lastMood)}>
                       {student.lastMood}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td style={styles.tableCell}>
                     {student.consultations}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 mr-3">
-                      <Eye size={16} />
-                    </button>
-                    <button className="text-green-600 hover:text-green-900 mr-3">
-                      <Edit size={16} />
-                    </button>
-                    <button className="text-red-600 hover:text-red-900">
-                      <Trash2 size={16} />
-                    </button>
+                  <td style={styles.tableCell}>
+                    <div style={styles.actionButtons}>
+                      <button style={{ ...styles.actionButton, color: '#0477BF' }}>
+                        <Eye size={16} />
+                      </button>
+                      <button style={{ ...styles.actionButton, color: '#10b981' }}>
+                        <Edit size={16} />
+                      </button>
+                      <button style={{ ...styles.actionButton, color: '#ef4444' }}>
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -146,41 +595,45 @@ const GuidanceDashboard = () => {
   );
 
   const MoodInsightsView = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">Student Mood Insights</h2>
+    <div style={styles.pageContainer}>
+      <h2 style={styles.pageTitle}>Student Mood Insights</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Overall Mood Distribution</h3>
-          <div className="space-y-3">
+      <div style={{ ...styles.grid, ...styles.gridCols3 }}>
+        <div style={styles.card}>
+          <h3 style={styles.cardTitle}>Overall Mood Distribution</h3>
+          <div>
             {moodData.map((mood, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: mood.color }}></div>
-                  <span className="text-sm font-medium">{mood.mood}</span>
+              <div key={index} style={styles.moodItem}>
+                <div style={styles.moodIndicator}>
+                  <div style={{ ...styles.moodDot, backgroundColor: mood.color }}></div>
+                  <span style={{ fontSize: '14px', fontWeight: '500' }}>{mood.mood}</span>
                 </div>
-                <span className="text-sm text-gray-600">{mood.count} students</span>
+                <span style={{ fontSize: '14px', color: '#6b7280' }}>{mood.count} students</span>
               </div>
             ))}
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Weekly Trends</h3>
-          <div className="text-center py-8">
-            <TrendingUp size={48} className="mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-500">Mood trend chart would be displayed here</p>
+        <div style={styles.card}>
+          <h3 style={styles.cardTitle}>Weekly Trends</h3>
+          <div style={styles.emptyState}>
+            <TrendingUp size={48} style={styles.emptyIcon} />
+            <p>Mood trend chart would be displayed here</p>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Alerts</h3>
-          <div className="space-y-3">
-            <div className="p-3 bg-red-50 border-l-4 border-red-400 rounded">
-              <p className="text-sm text-red-700">5 students reported feeling anxious this week</p>
+        <div style={styles.card}>
+          <h3 style={styles.cardTitle}>Alerts</h3>
+          <div>
+            <div style={{ ...styles.alertCard, ...styles.alertRed }}>
+              <p style={{ fontSize: '14px', color: '#991b1b', margin: 0 }}>
+                5 students reported feeling anxious this week
+              </p>
             </div>
-            <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-              <p className="text-sm text-yellow-700">Stress levels increased by 15% compared to last week</p>
+            <div style={{ ...styles.alertCard, ...styles.alertYellow }}>
+              <p style={{ fontSize: '14px', color: '#92400e', margin: 0 }}>
+                Stress levels increased by 15% compared to last week
+              </p>
             </div>
           </div>
         </div>
@@ -189,42 +642,48 @@ const GuidanceDashboard = () => {
   );
 
   const AppointmentApprovalView = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Appointment Approval</h2>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+    <div style={styles.pageContainer}>
+      <div style={styles.pageHeader}>
+        <h2 style={styles.pageTitle}>Appointment Approval</h2>
+        <button style={styles.primaryButton}>
           <Calendar size={20} />
           Set Available Times
         </button>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Pending Appointments</h3>
-          <div className="space-y-4">
+      <div style={{ ...styles.grid, ...styles.gridCols2 }}>
+        <div style={styles.card}>
+          <h3 style={styles.cardTitle}>Pending Appointments</h3>
+          <div>
             {pendingAppointments.map((appointment) => (
-              <div key={appointment.id} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex justify-between items-start mb-3">
+              <div key={appointment.id} style={styles.appointmentCard}>
+                <div style={styles.appointmentHeader}>
                   <div>
-                    <h4 className="font-semibold text-gray-800">{appointment.student}</h4>
-                    <p className="text-sm text-gray-600">{appointment.grade}</p>
+                    <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
+                      {appointment.student}
+                    </h4>
+                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
+                      {appointment.grade}
+                    </p>
                   </div>
-                  <div className="flex gap-2">
-                    <button className="bg-green-500 hover:bg-green-600 text-white p-2 rounded">
+                  <div style={styles.appointmentActions}>
+                    <button style={styles.approveButton}>
                       <Check size={16} />
                     </button>
-                    <button className="bg-red-500 hover:bg-red-600 text-white p-2 rounded">
+                    <button style={styles.rejectButton}>
                       <X size={16} />
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 mb-2">{appointment.reason}</p>
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
+                <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 8px 0' }}>
+                  {appointment.reason}
+                </p>
+                <div style={styles.appointmentMeta}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Calendar size={14} />
                     {appointment.date}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Clock size={14} />
                     {appointment.time}
                   </span>
@@ -234,24 +693,24 @@ const GuidanceDashboard = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Available Time Slots</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-              <input type="date" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div style={styles.card}>
+          <h3 style={styles.cardTitle}>Available Time Slots</h3>
+          <div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Date</label>
+              <input type="date" style={styles.input} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Time Slots</label>
-              <div className="grid grid-cols-2 gap-2">
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Time Slots</label>
+              <div style={styles.timeSlotGrid}>
                 {['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'].map((time) => (
-                  <button key={time} className="border border-gray-300 hover:bg-blue-50 hover:border-blue-500 px-3 py-2 rounded text-sm">
+                  <button key={time} style={styles.timeSlotButton}>
                     {time}
                   </button>
                 ))}
               </div>
             </div>
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
+            <button style={{ ...styles.primaryButton, width: '100%', justifyContent: 'center' }}>
               Update Available Times
             </button>
           </div>
@@ -261,27 +720,27 @@ const GuidanceDashboard = () => {
   );
 
   const GenericFormView = ({ title, description }) => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
+    <div style={styles.pageContainer}>
+      <h2 style={styles.pageTitle}>{title}</h2>
       
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <p className="text-gray-600 mb-6">{description}</p>
+      <div style={styles.card}>
+        <p style={{ color: '#6b7280', marginBottom: '24px' }}>{description}</p>
         
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-4">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <button style={styles.primaryButton}>
               <Plus size={20} />
               Create New
             </button>
-            <button className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg flex items-center gap-2">
+            <button style={styles.filterButton}>
               <Filter size={20} />
               Filter
             </button>
           </div>
         </div>
         
-        <div className="text-center py-12 text-gray-500">
-          <FileText size={48} className="mx-auto mb-4 text-gray-300" />
+        <div style={styles.emptyState}>
+          <FileText size={48} style={styles.emptyIcon} />
           <p>No {title.toLowerCase()} found. Click "Create New" to get started.</p>
         </div>
       </div>
@@ -310,22 +769,34 @@ const GuidanceDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div style={styles.container}>
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg flex flex-col relative">
-        <div className="p-6 bg-gradient-to-r from-blue-600 to-blue-700">
-          <h1 className="text-xl font-bold text-white">Guidance Portal</h1>
-          <p className="text-blue-100 text-sm">Counselor Dashboard</p>
+      <div style={styles.sidebar}>
+        <div style={styles.sidebarHeader}>
+          <h1 style={styles.sidebarTitle}>Guidance Portal</h1>
+          <p style={styles.sidebarSubtitle}>Counselor Dashboard</p>
         </div>
         
-        <nav className="flex-1 mt-6">
+        <nav style={styles.nav}>
           {sidebarItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-gray-50 transition-colors ${
-                activeTab === item.id ? 'bg-blue-50 border-r-4 border-blue-600 text-blue-600' : 'text-gray-700'
-              }`}
+              style={{
+                ...styles.navButton,
+                ...(activeTab === item.id ? styles.navButtonActive : {}),
+                color: activeTab === item.id ? '#0477BF' : '#374151'
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== item.id) {
+                  e.target.style.backgroundColor = '#f9fafb';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== item.id) {
+                  e.target.style.backgroundColor = 'transparent';
+                }
+              }}
             >
               <item.icon size={20} />
               {item.label}
@@ -333,21 +804,19 @@ const GuidanceDashboard = () => {
           ))}
         </nav>
         
-        <div className="p-6 border-t mt-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-              GC
-            </div>
+        <div style={styles.userSection}>
+          <div style={styles.userInfo}>
+            <div style={styles.userAvatar}>GC</div>
             <div>
-              <p className="font-medium text-gray-800">Guidance Counselor</p>
-              <p className="text-sm text-gray-500">counselor@school.edu</p>
+              <p style={styles.userName}>Guidance Counselor</p>
+              <p style={styles.userEmail}>counselor@school.edu</p>
             </div>
           </div>
-          <div className="flex gap-2">
-            <button className="flex-1 bg-gray-100 hover:bg-gray-200 p-2 rounded flex items-center justify-center">
+          <div style={styles.userActions}>
+            <button style={{ ...styles.userActionButton, ...styles.settingsButton }}>
               <Settings size={16} />
             </button>
-            <button className="flex-1 bg-red-100 hover:bg-red-200 p-2 rounded flex items-center justify-center text-red-600">
+            <button style={{ ...styles.userActionButton, ...styles.logoutButton }}>
               <LogOut size={16} />
             </button>
           </div>
@@ -355,31 +824,29 @@ const GuidanceDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div style={styles.mainContent}>
         {/* Header */}
-        <header className="bg-white shadow-sm border-b px-6 py-4">
-          <div className="flex justify-between items-center">
+        <header style={styles.header}>
+          <div style={styles.headerContent}>
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 style={styles.headerTitle}>
                 {sidebarItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
               </h2>
-              <p className="text-sm text-gray-600">Manage student guidance and counseling</p>
+              <p style={styles.headerSubtitle}>Manage student guidance and counseling</p>
             </div>
             
-            <div className="flex items-center gap-4">
-              <button className="relative p-2 text-gray-600 hover:text-gray-800">
+            <div style={styles.headerActions}>
+              <button style={styles.notificationButton}>
                 <Bell size={20} />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                <span style={styles.notificationBadge}></span>
               </button>
-              <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-gray-800 font-semibold">
-                GC
-              </div>
+              <div style={styles.headerAvatar}>GC</div>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-6 overflow-auto">
+        <main style={styles.content}>
           {renderContent()}
         </main>
       </div>
