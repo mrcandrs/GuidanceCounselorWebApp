@@ -215,9 +215,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 1200px; /* Set a maximum width for the container */
+  max-width: 1400px; /* Set a maximum width for the container */
   margin: 0 auto; /* Center the container */
-  padding: 24px; /* Add padding */
 }
 
 .page-header {
