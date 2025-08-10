@@ -141,16 +141,6 @@
   flex-direction: column;
 }
 
-.main-inner {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto; /* center horizontally */
-}
-
 .header {
   background-color: white;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -691,5 +681,8 @@
   
   .content {
     padding: 16px;
+    width: 100%;
+    max-width: 1200px; /* Match Mood Insights */
+    margin: 0 auto;    /* Center content horizontally */
   }
 }

@@ -371,7 +371,6 @@ const GuidanceDashboard = () => {
 
       {/* Main Content */}
       <div className="main-content">
-        <div className="main-inner">
         {/* Header */}
         <header className="header">
           <div className="header-content">
@@ -398,7 +397,6 @@ const GuidanceDashboard = () => {
         </main>
       </div>
     </div>
-  </div>
   );
 };
 
