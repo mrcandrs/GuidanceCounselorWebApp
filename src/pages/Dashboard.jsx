@@ -283,6 +283,7 @@ const GuidanceDashboard = () => {
     <div className="page-container">
       <h2 className="page-title">{title}</h2>
       
+      <div className="grid grid-cols-1">
       <div className="card">
         <p style={{ color: '#6b7280', marginBottom: '24px' }}>{description}</p>
         
@@ -296,6 +297,7 @@ const GuidanceDashboard = () => {
               <Filter size={20} />
               Filter
             </button>
+            </div>
           </div>
         </div>
         
