@@ -335,6 +335,7 @@
   width: 100%; /* Ensure cards take full width of their container */
   max-width: 1200px; /* Set a maximum width for the cards */
   margin: 0 auto; /* Center the cards */
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
 }
 
 .card-title {
