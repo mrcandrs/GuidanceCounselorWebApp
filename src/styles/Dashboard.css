@@ -141,6 +141,15 @@
   overflow-y: auto;
 }
 
+.main-content-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+
 .header {
   background-color: white;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -215,10 +224,10 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 1200px; /* Set a maximum width for the container */
   width: 100%;
-  margin: 0 auto;
+  margin: 0;
   padding: 24px;
+  box-sizing: border-box; /* add this */
 }
 
 .page-header {
@@ -335,6 +344,7 @@
   width: 100%; /* Ensure cards take full width of their container */
   margin: 0;
   box-sizing: border-box; /* Ensure padding doesn't affect width */
+  max-width: none;
 }
 
 .card-title {

@@ -376,6 +376,7 @@ const GuidanceDashboard = () => {
 
       {/* Main Content */}
       <div className="main-content">
+        <div className="main-content-inner">
         {/* Header */}
         <header className="header">
           <div className="header-content">
@@ -401,6 +402,7 @@ const GuidanceDashboard = () => {
           {renderContent()}
         </main>
       </div>
+    </div>
     </div>
   );
 };
