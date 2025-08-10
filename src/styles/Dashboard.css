@@ -330,8 +330,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
   width: 100%; /* Ensure cards take full width of their container */
-  min-width: 300px; /* Prevent collapsing */
-  max-width: 400px; /* Prevent stretching */
+  max-width: 1200px; /* Set a maximum width for the cards */
   margin: 0 auto; /* Center the cards */
 }
 
