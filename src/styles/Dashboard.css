@@ -717,18 +717,18 @@
   }
 }
 
-/* Prevent shrinking on all pages */
+/* Force main content to fill available space inside dashboard */
 .dashboard-container {
   display: flex;
   width: 100%;
 }
 
-.sidebar {
-  flex-shrink: 0;
+.dashboard-container .sidebar {
+  flex-shrink: 0; /* Sidebar stays fixed width */
 }
 
-.main-content,
-.page-container {
+.dashboard-container .main-content,
+.dashboard-container .page-container {
   flex: 1 1 auto !important;
   min-width: 0 !important;
   width: 100% !important;
