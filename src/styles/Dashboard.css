@@ -7,7 +7,6 @@
   min-height: 100vh;
   background-color: #f3f4f6;
   display: flex;
-  flex-direction: row;
   font-family: Arial, sans-serif;
   margin: 0;
 }
@@ -15,7 +14,6 @@
 /* Sidebar Styles */
 .sidebar {
   width: 256px;
-  flex-shrink: 0;
   background-color: white;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -215,6 +213,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%; /* ensure full width */
+  max-width: 100%; /* remove any max width constraints */
 }
 
 .page-header {
@@ -328,8 +328,6 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
-  flex: 1 1 300px;
-  max-width: 380px;
 }
 
 .card-title {
@@ -486,6 +484,7 @@
 .grid {
   display: grid;
   gap: 24px;
+  width: 100%; /* ensure full width */
 }
 
 .grid-cols-1 {
