@@ -19,6 +19,7 @@ import {
   X, 
   Clock 
 } from 'lucide-react';
+import '../styles/Dashboard.css';
 
 const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
