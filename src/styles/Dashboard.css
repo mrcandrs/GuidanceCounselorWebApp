@@ -460,17 +460,17 @@
 
 .mood-mild {
   background-color: #34C759;
-  color: #166534;
+  color: #ffff;
 }
 
 .mood-moderate {
   background-color: #009951;
-  color: #92400e;
+  color: #ffff;
 }
 
 .mood-high {
   background-color: #1B5E20;
-  color: #991b1b;
+  color: #ffff;
 }
 
 .mood-neutral {
