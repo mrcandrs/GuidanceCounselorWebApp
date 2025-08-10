@@ -215,7 +215,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 1200px; /* Set a maximum width for the container */
+  max-width: 1800px; /* Set a maximum width for the container */
 }
 
 .page-header {
