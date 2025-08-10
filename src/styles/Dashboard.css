@@ -137,8 +137,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1 0 auto; /* Don't allow shrinking (0) */
-  min-width: calc(100% - 256px); /* Account for sidebar width */
+  padding: 24px;
+  overflow-y: auto;
 }
 
 .header {
@@ -329,7 +329,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
   width: 100%; /* Ensure cards take full width of their container */
-  max-width: 1200px; /*Set a maximum width for the cards */
+  max-width: 1200px; /* Set a maximum width for the cards */
   margin: 0 auto; /* Center the cards */
 }
 

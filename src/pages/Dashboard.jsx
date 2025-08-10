@@ -213,7 +213,7 @@ const GuidanceDashboard = () => {
         </button>
       </div>
       
-      <div className="grid grid-cols-3"> {/* Ensure this matches other views */}
+      <div className="grid grid-cols-3">
         <div className="card">
           <h3 className="card-title">Pending Appointments</h3>
           <div>
