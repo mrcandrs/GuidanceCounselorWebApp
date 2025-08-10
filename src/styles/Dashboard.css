@@ -42,10 +42,12 @@
 .nav {
   flex: 1;
   margin-top: 24px;
+  width: 100%;
 }
 
 .nav-button {
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 12px;
