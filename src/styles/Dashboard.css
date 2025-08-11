@@ -142,12 +142,15 @@
 /* Main content with left margin equal to sidebar width */
 .main-content {
   margin-left: 256px;
-  flex: 1;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  width: calc(100% - 256px);
-  max-width: calc(100% - 256px);
+  padding: 24px;
+  overflow-y: auto;
+  flex-grow: 1;
+  outline: 2px solid red;
+  min-width: 0;
+  transition: margin-left 0.3s ease;
 }
 
 .header {
@@ -155,7 +158,6 @@
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e5e7eb;
   padding: 16px 24px;
-  flex-shrink: 0;
 }
 
 .header-content {
@@ -215,30 +217,31 @@
 }
 
 .content {
-  flex: 1;
-  width: 100%;
+  flex-grow: 1;
+  min-width: 0;  /* this helps in flex containers to avoid shrinking */
+  padding: 24px;
   overflow-y: auto;
-  background-color: #f3f4f6;
 }
 
-/* Page Layout - FIXED */
+/* Page Layout */
 .page-container {
-  width: 100%;
-  max-width: none;
-  padding: 24px;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  /* Remove the outline for production */
-  /* outline: 2px solid blue; */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 24px;
+  flex-grow: 1;       /* allow growing */
+  min-width: 0;       /* prevent flexbox shrinking issues */
+  outline: 2px solid blue;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
 }
 
 .page-title {
@@ -346,9 +349,9 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
-  width: 100%;
-  box-sizing: border-box;
-  flex: 1; /* Allow cards to grow */
+  width: 100%; /* Ensure cards take full width of their container */
+  margin: 0;
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
 }
 
 .card-title {
@@ -378,7 +381,6 @@
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
-  box-sizing: border-box;
 }
 
 .search-input:focus {
@@ -502,12 +504,12 @@
   color: #374151;
 }
 
-/* Grid Layouts - FIXED */
+/* Grid Layouts */
 .grid {
   display: grid;
   gap: 24px;
+  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
   width: 100%;
-  box-sizing: border-box;
 }
 
 .grid-cols-1 {
@@ -520,11 +522,6 @@
 
 .grid-cols-3 {
   grid-template-columns: repeat(3, 1fr);
-}
-
-/* Default grid behavior - removed the conflicting default */
-.grid:not(.grid-cols-1):not(.grid-cols-2):not(.grid-cols-3) {
-  grid-template-columns: 1fr;
 }
 
 .time-slot-grid {
@@ -559,6 +556,13 @@
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
+}
+
+/* Fix card widths inside Appointment Approval view */
+.appointment-view .card {
+  max-width: none !important;
+  margin: 0 !important;
+  width: 100% !important;
 }
 
 .appointment-header {
@@ -608,7 +612,6 @@
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
-  box-sizing: border-box;
 }
 
 .input:focus {
@@ -664,7 +667,7 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .grid-cols-3 {
+  .grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -674,12 +677,7 @@
     width: 200px;
   }
   
-  .main-content {
-    margin-left: 200px;
-    width: calc(100% - 200px);
-    max-width: calc(100% - 200px);
-  }
-  
+  .grid,
   .grid-cols-2,
   .grid-cols-3 {
     grid-template-columns: 1fr;
@@ -705,41 +703,35 @@
     box-shadow: none;
   }
   
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-    max-width: 100%;
+  .sidebar.open {
+    transform: translateX(0);
   }
   
-  .page-container {
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+  
+  .content {
     padding: 16px;
   }
 }
 
-/* Dashboard Container Layout - FIXED */
+/* Force main content to fill available space inside dashboard */
 .dashboard-container {
   display: flex;
   width: 100%;
-  min-height: 100vh;
 }
 
-/* Force consistent layout for all pages */
-.dashboard-container .main-content {
-  flex: 1;
-  min-width: 0;
-  width: calc(100% - 256px);
-  max-width: calc(100% - 256px);
+.dashboard-container .sidebar {
+  flex-shrink: 0; /* Sidebar stays fixed width */
 }
 
+.dashboard-container .main-content,
 .dashboard-container .page-container {
-  flex: 1;
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-}
-
-.dashboard-container .card {
-  width: 100%;
-  min-width: 0;
-  flex: 1;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
 }
