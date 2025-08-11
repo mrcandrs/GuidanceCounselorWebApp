@@ -139,12 +139,16 @@
 }
 
 /* Main Content Styles */
+/* Main content with left margin equal to sidebar width */
 .main-content {
-  flex-shrink: 0; /* prevent shrinking with sidebar */
   margin-left: 256px;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
+  padding: 24px;
   overflow-y: auto;
+  flex-grow: 1;
+  outline: 2px solid red;
   min-width: 0;
   transition: margin-left 0.3s ease;
 }
@@ -229,9 +233,9 @@
   box-sizing: border-box;
   margin: 0;
   padding: 24px;
-  flex-grow: 1;
-  min-width: 0;
-  outline: 2px solid blue; /* debug */
+  flex-grow: 1;       /* allow growing */
+  min-width: 0;       /* prevent flexbox shrinking issues */
+  outline: 2px solid blue;
 }
 
 .page-header {
@@ -347,8 +351,8 @@
   padding: 24px;
   width: 100%; /* Ensure cards take full width of their container */
   margin: 0;
-  box-sizing: border-box; /* Ensure padding doesn't affect width */
   outline: 2px solid green;
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
 }
 
 .card-title {
@@ -505,7 +509,7 @@
 .grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(3, 1fr); /* fixed three columns on large */
+  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
   width: 100%;
 }
 
@@ -674,6 +678,7 @@
     width: 200px;
   }
   
+  .grid,
   .grid-cols-2,
   .grid-cols-3 {
     grid-template-columns: 1fr;
@@ -704,7 +709,8 @@
   }
   
   .main-content {
-    margin-left: 256px;
+    margin-left: 0;
+    padding: 16px;
   }
   
   .content {
@@ -720,4 +726,13 @@
 
 .dashboard-container .sidebar {
   flex-shrink: 0; /* Sidebar stays fixed width */
+}
+
+.dashboard-container .main-content,
+.dashboard-container .page-container {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
 }

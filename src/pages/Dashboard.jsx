@@ -140,7 +140,8 @@ const GuidanceDashboard = () => {
   const MoodInsightsView = () => (
     <div className="page-container">
       <h2 className="page-title">Student Mood Insights</h2>
-
+      
+      <div className="grid grid-cols-3">
         <div className="card">
           <h3 className="card-title">Overall Mood Distribution</h3>
           <div>
@@ -180,6 +181,7 @@ const GuidanceDashboard = () => {
           </div>
         </div>
       </div>
+    </div>
   );
 
   const AppointmentApprovalView = () => (
@@ -191,7 +193,8 @@ const GuidanceDashboard = () => {
         Set Available Times
       </button>
     </div>
-
+    
+    <div className="grid grid-cols-2">
       <div className="card">
         <h3 className="card-title">Pending Appointments</h3>
         <div>
@@ -256,6 +259,7 @@ const GuidanceDashboard = () => {
         </div>
       </div>
     </div>
+  </div>
 );
 
 
