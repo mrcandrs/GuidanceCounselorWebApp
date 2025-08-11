@@ -1,31 +1,13 @@
 import React, { useState } from 'react';
 import { 
-  Users, 
-  TrendingUp, 
-  FileText, 
-  Calendar, 
-  ClipboardList, 
-  UserCheck, 
-  Plus, 
-  Search, 
-  Filter, 
-  Bell, 
-  Settings, 
-  LogOut, 
-  Eye, 
-  Edit, 
-  Trash2, 
-  Check, 
-  X, 
-  Clock 
-} from 'lucide-react';
+  Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
 import '../styles/Dashboard.css';
 
 const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Sample data
+  //Placeholder data
   const students = [
     { id: 1, name: 'John Doe', grade: '12', section: 'A', status: 'Active', lastMood: 'MILD', consultations: 3 },
     { id: 2, name: 'Jane Smith', grade: '11', section: 'B', status: 'Active', lastMood: 'MODERATE', consultations: 1 },
@@ -77,8 +59,7 @@ const GuidanceDashboard = () => {
           Add Student
         </button>
       </div>
-      
-      <div className="grid grid-cols-3">
+ 
       <div className="card">
         <div className="search-container">
           <div className="search-input-container">
@@ -153,7 +134,6 @@ const GuidanceDashboard = () => {
         </div>
       </div>
     </div>
-  </div>
   );
 
   const MoodInsightsView = () => (
@@ -204,7 +184,7 @@ const GuidanceDashboard = () => {
   );
 
   const AppointmentApprovalView = () => (
-  <div className="page-container appointment-view">
+  <div className="page-container">
     <div className="page-header">
       <h2 className="page-title">Appointment Approval</h2>
       <button className="primary-button"> 
@@ -285,8 +265,7 @@ const GuidanceDashboard = () => {
   const GenericFormView = ({ title, description }) => (
     <div className="page-container">
       <h2 className="page-title">{title}</h2>
-      
-      <div className="grid grid-cols-3">
+
       <div className="card">
         <p style={{ color: '#6b7280', marginBottom: '24px' }}>{description}</p>
         
@@ -309,7 +288,6 @@ const GuidanceDashboard = () => {
         </div>
       </div>
     </div>
-  </div>
   );
 
   const renderContent = () => {
