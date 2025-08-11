@@ -12,19 +12,13 @@
 }
 
 /* Sidebar Styles */
-/* Sidebar fixed on left */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh; /* full viewport height */
   width: 256px;
-  z-index: 20; /* above main content */
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   background-color: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
+  position: relative;
 }
 
 .sidebar-header {
@@ -139,23 +133,17 @@
 }
 
 /* Main Content Styles */
-/* Main content with left margin equal to sidebar width */
 .main-content {
-  margin-left: 256px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  outline: 2px solid red;
-  min-width: 0;
-  transition: margin-left 0.3s ease;
 }
 
 .header {
   background-color: white;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e5e7eb;
-  padding: 24px;
+  padding: 16px 24px;
 }
 
 .header-content {
@@ -215,8 +203,7 @@
 }
 
 .content {
-  flex-grow: 1;
-  min-width: 0;  /* this helps in flex containers to avoid shrinking */
+  flex: 1;
   padding: 24px;
   overflow-y: auto;
 }
@@ -226,13 +213,6 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  margin: 0;
-  flex-grow: 1;       /* allow growing */
-  min-width: 0;       /* prevent flexbox shrinking issues */
-  outline: 2px solid blue;
 }
 
 .page-header {
@@ -346,10 +326,6 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
-  width: 100%; /* Ensure cards take full width of their container */
-  margin: 0;
-  outline: 2px solid green;
-  box-sizing: border-box; /* Ensure padding doesn't affect width */
 }
 
 .card-title {
@@ -474,7 +450,7 @@
   color: #ef4444;
 }
 
-/*Mood Badges*/
+/* Mood Badges */
 .mood-badge {
   padding: 2px 8px;
   font-size: 12px;
@@ -482,19 +458,19 @@
   border-radius: 9999px;
 }
 
-.mood-mild {
-  background-color: #34C759;
-  color: #ffff;
+.mood-happy {
+  background-color: #dcfce7;
+  color: #166534;
 }
 
-.mood-moderate {
-  background-color: #009951;
-  color: #ffff;
+.mood-stressed {
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
-.mood-high {
-  background-color: #1B5E20;
-  color: #ffff;
+.mood-anxious {
+  background-color: #fecaca;
+  color: #991b1b;
 }
 
 .mood-neutral {
@@ -506,8 +482,6 @@
 .grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
-  width: 100%;
 }
 
 .grid-cols-1 {
@@ -554,13 +528,6 @@
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-}
-
-/* Fix card widths inside Appointment Approval view */
-.appointment-view .card {
-  max-width: none !important;
-  margin: 0 !important;
-  width: 100% !important;
 }
 
 .appointment-header {
@@ -665,7 +632,7 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .grid {
+  .grid-cols-3 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -675,7 +642,6 @@
     width: 200px;
   }
   
-  .grid,
   .grid-cols-2,
   .grid-cols-3 {
     grid-template-columns: 1fr;
@@ -692,13 +658,13 @@
   }
 }
 
-/* On smaller screens, reset sidebar to relative and remove main content margin */
 @media (max-width: 640px) {
   .sidebar {
-    position: relative;
     width: 100%;
-    height: auto;
-    box-shadow: none;
+    position: fixed;
+    z-index: 10;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
   }
   
   .sidebar.open {
@@ -707,29 +673,9 @@
   
   .main-content {
     margin-left: 0;
-    padding: 16px;
   }
   
   .content {
     padding: 16px;
   }
-}
-
-/* Force main content to fill available space inside dashboard */
-.dashboard-container {
-  display: flex;
-  width: 100%;
-}
-
-.dashboard-container .sidebar {
-  flex-shrink: 0; /* Sidebar stays fixed width */
-}
-
-.dashboard-container .main-content,
-.dashboard-container .page-container {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
 }
