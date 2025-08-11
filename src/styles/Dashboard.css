@@ -144,6 +144,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  overflow-y: auto;
   outline: 2px solid red;
   min-width: 0;
   transition: margin-left 0.3s ease;
