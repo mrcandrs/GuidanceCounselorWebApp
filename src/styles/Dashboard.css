@@ -142,7 +142,7 @@
 .main-content {
   margin-left: 256px;
   display: flex;
-  flex: 1;
+  flex-grow: 1;
   flex-direction: column;
   overflow-y: auto;
   outline: 2px solid red;
