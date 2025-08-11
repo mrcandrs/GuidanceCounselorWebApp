@@ -232,7 +232,6 @@
   max-width: 100%;
   box-sizing: border-box;
   margin: 0;
-  padding: 24px;
   flex-grow: 1;       /* allow growing */
   min-width: 0;       /* prevent flexbox shrinking issues */
   outline: 2px solid blue;
