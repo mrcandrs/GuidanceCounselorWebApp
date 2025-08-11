@@ -349,6 +349,7 @@
   width: 100%; /* Ensure cards take full width of their container */
   margin: 0;
   box-sizing: border-box; /* Ensure padding doesn't affect width */
+  outline: 2px solid green;
 }
 
 .card-title {

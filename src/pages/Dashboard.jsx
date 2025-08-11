@@ -267,8 +267,8 @@ const GuidanceDashboard = () => {
       <div className="card">
         <p style={{ color: '#6b7280', marginBottom: '24px' }}>{description}</p>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', gap: '16px' }}>
+        {/*<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '16px' }}>*/}
             <button className="primary-button">
               <Plus size={20} />
               Create New
