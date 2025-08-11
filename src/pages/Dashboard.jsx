@@ -1,24 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Users, 
-  TrendingUp, 
-  FileText, 
-  Calendar, 
-  ClipboardList, 
-  UserCheck, 
-  Plus, 
-  Search, 
-  Filter, 
-  Bell, 
-  Settings, 
-  LogOut, 
-  Eye, 
-  Edit, 
-  Trash2, 
-  Check, 
-  X, 
-  Clock 
-} from 'lucide-react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
 import '../styles/Dashboard.css';
 
 const GuidanceDashboard = () => {
@@ -213,7 +194,7 @@ const GuidanceDashboard = () => {
       </button>
     </div>
     
-    <div className="grid grid-cols-2">
+    <div className="grid grid-cols-3">
       <div className="card">
         <h3 className="card-title">Pending Appointments</h3>
         <div>
