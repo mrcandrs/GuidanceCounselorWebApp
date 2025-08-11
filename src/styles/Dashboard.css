@@ -145,8 +145,10 @@
   flex-grow: 1;
   flex-direction: column;
   overflow-y: auto;
-  outline: 2px solid red;
-  min-width: 0;
+  
+  min-width: 0;  /* keeps flex children from overflowing */
+  flex-shrink: 0; /* Prevent shrinking */
+  outline: 2px solid red; /* keep for debug */
   transition: margin-left 0.3s ease;
 }
 
@@ -230,9 +232,12 @@
   box-sizing: border-box;
   margin: 0;
   padding: 24px;
-  flex: 1;
+  flex-grow: 1;
   min-width: 0;
-  outline: 2px solid blue;
+
+  /* Ensure the page-container fills the horizontal space properly */
+  flex-shrink: 0;
+  outline: 2px solid blue; /* debug */
 }
 
 .page-header {
@@ -506,7 +511,7 @@
 .grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(3, 1fr); /* Ensure this is consistent */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   width: 100%;
 }
 
@@ -706,8 +711,7 @@
   }
   
   .main-content {
-    margin-left: 0;
-    padding: 16px;
+    margin-left: 256px;
   }
   
   .content {
@@ -723,13 +727,4 @@
 
 .dashboard-container .sidebar {
   flex-shrink: 0; /* Sidebar stays fixed width */
-}
-
-.dashboard-container .main-content,
-.dashboard-container .page-container {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
 }
