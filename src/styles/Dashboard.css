@@ -145,9 +145,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 24px;
   overflow-y: auto;
-  flex-grow: 1;
   outline: 2px solid red;
   min-width: 0;
   transition: margin-left 0.3s ease;
@@ -709,6 +707,7 @@
   
   .main-content {
     margin-left: 0;
+    padding: 16px;
   }
   
   .content {
