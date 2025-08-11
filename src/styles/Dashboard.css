@@ -142,12 +142,11 @@
 /* Main content with left margin equal to sidebar width */
 .main-content {
   margin-left: 256px;
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
   padding: 24px;
   overflow-y: auto;
-  flex-grow: 1;
   outline: 2px solid red;
   min-width: 0;
   transition: margin-left 0.3s ease;
@@ -233,8 +232,8 @@
   box-sizing: border-box;
   margin: 0;
   padding: 24px;
-  flex-grow: 1;       /* allow growing */
-  min-width: 0;       /* prevent flexbox shrinking issues */
+  flex: 1;
+  min-width: 0;
   outline: 2px solid blue;
 }
 
