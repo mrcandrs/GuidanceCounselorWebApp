@@ -140,15 +140,12 @@
 
 /* Main Content Styles */
 .main-content {
+  flex-shrink: 0; /* prevent shrinking with sidebar */
   margin-left: 256px;
   display: flex;
-  flex-grow: 1;
   flex-direction: column;
   overflow-y: auto;
-  
-  min-width: 0;  /* keeps flex children from overflowing */
-  flex-shrink: 0; /* Prevent shrinking */
-  outline: 2px solid red; /* keep for debug */
+  min-width: 0;
   transition: margin-left 0.3s ease;
 }
 
@@ -234,9 +231,6 @@
   padding: 24px;
   flex-grow: 1;
   min-width: 0;
-
-  /* Ensure the page-container fills the horizontal space properly */
-  flex-shrink: 0;
   outline: 2px solid blue; /* debug */
 }
 
@@ -511,7 +505,7 @@
 .grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* fixed three columns on large */
   width: 100%;
 }
 
@@ -680,7 +674,6 @@
     width: 200px;
   }
   
-  .grid,
   .grid-cols-2,
   .grid-cols-3 {
     grid-template-columns: 1fr;
