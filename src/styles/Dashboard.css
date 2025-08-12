@@ -326,9 +326,6 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
-  min-width: 0; /* Allows content to shrink if needed */
-  width: 100%;
-  height: fit-content;
 }
 
 .card-title {
@@ -496,8 +493,7 @@
 }
 
 .grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(280px, 1fr));
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .time-slot-grid {
