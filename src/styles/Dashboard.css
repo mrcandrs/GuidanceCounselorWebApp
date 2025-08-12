@@ -204,7 +204,6 @@
 
 .content {
   flex: 1;
-  padding: 24px;
   overflow-y: auto;
 }
 
@@ -215,7 +214,6 @@
   gap: 24px;
   width: 100%;
   max-width: none; /* Remove any max-width constraints */
-  padding: 24px; /* Adjust padding as needed */
 }
 
 .page-header {
@@ -329,7 +327,6 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
-  height: fit-content;
 }
 
 .card-title {
