@@ -326,6 +326,9 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
+  min-width: 0; /* Allows content to shrink if needed */
+  width: 100%;
+  height: fit-content;
 }
 
 .card-title {
@@ -484,14 +487,17 @@
   gap: 24px;
 }
 
-.grid-cols-3 {
-  grid-template-columns: minmax(300px, 1fr) minmax(400px, 1fr) minmax(300px, 1fr);
-  /* This ensures minimum widths and prevents compression */
+.grid-cols-1 {
+  grid-template-columns: 1fr;
 }
 
-/* Or for equal columns that don't compress: */
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start; /* This prevents height stretching issues */
 }
 
 .time-slot-grid {
