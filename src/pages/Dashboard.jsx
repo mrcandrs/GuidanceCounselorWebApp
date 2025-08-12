@@ -95,8 +95,10 @@ const GuidanceDashboard = () => {
               <tr>
                 <th className="table-header-cell">Student</th>
                 <th className="table-header-cell">Student No.</th>
-                <th className="table-header-cell">Program and Section</th>
+                <th className="table-header-cell">Program and Year</th>
                 <th className="table-header-cell">Last Mood Level</th>
+                <th className="table-header-cell">Date Registered</th>
+                <th className="table-header-cell">Last Login</th>
                 <th className="table-header-cell">Actions</th>
               </tr>
             </thead>
@@ -123,6 +125,8 @@ const GuidanceDashboard = () => {
                       {student.lastMood || "N/A"}
                     </span>
                   </td>
+                  <td className="table-cell">{student.dateregistered}</td>
+                  <td className="table-cell">{student.lastlogin}</td>
                   <td className="table-cell">
                     <div className="action-buttons">
                       <button className="action-button action-view">
