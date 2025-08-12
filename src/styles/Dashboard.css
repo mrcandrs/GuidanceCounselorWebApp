@@ -211,7 +211,7 @@
 /* Page Layout */
 .page-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 24px;
   max-width: 100%;
   margin: 0 auto;
