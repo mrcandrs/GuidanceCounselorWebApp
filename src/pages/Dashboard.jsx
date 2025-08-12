@@ -127,7 +127,7 @@ const GuidanceDashboard = () => {
                   </td>
                   <td className="table-cell">
                     {student.dateregistered ? new Date(student.dateregistered).toLocaleString('en-US', {
-                        month: 'short',
+                        month: 'long',
                         day: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
@@ -137,7 +137,7 @@ const GuidanceDashboard = () => {
                   </td>
                   <td className="table-cell">
                     {student.lastlogin ? new Date(student.lastlogin).toLocaleString('en-US', {
-                        month: 'short',
+                        month: 'long',
                         day: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
