@@ -244,7 +244,7 @@ const GuidanceDashboard = () => {
     <div className="page-container">
       <h2 className="page-title">Student Mood Insights</h2>
 
-      <div className="grid grid-cols-3">
+      <div className="grid">
         {/* Overall Mood Distribution */}
         <div className="card">
           <h3 className="card-title">Overall Mood Distribution</h3>
