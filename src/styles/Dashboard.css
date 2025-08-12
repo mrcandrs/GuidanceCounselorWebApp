@@ -496,8 +496,8 @@
 }
 
 .grid-cols-3 {
-  grid-template-columns: repeat(3, 1fr);
-  align-items: start; /* This prevents height stretching issues */
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  align-items: start;
 }
 
 .time-slot-grid {
