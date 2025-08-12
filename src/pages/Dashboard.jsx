@@ -125,8 +125,26 @@ const GuidanceDashboard = () => {
                       {student.lastMood || "N/A"}
                     </span>
                   </td>
-                  <td className="table-cell">{student.dateregistered}</td>
-                  <td className="table-cell">{student.lastlogin}</td>
+                  <td className="table-cell">
+                    {student.dateRegistered ? new Date(student.dateRegistered).toLocaleString('en-US', {
+                        month: 'short',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true,
+                    }) : 'N/A'}
+                  </td>
+                  <td className="table-cell">
+                    {student.lastLogin ? new Date(student.lastLogin).toLocaleString('en-US', {
+                        month: 'short',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true,
+                    }) : 'N/A'}
+                  </td>
                   <td className="table-cell">
                     <div className="action-buttons">
                       <button className="action-button action-view">
