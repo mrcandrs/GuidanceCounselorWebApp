@@ -27,10 +27,10 @@ const GuidanceDashboard = () => {
   
   // Sample data
   const students = [
-    { id: 1, name: 'Marc Andres', studentno: '02000302066', program: 'BSIT', section: '4B', status: 'Active', lastMood: 'happy'},
-    { id: 2, name: 'Jane Smith', grade: '11', section: 'B', status: 'Active', lastMood: 'Stressed', consultations: 1 },
-    { id: 3, name: 'Mike Johnson', grade: '10', section: 'C', status: 'Active', lastMood: 'Neutral', consultations: 5 },
-    { id: 4, name: 'Sarah Wilson', grade: '12', section: 'A', status: 'Active', lastMood: 'Anxious', consultations: 2 },
+    { id: 1, name: 'Marc Andres', studentno: '02000302066', program: 'BSIT', section: '4B', status: 'Active', lastMood: 'MILD'},
+    { id: 2, name: 'Jane Smith', studentno: '02000302077', program: 'BSIT', section: '4A', status: 'Active', lastMood: 'MILD'},
+    { id: 3, name: 'John Doe', studentno: '02000302011', program: 'BSIT', section: '4C', status: 'Active', lastMood: 'MODERATE'},
+    { id: 4, name: 'Naruto Uzumaki', studentno: '02000302099', program: 'BSIT', section: '4A', status: 'Active', lastMood: 'HIGH'},
   ];
 
   const pendingAppointments = [
@@ -59,12 +59,12 @@ const GuidanceDashboard = () => {
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
-      case 'Happy':
-        return 'mood-badge mood-happy';
-      case 'Stressed':
-        return 'mood-badge mood-stressed';
-      case 'Anxious':
-        return 'mood-badge mood-anxious';
+      case 'MILD':
+        return 'mood-badge mood-mild';
+      case 'MODERATE':
+        return 'mood-badge mood-moderate';
+      case 'HIGH':
+        return 'mood-badge mood-high';
       default:
         return 'mood-badge mood-neutral';
     }
@@ -101,7 +101,7 @@ const GuidanceDashboard = () => {
                 <th className="table-header-cell">Student</th>
                 <th className="table-header-cell">Student No.</th>
                 <th className="table-header-cell">Program and Section</th>
-                <th className="table-header-cell">Last Mood</th>
+                <th className="table-header-cell">Last Mood Level</th>
                 <th className="table-header-cell">Actions</th>
               </tr>
             </thead>

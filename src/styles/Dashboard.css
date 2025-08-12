@@ -458,18 +458,18 @@
   border-radius: 9999px;
 }
 
-.mood-happy {
-  background-color: #dcfce7;
+.mood-mild {
+  background-color: #34C759;
   color: #166534;
 }
 
-.mood-stressed {
-  background-color: #fef3c7;
+.mood-moderate {
+  background-color: #009951;
   color: #92400e;
 }
 
-.mood-anxious {
-  background-color: #fecaca;
+.mood-high {
+  background-color: #1B5E20;
   color: #991b1b;
 }
 
