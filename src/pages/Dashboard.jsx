@@ -27,7 +27,7 @@ const GuidanceDashboard = () => {
   
   // Sample data
   const students = [
-    { id: 1, name: 'John Doe', grade: '12', section: 'A', status: 'Active', lastMood: 'Happy', consultations: 3 },
+    { id: 1, name: 'Marc Andres', studentno: '02000302066', program: 'BSIT', section: '4B', status: 'Active', lastMood: 'happy'},
     { id: 2, name: 'Jane Smith', grade: '11', section: 'B', status: 'Active', lastMood: 'Stressed', consultations: 1 },
     { id: 3, name: 'Mike Johnson', grade: '10', section: 'C', status: 'Active', lastMood: 'Neutral', consultations: 5 },
     { id: 4, name: 'Sarah Wilson', grade: '12', section: 'A', status: 'Active', lastMood: 'Anxious', consultations: 2 },
@@ -74,10 +74,6 @@ const GuidanceDashboard = () => {
     <div className="page-container">
       <div className="page-header">
         <h2 className="page-title">Students List</h2>
-        <button className="primary-button">
-          <Plus size={20} />
-          Add Student
-        </button>
       </div>
       
       <div className="card">
@@ -103,9 +99,9 @@ const GuidanceDashboard = () => {
             <thead className="table-header">
               <tr>
                 <th className="table-header-cell">Student</th>
-                <th className="table-header-cell">Grade & Section</th>
+                <th className="table-header-cell">Student No.</th>
+                <th className="table-header-cell">Program and Section</th>
                 <th className="table-header-cell">Last Mood</th>
-                <th className="table-header-cell">Consultations</th>
                 <th className="table-header-cell">Actions</th>
               </tr>
             </thead>
@@ -124,15 +120,15 @@ const GuidanceDashboard = () => {
                     </div>
                   </td>
                   <td className="table-cell">
-                    Grade {student.grade} - {student.section}
+                    {student.studentno}
+                  </td>
+                  <td className="table-cell">
+                    {student.program} - {student.section}
                   </td>
                   <td className="table-cell">
                     <span className={getMoodBadgeClass(student.lastMood)}>
                       {student.lastMood}
                     </span>
-                  </td>
-                  <td className="table-cell">
-                    {student.consultations}
                   </td>
                   <td className="table-cell">
                     <div className="action-buttons">
