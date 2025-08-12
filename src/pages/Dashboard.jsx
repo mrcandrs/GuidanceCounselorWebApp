@@ -298,7 +298,6 @@ const GuidanceDashboard = () => {
           )}
         </div>
       </div>
-    </div>
   );
 };
 
