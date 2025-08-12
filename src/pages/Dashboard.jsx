@@ -109,14 +109,14 @@ const GuidanceDashboard = () => {
                         {student.name.charAt(0)}
                       </div>
                       <div>
-                        <div className="student-name">{student.fullName}</div>
+                        <div className="student-name">{student.name}</div>
                         <div className="student-status">{student.status}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="table-cell">{student.studentNumber}</td>
+                  <td className="table-cell">{student.studentno}</td>
                   <td className="table-cell">
-                    {student.program} - {student.gradeYear}
+                    {student.program} - {student.section}
                   </td>
                   <td className="table-cell">
                     <span className={getMoodBadgeClass(student.lastMood)}>
