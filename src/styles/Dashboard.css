@@ -485,7 +485,6 @@
   display: grid;
   gap: 24px;
   width: 100%;
-  grid-template-columns: repeat(3, 1fr);
 }
 
 .grid-cols-1 {
@@ -497,6 +496,9 @@
 }
 
 .grid-cols-3 {
+  display: grid;
+  gap: 24px;
+  width: 100%;
   grid-template-columns: repeat(3, 1fr);
 }
 
