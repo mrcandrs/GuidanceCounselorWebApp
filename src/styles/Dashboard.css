@@ -213,6 +213,9 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  max-width: none; /* Remove any max-width constraints */
+  padding: 24px; /* Adjust padding as needed */
 }
 
 .page-header {
@@ -482,6 +485,7 @@
 .grid {
   display: grid;
   gap: 24px;
+  width: 100%;
 }
 
 .grid-cols-1 {
