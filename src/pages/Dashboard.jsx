@@ -1,38 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Users, 
-  TrendingUp, 
-  FileText, 
-  Calendar, 
-  ClipboardList, 
-  UserCheck, 
-  Plus, 
-  Search, 
-  Filter, 
-  Bell, 
-  Settings, 
-  LogOut, 
-  Eye, 
-  Edit, 
-  Trash2, 
-  Check, 
-  X, 
-  Clock 
-} from 'lucide-react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
 import '../styles/Dashboard.css';
+import axios from "axios";
 
 const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Sample data
-  const students = [
-    { id: 1, name: 'Marc Andres', studentno: '02000302066', program: 'BSIT', section: '4B', status: 'Active', lastMood: 'MILD'},
-    { id: 2, name: 'Jane Smith', studentno: '02000302077', program: 'BSIT', section: '4A', status: 'Active', lastMood: 'MILD'},
-    { id: 3, name: 'John Doe', studentno: '02000302011', program: 'BSIT', section: '4C', status: 'Active', lastMood: 'MODERATE'},
-    { id: 4, name: 'Naruto Uzumaki', studentno: '02000302099', program: 'BSIT', section: '4A', status: 'Active', lastMood: 'HIGH'},
-  ];
-
   const pendingAppointments = [
     { id: 1, student: 'John Doe', grade: '12-A', reason: 'Academic counseling', date: '2024-08-10', time: '10:00 AM', status: 'pending' },
     { id: 2, student: 'Jane Smith', grade: '11-B', reason: 'Career guidance', date: '2024-08-11', time: '2:00 PM', status: 'pending' },
@@ -57,6 +31,10 @@ const GuidanceDashboard = () => {
     { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
   ];
 
+  const StudentsListView = () => {
+  const [students, setStudents] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
       case 'MILD':
@@ -70,12 +48,29 @@ const GuidanceDashboard = () => {
     }
   };
 
-  const StudentsListView = () => (
+  //Fetching student data from API
+  useEffect(() => {
+    axios
+      .get("https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood")
+      .then((response) => {
+        setStudents(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching students:", error);
+      });
+  }, []);
+
+  //Filter students by search term
+  const filteredStudents = students.filter((student) =>
+    student.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
     <div className="page-container">
       <div className="page-header">
         <h2 className="page-title">Students List</h2>
       </div>
-      
+
       <div className="card">
         <div className="search-container">
           <div className="search-input-container">
@@ -93,8 +88,8 @@ const GuidanceDashboard = () => {
             Filter
           </button>
         </div>
-        
-        <div style={{ overflowX: 'auto' }}>
+
+        <div style={{ overflowX: "auto" }}>
           <table className="table">
             <thead className="table-header">
               <tr>
@@ -106,7 +101,7 @@ const GuidanceDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {students.map((student) => (
+              {filteredStudents.map((student) => (
                 <tr key={student.id} className="table-row">
                   <td className="table-cell">
                     <div className="student-info">
@@ -114,20 +109,18 @@ const GuidanceDashboard = () => {
                         {student.name.charAt(0)}
                       </div>
                       <div>
-                        <div className="student-name">{student.name}</div>
+                        <div className="student-name">{student.fullName}</div>
                         <div className="student-status">{student.status}</div>
                       </div>
                     </div>
                   </td>
+                  <td className="table-cell">{student.studentNumber}</td>
                   <td className="table-cell">
-                    {student.studentno}
-                  </td>
-                  <td className="table-cell">
-                    {student.program} - {student.section}
+                    {student.program} - {student.gradeYear}
                   </td>
                   <td className="table-cell">
                     <span className={getMoodBadgeClass(student.lastMood)}>
-                      {student.lastMood}
+                      {student.lastMood || "N/A"}
                     </span>
                   </td>
                   <td className="table-cell">
@@ -145,12 +138,20 @@ const GuidanceDashboard = () => {
                   </td>
                 </tr>
               ))}
+              {filteredStudents.length === 0 && (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    No students found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
     </div>
   );
+};
 
   const MoodInsightsView = () => (
     <div className="page-container">
