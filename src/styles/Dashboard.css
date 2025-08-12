@@ -213,6 +213,9 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  max-width: 1200px; /* or 100%, or auto */
+  margin: 0 auto;
+  padding: 16px;
 }
 
 .page-header {
