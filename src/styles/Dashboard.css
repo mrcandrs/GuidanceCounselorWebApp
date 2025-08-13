@@ -10,7 +10,6 @@
   font-family: Arial, sans-serif;
   margin: 0;
   width: 100%;
-  max-width: 100%; /* Add this */
 }
 
 /* Sidebar Styles */
@@ -333,6 +332,7 @@
 .cards-row {
   display: flex;
   gap: 16px; /* space between cards */
+  max-width: none; /* remove width restriction */
 }
 
 .card {
