@@ -130,7 +130,6 @@ const MoodInsightsView = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
