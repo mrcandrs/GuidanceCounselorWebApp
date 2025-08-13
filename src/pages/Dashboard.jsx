@@ -42,15 +42,19 @@ const GuidanceDashboard = () => {
 
 
   const handleLogout = () => {
-    // Remove token
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    
+    if (confirmLogout) {
+      // Remove token
     localStorage.removeItem('authToken');
     console.log("Authentication token removed successfully.");
 
-    // Optional: clear state
+    //Clear state
     setCounselor({ name: '', email: '' });
 
-    // Redirect to login
+    //Redirect to login
     navigate('/');
+    }
   };
 
   const pendingAppointments = [
