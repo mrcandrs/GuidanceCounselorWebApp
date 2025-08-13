@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import '../styles/Dashboard.css'; // Same CSS file
+import '../styles/Dashboard.css';
 import axios from "axios";
 
 //Mood colors
@@ -17,20 +17,21 @@ const colorForMood = (mood) => {
 
   //Chart component for mood trends
   const MoodTrendChart = ({ data }) => {
-  // data expected: [{date: '2025-08-01', mild:0, moderate:1, high:2, na:0}, ...]
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <LineChart data={data}>
-        <XAxis dataKey="date" />
-        <YAxis allowDecimals={false} />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="mild" stroke={colorForMood("MILD")} />
-        <Line type="monotone" dataKey="moderate" stroke={colorForMood("MODERATE")} />
-        <Line type="monotone" dataKey="high" stroke={colorForMood("HIGH")} />
-        <Line type="monotone" dataKey="na" stroke={colorForMood("N/A")} />
-      </LineChart>
-    </ResponsiveContainer>
+    <div style={{ width: '100%', height: '260px', minWidth: 0, overflow: 'hidden' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data}>
+          <XAxis dataKey="date" />
+          <YAxis allowDecimals={false} />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="mild" stroke={colorForMood("MILD")} />
+          <Line type="monotone" dataKey="moderate" stroke={colorForMood("MODERATE")} />
+          <Line type="monotone" dataKey="high" stroke={colorForMood("HIGH")} />
+          <Line type="monotone" dataKey="na" stroke={colorForMood("N/A")} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
     );
   };
 
@@ -41,7 +42,6 @@ const MoodInsightsView = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const fetchAll = async () => {
       try {
         const [distRes, trendsRes, alertsRes] = await Promise.all([
@@ -71,12 +71,12 @@ const MoodInsightsView = () => {
   }));
 
   return (
-    <div className="page-container">
+    <div className="page-container" style={{ width: '100%', minWidth: 0 }}>
       <h2 className="page-title">Student Mood Insights</h2>
 
-      <div className="grid-cols-3">
+      <div className="grid-cols-3" style={{ width: '100%', minWidth: 0 }}>
         {/* Overall Mood Distribution */}
-        <div className="card">
+        <div className="card" style={{ minWidth: 0 }}>
           <h3 className="card-title">Overall Mood Distribution</h3>
 
           {loading ? (
@@ -99,7 +99,7 @@ const MoodInsightsView = () => {
         </div>
 
         {/* Weekly/Daily Trends (chart) */}
-        <div className="card">
+        <div className="card" style={{ minWidth: 0, overflow: 'hidden' }}>
           <h3 className="card-title">Weekly Trends</h3>
           {loading ? (
             <p>Loading chart...</p>
@@ -114,7 +114,7 @@ const MoodInsightsView = () => {
         </div>
 
         {/* Alerts */}
-        <div className="card">
+        <div className="card" style={{ minWidth: 0 }}>
           <h3 className="card-title">Alerts</h3>
           {loading ? (
             <p>Loading alerts...</p>
@@ -127,9 +127,9 @@ const MoodInsightsView = () => {
               </div>
             ))
           )}
-          </div>
         </div>
       </div>
+    </div>
   );
 };
 
