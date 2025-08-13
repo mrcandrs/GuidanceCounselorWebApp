@@ -11,6 +11,7 @@ const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
   const navigate = useNavigate();
   const [counselor, setCounselor] = useState({ name: '', email: '' });
+  const [showModal, setShowModal] = useState(false);
   //const [searchTerm, setSearchTerm] = useState('');
 
   //Use effect for fetching Counselor from database
@@ -40,12 +41,8 @@ const GuidanceDashboard = () => {
   fetchCounselor();
   }, []);
 
-
   const handleLogout = () => {
-    const confirmLogout = window.confirm("Are you sure you want to log out?");
-    
-    if (confirmLogout) {
-      // Remove token
+    // Remove token
     localStorage.removeItem('authToken');
     console.log("Authentication token removed successfully.");
 
@@ -54,7 +51,6 @@ const GuidanceDashboard = () => {
 
     //Redirect to login
     navigate('/');
-    }
   };
 
   const pendingAppointments = [
@@ -246,9 +242,25 @@ const GuidanceDashboard = () => {
             </button>
 
             {/* Logout button */}
-            <button onClick={handleLogout} className="user-action-button logout-button">
+            <button className="user-action-button logout-button" onClick={() => setShowModal(true)}>
               <LogOut size={16} />
             </button>
+
+            {showModal && (
+            <div className="modal-overlay">
+            <div className="modal">
+            <h3>Are you sure you want to log out?</h3>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+              <button className="confirm-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
           </div>
         </div>
       </div>
