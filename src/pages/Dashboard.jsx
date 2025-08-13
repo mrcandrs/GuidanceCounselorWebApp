@@ -8,7 +8,36 @@ import axios from "axios";
 
 const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
+  const [counselor, setCounselor] = useState({ name: '', email: '' });
   //const [searchTerm, setSearchTerm] = useState('');
+
+  //Use effect for fetching Counselor from database
+  useEffect(() => {
+  const fetchCounselor = async () => {
+    try {
+      const token = localStorage.getItem('token'); // must be set during login
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      const res = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/counselor/me',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setCounselor(res.data); // make sure API returns { name, email }
+    } catch (err) {
+      console.error('Failed to fetch counselor:', err);
+    }
+  };
+
+  fetchCounselor();
+}, []);
+
+
   
   const pendingAppointments = [
     { id: 1, student: 'John Doe', grade: '12-A', reason: 'Academic counseling', date: '2024-08-10', time: '10:00 AM', status: 'pending' },
@@ -184,10 +213,10 @@ const GuidanceDashboard = () => {
         
         <div className="user-section">
           <div className="user-info">
-            <div className="user-avatar">GC</div>
+            <div className="user-avatar">{counselor.name ? counselor.name.charAt(0) : 'GC'}</div>
             <div>
-              <p className="user-name">Guidance Counselor</p>
-              <p className="user-email">counselor@school.edu</p>
+              <p className="user-name">{counselor.name || 'Loading...'}</p>
+              <p className="user-email">{counselor.email || ''}</p>
             </div>
           </div>
           <div className="user-actions">
