@@ -71,7 +71,6 @@ const MoodInsightsView = () => {
   }));
 
   return (
-    <div className="dashboard-container">
     <div className="page-container">
       <h2 className="page-title">Student Mood Insights</h2>
 
