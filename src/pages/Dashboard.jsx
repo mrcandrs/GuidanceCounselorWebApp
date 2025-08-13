@@ -18,8 +18,7 @@ const GuidanceDashboard = () => {
       const token = localStorage.getItem('authToken'); //must be set during login
       console.log("Stored token:", token);
       if (!token) {
-        console.warn("No token found, redirecting to login");
-        navigate('/login')
+        console.error('No token found');
         return;
       }
 
