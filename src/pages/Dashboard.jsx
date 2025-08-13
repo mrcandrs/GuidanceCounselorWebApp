@@ -49,7 +49,7 @@ const GuidanceDashboard = () => {
     setCounselor({ name: '', email: '' });
 
     // Redirect to login
-    navigate('/login');
+    navigate('/');
   };
 
   const pendingAppointments = [
