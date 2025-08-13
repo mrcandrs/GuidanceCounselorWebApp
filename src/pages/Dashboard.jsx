@@ -241,6 +241,7 @@ const GuidanceDashboard = () => {
   }));
 
   return (
+    <div className="dashboard-container">
     <div className="page-container">
       <h2 className="page-title">Student Mood Insights</h2>
 
@@ -297,6 +298,7 @@ const GuidanceDashboard = () => {
               </div>
             ))
           )}
+          </div>
         </div>
       </div>
     </div>
