@@ -138,8 +138,17 @@ html, body {
 }
 
 .logout-button {
-  background-color: #fef2f2;
-  color: #dc2626;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-top: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #d9363e;
 }
 
 /* Main Content Styles */

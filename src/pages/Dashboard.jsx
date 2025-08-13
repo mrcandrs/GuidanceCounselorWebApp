@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import StudentsListView from './StudentsListView';
@@ -8,6 +9,7 @@ import axios from "axios";
 
 const GuidanceDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
+  const navigate = useNavigate();
   const [counselor, setCounselor] = useState({ name: '', email: '' });
   //const [searchTerm, setSearchTerm] = useState('');
 
@@ -29,17 +31,27 @@ const GuidanceDashboard = () => {
         }
       );
 
-      setCounselor(res.data); // make sure API returns { name, email }
+      setCounselor(res.data);
     } catch (err) {
       console.error('Failed to fetch counselor:', err);
     }
   };
 
   fetchCounselor();
-}, []);
+  }, []);
 
 
-  
+  const handleLogout = () => {
+    // Remove token
+    localStorage.removeItem('token');
+
+    // Optional: clear state
+    setCounselor({ name: '', email: '' });
+
+    // Redirect to login
+    navigate('/login');
+  };
+
   const pendingAppointments = [
     { id: 1, student: 'John Doe', grade: '12-A', reason: 'Academic counseling', date: '2024-08-10', time: '10:00 AM', status: 'pending' },
     { id: 2, student: 'Jane Smith', grade: '11-B', reason: 'Career guidance', date: '2024-08-11', time: '2:00 PM', status: 'pending' },
@@ -215,7 +227,9 @@ const GuidanceDashboard = () => {
         {/* User Section */}
         <div className="user-section">
           <div className="user-info">
-            <div className="user-avatar">{counselor.name ? counselor.name.charAt(0) : 'GC'}</div>
+            <div className="user-avatar">
+              {counselor.name ? counselor.name.charAt(0) : 'GC'}
+              </div>
             <div>
               <p className="user-name">{counselor.name || 'Loading...'}</p>
               <p className="user-email">{counselor.email || ''}</p>
@@ -225,7 +239,9 @@ const GuidanceDashboard = () => {
             <button className="user-action-button settings-button">
               <Settings size={16} />
             </button>
-            <button className="user-action-button logout-button">
+
+            {/* Logout button */}
+            <button onClick={handleLogout} className="user-action-button logout-button">
               <LogOut size={16} />
             </button>
           </div>
