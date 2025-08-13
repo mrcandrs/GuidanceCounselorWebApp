@@ -15,9 +15,11 @@ const GuidanceDashboard = () => {
   useEffect(() => {
   const fetchCounselor = async () => {
     try {
-      const token = localStorage.getItem('token'); // must be set during login
+      const token = localStorage.getItem('authToken'); //must be set during login
+      console.log("Stored token:", token);
       if (!token) {
-        console.error('No token found');
+        console.warn("No token found, redirecting to login");
+        navigate('/login')
         return;
       }
 
@@ -211,6 +213,7 @@ const GuidanceDashboard = () => {
           ))}
         </nav>
         
+        {/* User Section */}
         <div className="user-section">
           <div className="user-info">
             <div className="user-avatar">{counselor.name ? counselor.name.charAt(0) : 'GC'}</div>
