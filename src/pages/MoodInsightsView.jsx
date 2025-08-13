@@ -74,7 +74,7 @@ const MoodInsightsView = () => {
     <div className="page-container" style={{ width: '100%', minWidth: 0 }}>
       <h2 className="page-title">Student Mood Insights</h2>
 
-      <div className="grid-cols-3" style={{ width: '100%', minWidth: 0 }}>
+      <div className="cards-row">
         {/* Overall Mood Distribution */}
         <div className="card" style={{ minWidth: 0 }}>
           <h3 className="card-title">Overall Mood Distribution</h3>
