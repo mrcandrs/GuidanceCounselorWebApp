@@ -8,8 +8,8 @@
   background-color: #f3f4f6;
   display: flex;
   font-family: Arial, sans-serif;
-  margin: 0;
-  width: 100%;
+  margin: 0 auto;
+  max-width: 1600px;
 }
 
 /* Sidebar Styles */
@@ -332,7 +332,6 @@
 .cards-row {
   display: flex;
   gap: 16px; /* space between cards */
-  max-width: none; /* remove width restriction */
 }
 
 .card {
