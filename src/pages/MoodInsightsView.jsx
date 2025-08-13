@@ -19,7 +19,7 @@ const colorForMood = (mood) => {
   const MoodTrendChart = ({ data }) => {
   return (
     <div style={{ width: '100%', height: '260px', minWidth: 0, overflow: 'hidden' }}>
-      <ResponsiveContainer width={400} height={260}>
+      <ResponsiveContainer width={600} height={260}>
         <LineChart data={data}>
           <XAxis dataKey="date" />
           <YAxis allowDecimals={false} />
