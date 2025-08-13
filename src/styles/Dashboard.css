@@ -696,8 +696,3 @@
     padding: 16px;
   }
 }
-
-/* Fix for responsive chart container */
-.recharts-responsive-container {
-  min-width: 0 !important; /* Add this */
-}
