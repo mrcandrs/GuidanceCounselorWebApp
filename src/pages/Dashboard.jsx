@@ -44,6 +44,7 @@ const GuidanceDashboard = () => {
   const handleLogout = () => {
     // Remove token
     localStorage.removeItem('token');
+    console.log("Removed token successfully.");
 
     // Optional: clear state
     setCounselor({ name: '', email: '' });
