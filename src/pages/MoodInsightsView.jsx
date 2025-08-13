@@ -99,7 +99,7 @@ const MoodInsightsView = () => {
         </div>
 
         {/* Weekly/Daily Trends (chart) */}
-        <div className="card" style={{ minWidth: 0, overflow: 'hidden' }}>
+        <div className="card weekly-trends-card" style={{ minWidth: 0, overflow: 'hidden' }}>
           <h3 className="card-title">Weekly Trends</h3>
           {loading ? (
             <p>Loading chart...</p>
