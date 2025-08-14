@@ -13,7 +13,27 @@ const GuidanceDashboard = () => {
   const navigate = useNavigate();
   const [counselor, setCounselor] = useState({ name: '', email: '' });
   const [showModal, setShowModal] = useState(false);
+  const [pendingAppointments, setPendingAppointments] = useState([]);
   //const [searchTerm, setSearchTerm] = useState('');
+
+  //Use effect for pending appointments
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const res = await axios.get(
+          "https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"
+        );
+        setPendingAppointments(res.data);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
+
+
 
   //Use effect for fetching Counselor from database
   useEffect(() => {
@@ -53,12 +73,6 @@ const GuidanceDashboard = () => {
     //Redirect to login
     navigate('/');
   };
-
-  const pendingAppointments = [
-    { id: 1, student: 'John Doe', grade: '12-A', reason: 'Academic counseling', date: '2024-08-10', time: '10:00 AM', status: 'pending' },
-    { id: 2, student: 'Jane Smith', grade: '11-B', reason: 'Career guidance', date: '2024-08-11', time: '2:00 PM', status: 'pending' },
-    { id: 3, student: 'Mike Johnson', grade: '10-C', reason: 'Personal issues', date: '2024-08-12', time: '9:00 AM', status: 'pending' },
-  ];
 
   const moodData = [
     { mood: 'MILD', count: 45, color: '#34C759' },

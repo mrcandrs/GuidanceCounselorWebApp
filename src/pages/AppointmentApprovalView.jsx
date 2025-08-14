@@ -19,7 +19,7 @@ const AppointmentApprovalView = ({ pendingAppointments }) => {
           <h3 className="card-title">Pending Appointments</h3>
           <div>
             {pendingAppointments.map((appointment) => (
-              <div key={appointment.id} className="appointment-card">
+              <div key={appointment.appointmentId} className="appointment-card">
                 <div className="appointment-header">
                   <div>
                     <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
