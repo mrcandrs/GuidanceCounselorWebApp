@@ -23,10 +23,10 @@ const AppointmentApprovalView = ({ pendingAppointments }) => {
                 <div className="appointment-header">
                   <div>
                     <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
-                      {appointment.student}
+                      {appointment.studentName}
                     </h4>
                     <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      {appointment.grade}
+                      {appointment.programSection}
                     </p>
                   </div>
                   <div className="appointment-actions">
