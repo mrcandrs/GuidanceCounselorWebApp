@@ -34,9 +34,29 @@ import axios from "axios";
       }, []);
 
     //Filter students by search term
-    const filteredStudents = students.filter((student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredStudents = students.filter((student) => {
+  const searchLower = searchTerm.toLowerCase();
+  
+  return (
+    //Search by name
+    student.name.toLowerCase().includes(searchLower) ||
+    
+    //Search by student number
+    student.studentno.toLowerCase().includes(searchLower) ||
+    
+    //Search by program
+    student.program.toLowerCase().includes(searchLower) ||
+    
+    //Search by section
+    student.section.toLowerCase().includes(searchLower) ||
+    
+    //Search by last mood
+    (student.lastMood && student.lastMood.toLowerCase().includes(searchLower)) ||
+    
+    // Search by ID (convert to string first)
+    student.id.toString().includes(searchLower)
     );
+  });
 
     return (
       <div className="page-container">
