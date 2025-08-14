@@ -779,3 +779,29 @@ html, body {
     padding: 16px;
   }
 }
+
+/* Scrollable appointment container */
+.appointments-scroll-container {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom scrollbar for appointments */
+.appointments-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.appointments-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.appointments-scroll-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.appointments-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
