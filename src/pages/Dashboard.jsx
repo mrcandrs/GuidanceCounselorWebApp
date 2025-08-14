@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import StudentsListView from './StudentsListView';
+import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
@@ -76,84 +77,6 @@ const GuidanceDashboard = () => {
     { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
   ];
 
-  const AppointmentApprovalView = () => (
-    <div className="page-container">
-      <div className="page-header">
-        <h2 className="page-title">Appointment Approval</h2>
-        <button className="primary-button">
-          <Calendar size={20} />
-          Set Available Times
-        </button>
-      </div>
-      
-      <div className="grid grid-cols-2">
-        <div className="card">
-          <h3 className="card-title">Pending Appointments</h3>
-          <div>
-            {pendingAppointments.map((appointment) => (
-              <div key={appointment.id} className="appointment-card">
-                <div className="appointment-header">
-                  <div>
-                    <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
-                      {appointment.student}
-                    </h4>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      {appointment.grade}
-                    </p>
-                  </div>
-                  <div className="appointment-actions">
-                    <button className="approve-button">
-                      <Check size={16} />
-                    </button>
-                    <button className="reject-button">
-                      <X size={16} />
-                    </button>
-                  </div>
-                </div>
-                <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 8px 0' }}>
-                  {appointment.reason}
-                </p>
-                <div className="appointment-meta">
-                  <span className="appointment-meta-item">
-                    <Calendar size={14} />
-                    {appointment.date}
-                  </span>
-                  <span className="appointment-meta-item">
-                    <Clock size={14} />
-                    {appointment.time}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <div className="card">
-          <h3 className="card-title">Available Time Slots</h3>
-          <div>
-            <div className="form-group">
-              <label className="label">Date</label>
-              <input type="date" className="input" />
-            </div>
-            <div className="form-group">
-              <label className="label">Time Slots</label>
-              <div className="time-slot-grid">
-                {['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'].map((time) => (
-                  <button key={time} className="time-slot-button">
-                    {time}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <button className="primary-button full-width">
-              Update Available Times
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   const GenericFormView = ({ title, description }) => (
     <div className="page-container">
       <h2 className="page-title">{title}</h2>
@@ -189,7 +112,7 @@ const GuidanceDashboard = () => {
       case 'mood':
         return <MoodInsightsView />;
       case 'appointments':
-        return <AppointmentApprovalView />;
+        return <AppointmentApprovalView pendingAppointments={pendingAppointments} />;
       case 'endorsement':
         return <GenericFormView title="Endorsement Forms" description="Manage custody and endorsement forms for students." />;
       case 'consultation':
