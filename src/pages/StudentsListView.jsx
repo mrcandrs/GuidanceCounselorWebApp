@@ -12,7 +12,7 @@ const StudentsListView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
 
-  // Course configuration
+// Course configuration
 const courses = [
   { 
     id: 'all', 
@@ -21,7 +21,7 @@ const courses = [
     description: 'View all registered students',
     color: '#0477BF',
     icon: Users,
-    matchValues: ['ALL'] // Special case for all students
+    matchValues: ['ALL']
   },
   { 
     id: 'bsit', 
@@ -30,7 +30,12 @@ const courses = [
     description: 'Bachelor of Science in Information Technology',
     color: '#10b981',
     icon: Users,
-    matchValues: ['BSIT', 'Bachelor of Science in Information Technology', 'Information Technology']
+    matchValues: [
+      'BSIT', 
+      'Bachelor of Science in Information Technology', 
+      'Information Technology',
+      'Bachelor of Science in Information Technology (BSIT)'  // <-- Added
+    ]
   },
   { 
     id: 'bscs', 
@@ -39,7 +44,12 @@ const courses = [
     description: 'Bachelor of Science in Computer Science',
     color: '#8b5cf6',
     icon: Users,
-    matchValues: ['BSCS', 'Bachelor of Science in Computer Science', 'Computer Science']
+    matchValues: [
+      'BSCS', 
+      'Bachelor of Science in Computer Science', 
+      'Computer Science',
+      'Bachelor of Science in Computer Science (BSCS)'        // <-- Added
+    ]
   },
   { 
     id: 'bshm', 
@@ -48,7 +58,12 @@ const courses = [
     description: 'Bachelor of Science in Hospitality Management',
     color: '#f59e0b',
     icon: Users,
-    matchValues: ['BSHM', 'Bachelor of Science in Hospitality Management', 'Hospitality Management']
+    matchValues: [
+      'BSHM', 
+      'Bachelor of Science in Hospitality Management', 
+      'Hospitality Management',
+      'Bachelor of Science in Hospitality Management (BSHM)'  // <-- Added
+    ]
   },
   { 
     id: 'bstm', 
@@ -57,9 +72,15 @@ const courses = [
     description: 'Bachelor of Science in Tourism Management',
     color: '#ef4444',
     icon: Users,
-    matchValues: ['BSTM', 'Bachelor of Science in Tourism Management', 'Tourism Management']
+    matchValues: [
+      'BSTM', 
+      'Bachelor of Science in Tourism Management', 
+      'Tourism Management',
+      'Bachelor of Science in Tourism Management (BSTM)'      // <-- Added
+    ]
   }
 ];
+
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
