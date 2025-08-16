@@ -96,32 +96,33 @@ const courses = [
   };
 
   // Fetch all students once when component mounts (only when a course is selected)
-const fetchAllStudents = async () => {
-  if (hasLoadedStudents) return; // Don't fetch if already loaded
+const fetchAllStudents = async (selectedCourse) => {
+  if (hasLoadedStudents) {
+    // Already loaded, just filter
+    filterStudentsByCourse(selectedCourse, allStudents);
+    return;
+  }
 
   setIsLoading(true);
   try {
-    console.log("Fetching students..."); // <-- Debug log
+    console.log("Fetching students...");
 
     const response = await axios.get(
       "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood",
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
+      { headers: { 'Content-Type': 'application/json' } }
     );
 
-    console.log("API Response:", response.data); // <-- See the exact data returned
+    console.log("API Response:", response.data);
 
     setAllStudents(response.data);
     setHasLoadedStudents(true);
 
+    // ✅ use the fresh data immediately
     filterStudentsByCourse(selectedCourse, response.data);
 
   } catch (error) {
-    console.error("Error fetching students:", error); // <-- Capture error details
-    alert('Failed to load students. Please try again.');
+    console.error("Error fetching students:", error);
+    alert("Failed to load students. Please try again.");
   } finally {
     setIsLoading(false);
   }
