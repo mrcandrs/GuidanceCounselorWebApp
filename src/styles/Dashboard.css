@@ -946,6 +946,11 @@ html, body {
   border-color: #9ca3af;
 }
 
+.back-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
+}
+
 /* Loading spinner animation */
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -960,7 +965,7 @@ html, body {
   border-top: 3px solid #0477BF;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  margin: 0 auto 16px auto;
 }
 
 /* Enhanced course card hover effects */

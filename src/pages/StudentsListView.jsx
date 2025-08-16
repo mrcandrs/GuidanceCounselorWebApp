@@ -4,13 +4,15 @@ import '../styles/Dashboard.css'; // Import the shared CSS
 import axios from "axios";
 
 //Students List View with Course Selection
-  const StudentsListView = () => {
-  const [students, setStudents] = useState([]);
+const StudentsListView = () => {
+  const [allStudents, setAllStudents] = useState([]); // Store all students
+  const [displayedStudents, setDisplayedStudents] = useState([]); // Students to display
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
 
-  //Course configuration
+  // Course configuration
   const courses = [
     { 
       id: 'all', 
@@ -64,55 +66,74 @@ import axios from "axios";
         return 'mood-badge mood-high';
       default:
         return 'mood-badge mood-neutral';
-      }
-    };
+    }
+  };
 
-    //Fetch students based on selected course
-  const fetchStudentsByCourse = async (courseCode) => {
+  // Fetch all students once when component mounts (only when a course is selected)
+  const fetchAllStudents = async () => {
+    if (hasLoadedStudents) return; // Don't fetch if already loaded
+    
     setIsLoading(true);
     try {
-      let url = "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood";
-      
-      //If not fetching all students, add course filter to API call
-      if (courseCode !== 'ALL') {
-        url += `?program=${courseCode}`;
-      }
-      
-      const response = await axios.get(url);
-      setStudents(response.data);
+      const response = await axios.get(
+        "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood"
+      );
+      setAllStudents(response.data);
+      setHasLoadedStudents(true);
     } catch (error) {
       console.error("Error fetching students:", error);
-      //You might want to show an error message to the user here
     } finally {
       setIsLoading(false);
     }
   };
 
-  //Handle course selection
-  const handleCourseSelect = (course) => {
-    setSelectedCourse(course);
-    setSearchTerm(""); // Clear search when switching courses
-    fetchStudentsByCourse(course.code);
+  // Filter students by course program
+  const filterStudentsByCourse = (courseCode) => {
+    if (courseCode === 'ALL') {
+      setDisplayedStudents(allStudents);
+    } else {
+      const filtered = allStudents.filter(student => 
+        student.program && student.program.toUpperCase().includes(courseCode.toUpperCase())
+      );
+      setDisplayedStudents(filtered);
+    }
   };
 
-  //Handle back to course selection
+  // Handle course selection
+  const handleCourseSelect = async (course) => {
+    setSelectedCourse(course);
+    setSearchTerm(""); // Clear search when switching courses
+    
+    // Fetch students if not already loaded
+    if (!hasLoadedStudents) {
+      await fetchAllStudents();
+    }
+    
+    // Filter students based on selected course
+    filterStudentsByCourse(course.code);
+  };
+
+  // Handle back to course selection
   const handleBackToCourseSelection = () => {
     setSelectedCourse(null);
-    setStudents([]);
+    setDisplayedStudents([]);
     setSearchTerm("");
+    // Note: We keep hasLoadedStudents and allStudents for performance
   };
 
   // Filter students by search term
-  const filteredStudents = students.filter((student) => {
+  const filteredStudents = displayedStudents.filter((student) => {
+    if (!searchTerm) return true;
+    
     const searchLower = searchTerm.toLowerCase();
     
     return (
-      student.name.toLowerCase().includes(searchLower) ||
-      student.studentno.toLowerCase().includes(searchLower) ||
-      student.program.toLowerCase().includes(searchLower) ||
-      student.section.toLowerCase().includes(searchLower) ||
+      (student.name && student.name.toLowerCase().includes(searchLower)) ||
+      (student.studentno && student.studentno.toLowerCase().includes(searchLower)) ||
+      (student.program && student.program.toLowerCase().includes(searchLower)) ||
+      (student.section && student.section.toLowerCase().includes(searchLower)) ||
       (student.lastMood && student.lastMood.toLowerCase().includes(searchLower)) ||
-      student.id.toString().includes(searchLower)
+      (student.id && student.id.toString().includes(searchLower))
     );
   });
 
@@ -155,14 +176,6 @@ import axios from "axios";
                   cursor: 'pointer',
                   transition: 'all 0.2s'
                 }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 8px 25px -8px rgba(0, 0, 0, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-                }}
               >
                 <div className="course-card-header">
                   <div 
@@ -187,7 +200,7 @@ import axios from "axios";
     </div>
   );
 
-    // Students List View (existing functionality with back button)
+  // Students List View (existing functionality with back button)
   const StudentsTableView = () => (
     <div className="page-container">
       <div className="page-header">
@@ -195,25 +208,7 @@ import axios from "axios";
           <button 
             onClick={handleBackToCourseSelection}
             className="back-button"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 16px',
-              border: '1px solid #d1d5db',
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              color: '#374151',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#f9fafb';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'white';
-            }}
+            type="button"
           >
             <ArrowLeft size={16} />
             Back to Courses
@@ -245,7 +240,7 @@ import axios from "axios";
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="filter-button">
+          <button className="filter-button" type="button">
             <Filter size={20} />
             Filter
           </button>
@@ -257,20 +252,19 @@ import axios from "axios";
             padding: '48px 0',
             color: '#6b7280'
           }}>
-            <div style={{
-              display: 'inline-block',
-              width: '32px',
-              height: '32px',
-              border: '3px solid #f3f4f6',
-              borderTop: '3px solid #0477BF',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              marginBottom: '16px'
-            }}></div>
+            <div className="loading-spinner"></div>
             <p>Loading students...</p>
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>
+            <div style={{ 
+              marginBottom: '16px', 
+              color: '#6b7280', 
+              fontSize: '14px' 
+            }}>
+              Showing {filteredStudents.length} of {displayedStudents.length} students
+            </div>
+            
             <table className="table">
               <thead className="table-header">
                 <tr>
@@ -289,17 +283,17 @@ import axios from "axios";
                     <td className="table-cell">
                       <div className="student-info">
                         <div className="student-avatar">
-                          {student.name.charAt(0)}
+                          {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
                         </div>
                         <div>
-                          <div className="student-name">{student.name}</div>
-                          <div className="student-status">{student.status}</div>
+                          <div className="student-name">{student.name || 'N/A'}</div>
+                          <div className="student-status">{student.status || 'Active'}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="table-cell">{student.studentno}</td>
+                    <td className="table-cell">{student.studentno || 'N/A'}</td>
                     <td className="table-cell">
-                      {student.program} - {student.section}
+                      {student.program || 'N/A'} - {student.section || 'N/A'}
                     </td>
                     <td className="table-cell">
                       <span className={getMoodBadgeClass(student.lastMood)}>
@@ -328,13 +322,13 @@ import axios from "axios";
                     </td>
                     <td className="table-cell">
                       <div className="action-buttons">
-                        <button className="action-button action-view">
+                        <button className="action-button action-view" type="button">
                           <Eye size={16} />
                         </button>
-                        <button className="action-button action-edit">
+                        <button className="action-button action-edit" type="button">
                           <Edit size={16} />
                         </button>
-                        <button className="action-button action-delete">
+                        <button className="action-button action-delete" type="button">
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -345,7 +339,10 @@ import axios from "axios";
                   <tr>
                     <td colSpan="7" style={{ textAlign: "center", padding: '48px 0' }}>
                       <div style={{ color: '#6b7280' }}>
-                        {searchTerm ? `No students found matching "${searchTerm}"` : `No ${selectedCourse?.code} students found.`}
+                        {searchTerm 
+                          ? `No students found matching "${searchTerm}"` 
+                          : `No ${selectedCourse?.code === 'ALL' ? '' : selectedCourse?.code} students found.`
+                        }
                       </div>
                     </td>
                   </tr>
@@ -358,8 +355,8 @@ import axios from "axios";
     </div>
   );
 
-  //Render based on whether a course is selected
+  // Only render course selection initially - no loading on login page
   return selectedCourse ? <StudentsTableView /> : <CourseSelectionView />;
 };
 
-  export default StudentsListView;
+export default StudentsListView;
