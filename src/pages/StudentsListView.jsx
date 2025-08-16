@@ -286,24 +286,18 @@ const handleBackToCourseSelection = () => {
     <div className="page-container">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <button 
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("🚨 Button physically clicked!");
-            handleBackToCourseSelection();
-          }}
-          className="back-button"
-          type="button"
-          style={{ 
-            // Add some visual debugging
-            border: '2px solid red',
-            background: 'yellow'
-          }}
-        >
-          <ArrowLeft size={16} />
-          Back to Courses
-        </button>
+          // Temporary fix - add these inline styles to the button
+            <button 
+              onClick={handleBackToCourseSelection}
+              className="back-button"
+              type="button"
+              style={{
+                position: 'relative',
+                zIndex: 9999,
+                pointerEvents: 'auto',
+                cursor: 'pointer'
+              }}
+            />
           <div>
             <h2 className="page-title">
               {selectedCourse?.code === 'ALL' ? 'All Students' : `${selectedCourse?.code} Students`}
