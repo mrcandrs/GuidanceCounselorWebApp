@@ -138,11 +138,9 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
     return;
   }
 
-  const filtered = studentList.filter((student) => {
-    if (!student.program) {
-      console.log("Student without program:", student);
-      return false;
-    }
+  const filtered = studentList.filter((student) =>
+  student.program.toLowerCase().includes(selectedCourse.toLowerCase())
+);
 
     const studentProgram = student.program.toUpperCase().trim();
     const matches = course.matchValues.some((matchValue) =>
