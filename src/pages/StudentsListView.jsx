@@ -81,14 +81,6 @@ const courses = [
   }
 ];
 
-  //useEffect for fetching students per course
-  useEffect(() => {
-  if (allStudents.length > 0 && selectedCourse) {
-    filterStudentsByCourse(selectedCourse, allStudents);
-  }
-}, [allStudents, selectedCourse]);
-
-
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
       case 'MILD':
@@ -102,99 +94,104 @@ const courses = [
     }
   };
 
-  // Fetch all students once when component mounts (only when a course is selected)
-const fetchAllStudents = async (selectedCourse) => {
-  if (hasLoadedStudents) {
-    // Already loaded, just filter
-    filterStudentsByCourse(selectedCourse, allStudents);
-    return;
-  }
-
-  setIsLoading(true);
-  try {
-    console.log("Fetching students...");
-
-    const response = await axios.get(
-      "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood",
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-
-    console.log("API Response:", response.data);
-
-    setAllStudents(response.data);
-    setHasLoadedStudents(true);
-
-    // ✅ use the fresh data immediately
-    filterStudentsByCourse(selectedCourse, response.data);
-
-  } catch (error) {
-    console.error("Error fetching students:", error);
-    alert("Failed to load students. Please try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const filterStudentsByCourse = (course, studentList = allStudents) => {
-  console.log("Filtering for course:", course?.code, course);
-
-  if (!course) {
-    console.warn("No course object provided!");
-    return;
-  }
-
-  if (!studentList || studentList.length === 0) {
-    console.warn("No students available to filter!");
-    return;
-  }
-
-  if (course.code === "ALL") {
-    setDisplayedStudents(studentList);
-    return;
-  }
-
-  const filtered = studentList.filter((student) => {
-    if (!student.program) return false;
-
-    const studentProgram = student.program.toUpperCase().trim();
-    const matches = course.matchValues.some((matchValue) =>
-      studentProgram.includes(matchValue.toUpperCase())
-    );
-
-    if (!matches) {
-      console.log(
-        `Student "${student.name}" program "${student.program}" did not match course "${course.code}"`
-      );
+  // Fetch all students once when component mounts
+  const fetchAllStudents = async () => {
+    if (hasLoadedStudents) {
+      return; // Already loaded
     }
 
-    return matches;
-  });
+    setIsLoading(true);
+    try {
+      console.log("Fetching students...");
 
-  console.log("Filtered count:", filtered.length);
-  setDisplayedStudents(filtered);
-};
+      const response = await axios.get(
+        "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood",
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
+      console.log("API Response:", response.data);
 
+      setAllStudents(response.data);
+      setHasLoadedStudents(true);
 
-  // Handle course selection
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      alert("Failed to load students. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filterStudentsByCourse = (course, studentList = allStudents) => {
+    console.log("Filtering for course:", course?.code, course);
+
+    if (!course) {
+      console.warn("No course object provided!");
+      return;
+    }
+
+    if (!studentList || studentList.length === 0) {
+      console.warn("No students available to filter!");
+      return;
+    }
+
+    if (course.code === "ALL") {
+      setDisplayedStudents(studentList);
+      return;
+    }
+
+    const filtered = studentList.filter((student) => {
+      if (!student.program) return false;
+
+      const studentProgram = student.program.toUpperCase().trim();
+      const matches = course.matchValues.some((matchValue) =>
+        studentProgram.includes(matchValue.toUpperCase())
+      );
+
+      if (!matches) {
+        console.log(
+          `Student "${student.name}" program "${student.program}" did not match course "${course.code}"`
+        );
+      }
+
+      return matches;
+    });
+
+    console.log("Filtered count:", filtered.length);
+    setDisplayedStudents(filtered);
+  };
+
+  // Handle course selection - FIXED
   const handleCourseSelect = async (course) => {
     setSelectedCourse(course);
+    setSearchTerm(''); // Clear search when switching courses
     
     // Fetch students if not already loaded
     if (!hasLoadedStudents) {
       await fetchAllStudents();
+      // After fetching, filter with the fresh data
+      setTimeout(() => filterStudentsByCourse(course, allStudents), 0);
+    } else {
+      // Filter students based on selected course with existing data
+      filterStudentsByCourse(course, allStudents);
     }
-    
-    // Filter students based on selected course
-    filterStudentsByCourse(course);
   };
 
-  // Handle back to course selection
+  // Handle back to course selection - FIXED
   const handleBackToCourseSelection = () => {
+    console.log("Back button clicked - resetting state");
     setSelectedCourse(null);
     setDisplayedStudents([]);
+    setSearchTerm(''); // Clear search term
     // Note: We keep hasLoadedStudents and allStudents for performance
   };
+
+  // UseEffect to handle filtering when allStudents or selectedCourse changes
+  useEffect(() => {
+    if (allStudents.length > 0 && selectedCourse) {
+      filterStudentsByCourse(selectedCourse, allStudents);
+    }
+  }, [allStudents, selectedCourse]);
 
   // Filter students by search term
   const filteredStudents = displayedStudents.filter((student) => {
@@ -430,7 +427,7 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
     </div>
   );
 
-  // Only render course selection initially - no loading on login page
+  // Main render - conditional rendering based on selectedCourse
   return selectedCourse ? <StudentsTableView /> : <CourseSelectionView />;
 };
 
