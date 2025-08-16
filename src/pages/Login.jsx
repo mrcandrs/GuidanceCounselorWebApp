@@ -86,7 +86,6 @@ const Login = () => {
         </div>
 
         <button type="submit" className="login-button">
-          <span className="loading-spinner" id="loadingSpinner"></span>
           <span id="buttonText">Login</span>
         </button>
       </form>

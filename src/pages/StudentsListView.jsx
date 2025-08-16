@@ -179,7 +179,7 @@ const courses = [
 
   // Enhanced handleBackToCourseSelection with debugging
 const handleBackToCourseSelection = () => {
-  console.log("🔥 BACK BUTTON CLICKED!");
+  console.log("BACK BUTTON CLICKED!");
   console.log("Current selectedCourse:", selectedCourse);
   console.log("Current displayedStudents length:", displayedStudents.length);
   
@@ -187,7 +187,7 @@ const handleBackToCourseSelection = () => {
   setDisplayedStudents([]);
   setSearchTerm('');
   
-  console.log("✅ State should be reset now");
+  console.log("State should be reset now");
   
   // Force a re-render check
   setTimeout(() => {
@@ -441,20 +441,8 @@ const handleBackToCourseSelection = () => {
       </div>
     </div>
   );
-
-  // Also add debugging to your main render
-const renderDebugInfo = () => {
-  console.log("🔍 RENDER - selectedCourse:", selectedCourse);
-  console.log("🔍 RENDER - Will show:", selectedCourse ? 'StudentsTableView' : 'CourseSelectionView');
-};
-
-// In your main component return:
-return (
-  <>
-    {renderDebugInfo()}
-    {selectedCourse ? <StudentsTableView /> : <CourseSelectionView />}
-  </>
-);
+  
+return selectedCourse ? <StudentsTableView /> : <CourseSelectionView />;
 };
 
 export default StudentsListView;
