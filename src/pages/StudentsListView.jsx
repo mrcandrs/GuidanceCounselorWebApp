@@ -111,7 +111,6 @@ const courses = [
       
       const studentProgram = student.program.toString().toUpperCase().trim();
       
-      // Check if student program matches any of the possible values for this course
       return course.matchValues.some(matchValue => 
         studentProgram.includes(matchValue.toUpperCase())
       );
@@ -132,7 +131,7 @@ const courses = [
     }
     
     // Filter students based on selected course
-    filterStudentsByCourse(course.code);
+    filterStudentsByCourse(course);
   };
 
   // Handle back to course selection
