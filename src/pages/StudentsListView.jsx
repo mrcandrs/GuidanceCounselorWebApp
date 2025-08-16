@@ -75,13 +75,22 @@ const StudentsListView = () => {
     
     setIsLoading(true);
     try {
+      // Use the original API endpoint without parameters since your controller doesn't support filtering yet
       const response = await axios.get(
-        "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood"
+        "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood",
+        {
+          // Add headers if needed for authentication
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
       setAllStudents(response.data);
       setHasLoadedStudents(true);
     } catch (error) {
       console.error("Error fetching students:", error);
+      // Show error to user
+      alert('Failed to load students. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -89,12 +98,26 @@ const StudentsListView = () => {
 
   // Filter students by course program
   const filterStudentsByCourse = (courseCode) => {
+    console.log('Filtering students for course:', courseCode);
+    console.log('All students:', allStudents);
+    
     if (courseCode === 'ALL') {
       setDisplayedStudents(allStudents);
     } else {
-      const filtered = allStudents.filter(student => 
-        student.program && student.program.toUpperCase().includes(courseCode.toUpperCase())
-      );
+      // More flexible filtering - check if program contains the course code
+      const filtered = allStudents.filter(student => {
+        if (!student.program) return false;
+        
+        const studentProgram = student.program.toUpperCase();
+        const targetCourse = courseCode.toUpperCase();
+        
+        // Check for exact match or if program starts with course code
+        return studentProgram === targetCourse || 
+               studentProgram.startsWith(targetCourse) ||
+               studentProgram.includes(targetCourse);
+      });
+      
+      console.log('Filtered students:', filtered);
       setDisplayedStudents(filtered);
     }
   };
