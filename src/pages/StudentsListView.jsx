@@ -96,49 +96,66 @@ const courses = [
   };
 
   // Fetch all students once when component mounts (only when a course is selected)
-  const fetchAllStudents = async () => {
-    if (hasLoadedStudents) return; // Don't fetch if already loaded
-    
-    setIsLoading(true);
-    try {
-      // Use the original API endpoint without parameters since your controller doesn't support filtering yet
-      const response = await axios.get(
-        "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood",
-        {
-          // Add headers if needed for authentication
-          headers: {
-            'Content-Type': 'application/json'
-          }
+const fetchAllStudents = async () => {
+  if (hasLoadedStudents) return; // Don't fetch if already loaded
+
+  setIsLoading(true);
+  try {
+    console.log("Fetching students..."); // <-- Debug log
+
+    const response = await axios.get(
+      "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood",
+      {
+        headers: {
+          'Content-Type': 'application/json'
         }
-      );
-      setAllStudents(response.data);
-      setHasLoadedStudents(true);
-    } catch (error) {
-      console.error("Error fetching students:", error);
-      // Show error to user
-      alert('Failed to load students. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      }
+    );
+
+    console.log("API Response:", response.data); // <-- See the exact data returned
+
+    setAllStudents(response.data);
+    setHasLoadedStudents(true);
+  } catch (error) {
+    console.error("Error fetching students:", error); // <-- Capture error details
+    alert('Failed to load students. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Filter students by course program
-  const filterStudentsByCourse = (course) => {
+const filterStudentsByCourse = (course) => {
+  console.log("Filtering for course:", course.code); // <-- Which course selected
+  console.log("All students count:", allStudents.length); // <-- Debug count
+
   if (course.code === 'ALL') {
     setDisplayedStudents(allStudents);
-  } else {
-    const filtered = allStudents.filter(student => {
-      if (!student.program) return false;
-      
-      const studentProgram = student.program.toString().toUpperCase().trim();
-      
-      return course.matchValues.some(matchValue => 
-        studentProgram.includes(matchValue.toUpperCase())
-      );
-    });
-    
-    setDisplayedStudents(filtered);
+    return;
   }
+
+  const filtered = allStudents.filter(student => {
+    if (!student.program) {
+      console.log("Student without program:", student); // <-- Debug missing data
+      return false;
+    }
+
+    const studentProgram = student.program.toString().toUpperCase().trim();
+    const matches = course.matchValues.some(matchValue =>
+      studentProgram.includes(matchValue.toUpperCase())
+    );
+
+    if (!matches) {
+      console.log(
+        `Student "${student.name}" program "${student.program}" did not match course "${course.code}"`
+      );
+    }
+
+    return matches;
+  });
+
+  console.log("Filtered count:", filtered.length); // <-- How many matched
+  setDisplayedStudents(filtered);
 };
 
   // Handle course selection
