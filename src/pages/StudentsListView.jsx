@@ -177,14 +177,23 @@ const courses = [
     }
   };
 
-  // Handle back to course selection - FIXED
-  const handleBackToCourseSelection = () => {
-    console.log("Back button clicked - resetting state");
-    setSelectedCourse(null);
-    setDisplayedStudents([]);
-    setSearchTerm(''); // Clear search term
-    // Note: We keep hasLoadedStudents and allStudents for performance
-  };
+  // Enhanced handleBackToCourseSelection with debugging
+const handleBackToCourseSelection = () => {
+  console.log("🔥 BACK BUTTON CLICKED!");
+  console.log("Current selectedCourse:", selectedCourse);
+  console.log("Current displayedStudents length:", displayedStudents.length);
+  
+  setSelectedCourse(null);
+  setDisplayedStudents([]);
+  setSearchTerm('');
+  
+  console.log("✅ State should be reset now");
+  
+  // Force a re-render check
+  setTimeout(() => {
+    console.log("After timeout - selectedCourse:", selectedCourse);
+  }, 100);
+};
 
   // UseEffect to handle filtering when allStudents or selectedCourse changes
   useEffect(() => {
@@ -278,13 +287,23 @@ const courses = [
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button 
-            onClick={handleBackToCourseSelection}
-            className="back-button"
-            type="button"
-          >
-            <ArrowLeft size={16} />
-            Back to Courses
-          </button>
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("🚨 Button physically clicked!");
+            handleBackToCourseSelection();
+          }}
+          className="back-button"
+          type="button"
+          style={{ 
+            // Add some visual debugging
+            border: '2px solid red',
+            background: 'yellow'
+          }}
+        >
+          <ArrowLeft size={16} />
+          Back to Courses
+        </button>
           <div>
             <h2 className="page-title">
               {selectedCourse?.code === 'ALL' ? 'All Students' : `${selectedCourse?.code} Students`}
@@ -427,8 +446,19 @@ const courses = [
     </div>
   );
 
-  // Main render - conditional rendering based on selectedCourse
-  return selectedCourse ? <StudentsTableView /> : <CourseSelectionView />;
+  // Also add debugging to your main render
+const renderDebugInfo = () => {
+  console.log("🔍 RENDER - selectedCourse:", selectedCourse);
+  console.log("🔍 RENDER - Will show:", selectedCourse ? 'StudentsTableView' : 'CourseSelectionView');
+};
+
+// In your main component return:
+return (
+  <>
+    {renderDebugInfo()}
+    {selectedCourse ? <StudentsTableView /> : <CourseSelectionView />}
+  </>
+);
 };
 
 export default StudentsListView;
