@@ -81,6 +81,12 @@ const courses = [
   }
 ];
 
+  useEffect(() => {
+  if (allStudents.length > 0 && selectedCourse) {
+    filterStudentsByCourse(selectedCourse, allStudents);
+  }
+}, [allStudents, selectedCourse]);
+
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
@@ -129,6 +135,8 @@ const fetchAllStudents = async (selectedCourse) => {
 };
 
 const filterStudentsByCourse = (course, studentList = allStudents) => {
+  console.log("Filtering for course:", course?.code, course);
+
   if (!course) {
     console.warn("No course object provided!");
     return;
@@ -139,19 +147,13 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
     return;
   }
 
-  console.log("Filtering for course:", course.code, course);
-  console.log("Student list count:", studentList.length);
-
   if (course.code === "ALL") {
     setDisplayedStudents(studentList);
     return;
   }
 
   const filtered = studentList.filter((student) => {
-    if (!student.program) {
-      console.log("Student without program:", student);
-      return false;
-    }
+    if (!student.program) return false;
 
     const studentProgram = student.program.toUpperCase().trim();
     const matches = course.matchValues.some((matchValue) =>
@@ -170,6 +172,7 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
   console.log("Filtered count:", filtered.length);
   setDisplayedStudents(filtered);
 };
+
 
 
   // Handle course selection
