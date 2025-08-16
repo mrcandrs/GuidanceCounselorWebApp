@@ -81,6 +81,7 @@ const courses = [
   }
 ];
 
+  //useEffect for fetching students per course
   useEffect(() => {
   if (allStudents.length > 0 && selectedCourse) {
     filterStudentsByCourse(selectedCourse, allStudents);
@@ -339,11 +340,6 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
               fontSize: '14px' 
             }}>
               Showing {filteredStudents.length} of {displayedStudents.length} students
-              {/* Debug info - remove this after fixing */}
-              <br />
-              <small style={{ color: '#ef4444' }}>
-                Debug: Total loaded: {allStudents.length}, Course: {selectedCourse?.code}
-              </small>
             </div>
             
             {/* Add this debug section temporarily */}
