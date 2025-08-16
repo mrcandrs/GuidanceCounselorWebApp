@@ -116,6 +116,9 @@ const fetchAllStudents = async () => {
 
     setAllStudents(response.data);
     setHasLoadedStudents(true);
+
+    filterStudentsByCourse(selectedCourse, response.data);
+
   } catch (error) {
     console.error("Error fetching students:", error); // <-- Capture error details
     alert('Failed to load students. Please try again.');
@@ -125,23 +128,23 @@ const fetchAllStudents = async () => {
 };
 
   // Filter students by course program
-const filterStudentsByCourse = (course) => {
-  console.log("Filtering for course:", course.code); // <-- Which course selected
-  console.log("All students count:", allStudents.length); // <-- Debug count
+const filterStudentsByCourse = (course, studentList = allStudents) => {
+  console.log("Filtering for course:", course.code);
+  console.log("Student list count:", studentList.length);
 
-  if (course.code === 'ALL') {
-    setDisplayedStudents(allStudents);
+  if (course.code === "ALL") {
+    setDisplayedStudents(studentList);
     return;
   }
 
-  const filtered = allStudents.filter(student => {
+  const filtered = studentList.filter((student) => {
     if (!student.program) {
-      console.log("Student without program:", student); // <-- Debug missing data
+      console.log("Student without program:", student);
       return false;
     }
 
-    const studentProgram = student.program.toString().toUpperCase().trim();
-    const matches = course.matchValues.some(matchValue =>
+    const studentProgram = student.program.toUpperCase().trim();
+    const matches = course.matchValues.some((matchValue) =>
       studentProgram.includes(matchValue.toUpperCase())
     );
 
@@ -154,7 +157,7 @@ const filterStudentsByCourse = (course) => {
     return matches;
   });
 
-  console.log("Filtered count:", filtered.length); // <-- How many matched
+  console.log("Filtered count:", filtered.length);
   setDisplayedStudents(filtered);
 };
 
