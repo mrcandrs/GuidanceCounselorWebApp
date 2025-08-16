@@ -179,7 +179,6 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
   // Handle course selection
   const handleCourseSelect = async (course) => {
     setSelectedCourse(course);
-    setSearchTerm(""); // Clear search when switching courses
     
     // Fetch students if not already loaded
     if (!hasLoadedStudents) {
@@ -194,7 +193,6 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
   const handleBackToCourseSelection = () => {
     setSelectedCourse(null);
     setDisplayedStudents([]);
-    setSearchTerm("");
     // Note: We keep hasLoadedStudents and allStudents for performance
   };
 
