@@ -340,24 +340,6 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
               Showing {filteredStudents.length} of {displayedStudents.length} students
             </div>
             
-            {/* Add this debug section temporarily */}
-            {displayedStudents.length === 0 && allStudents.length > 0 && (
-              <div style={{ 
-                backgroundColor: '#fef2f2', 
-                border: '1px solid #fecaca', 
-                borderRadius: '8px', 
-                padding: '16px', 
-                marginBottom: '16px' 
-              }}>
-                <h4 style={{ color: '#991b1b', margin: '0 0 8px 0' }}>Debug Info:</h4>
-                <p style={{ color: '#991b1b', fontSize: '14px', margin: '0' }}>
-                  No students found for course "{selectedCourse?.code}". <br />
-                  Total students loaded: {allStudents.length} <br />
-                  Sample programs: {allStudents.slice(0, 3).map(s => s.program).join(', ')}
-                </p>
-              </div>
-            )}
-            
             <table className="table">
               <thead className="table-header">
                 <tr>
