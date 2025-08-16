@@ -261,7 +261,7 @@ const StudentsListView = () => {
       name: 'Information Technology', 
       code: 'BSIT',
       description: 'Bachelor of Science in Information Technology',
-      color: '#10b981',
+      color: '#ef4444',
       icon: Users,
       matchValues: [
         'BSIT', 
@@ -303,7 +303,7 @@ const StudentsListView = () => {
       name: 'Tourism Management', 
       code: 'BSTM',
       description: 'Bachelor of Science in Tourism Management',
-      color: '#ef4444',
+      color: '#10b981',
       icon: Users,
       matchValues: [
         'BSTM', 
