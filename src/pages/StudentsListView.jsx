@@ -13,48 +13,53 @@ const StudentsListView = () => {
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
 
   // Course configuration
-  const courses = [
-    { 
-      id: 'all', 
-      name: 'All Students', 
-      code: 'ALL',
-      description: 'View all registered students',
-      color: '#0477BF',
-      icon: Users
-    },
-    { 
-      id: 'bsit', 
-      name: 'Information Technology', 
-      code: 'BSIT',
-      description: 'Bachelor of Science in Information Technology',
-      color: '#10b981',
-      icon: Users
-    },
-    { 
-      id: 'bscs', 
-      name: 'Computer Science', 
-      code: 'BSCS',
-      description: 'Bachelor of Science in Computer Science',
-      color: '#8b5cf6',
-      icon: Users
-    },
-    { 
-      id: 'bshm', 
-      name: 'Hospitality Management', 
-      code: 'BSHM',
-      description: 'Bachelor of Science in Hospitality Management',
-      color: '#f59e0b',
-      icon: Users
-    },
-    { 
-      id: 'bstm', 
-      name: 'Tourism Management', 
-      code: 'BSTM',
-      description: 'Bachelor of Science in Tourism Management',
-      color: '#ef4444',
-      icon: Users
-    }
-  ];
+const courses = [
+  { 
+    id: 'all', 
+    name: 'All Students', 
+    code: 'ALL',
+    description: 'View all registered students',
+    color: '#0477BF',
+    icon: Users,
+    matchValues: ['ALL'] // Special case for all students
+  },
+  { 
+    id: 'bsit', 
+    name: 'Information Technology', 
+    code: 'BSIT',
+    description: 'Bachelor of Science in Information Technology',
+    color: '#10b981',
+    icon: Users,
+    matchValues: ['BSIT', 'Bachelor of Science in Information Technology', 'Information Technology']
+  },
+  { 
+    id: 'bscs', 
+    name: 'Computer Science', 
+    code: 'BSCS',
+    description: 'Bachelor of Science in Computer Science',
+    color: '#8b5cf6',
+    icon: Users,
+    matchValues: ['BSCS', 'Bachelor of Science in Computer Science', 'Computer Science']
+  },
+  { 
+    id: 'bshm', 
+    name: 'Hospitality Management', 
+    code: 'BSHM',
+    description: 'Bachelor of Science in Hospitality Management',
+    color: '#f59e0b',
+    icon: Users,
+    matchValues: ['BSHM', 'Bachelor of Science in Hospitality Management', 'Hospitality Management']
+  },
+  { 
+    id: 'bstm', 
+    name: 'Tourism Management', 
+    code: 'BSTM',
+    description: 'Bachelor of Science in Tourism Management',
+    color: '#ef4444',
+    icon: Users,
+    matchValues: ['BSTM', 'Bachelor of Science in Tourism Management', 'Tourism Management']
+  }
+];
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
@@ -97,45 +102,24 @@ const StudentsListView = () => {
   };
 
   // Filter students by course program
-  const filterStudentsByCourse = (courseCode) => {
-    console.log('=== DEBUGGING FILTER ===');
-    console.log('Filtering students for course:', courseCode);
-    console.log('Total students loaded:', allStudents.length);
-    console.log('Sample student data:', allStudents[0]);
-    
-    if (courseCode === 'ALL') {
-      console.log('Showing all students:', allStudents.length);
-      setDisplayedStudents(allStudents);
-    } else {
-      // More flexible filtering - check if program contains the course code
-      const filtered = allStudents.filter(student => {
-        console.log('Checking student:', student.name, 'Program:', student.program);
-        
-        if (!student.program) {
-          console.log('Student has no program field');
-          return false;
-        }
-        
-        const studentProgram = student.program.toString().toUpperCase().trim();
-        const targetCourse = courseCode.toUpperCase().trim();
-        
-        console.log(`Comparing "${studentProgram}" with "${targetCourse}"`);
-        
-        // Check for exact match or if program starts with course code
-        const matches = studentProgram === targetCourse || 
-                       studentProgram.startsWith(targetCourse) ||
-                       studentProgram.includes(targetCourse);
-        
-        console.log('Match result:', matches);
-        return matches;
-      });
+  const filterStudentsByCourse = (course) => {
+  if (course.code === 'ALL') {
+    setDisplayedStudents(allStudents);
+  } else {
+    const filtered = allStudents.filter(student => {
+      if (!student.program) return false;
       
-      console.log(`Filtered ${filtered.length} students out of ${allStudents.length}`);
-      console.log('Filtered students:', filtered);
-      setDisplayedStudents(filtered);
-    }
-    console.log('=== END DEBUGGING ===');
-  };
+      const studentProgram = student.program.toString().toUpperCase().trim();
+      
+      // Check if student program matches any of the possible values for this course
+      return course.matchValues.some(matchValue => 
+        studentProgram.includes(matchValue.toUpperCase())
+      );
+    });
+    
+    setDisplayedStudents(filtered);
+  }
+};
 
   // Handle course selection
   const handleCourseSelect = async (course) => {
