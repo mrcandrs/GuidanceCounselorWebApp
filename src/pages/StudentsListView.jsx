@@ -128,15 +128,19 @@ const fetchAllStudents = async (selectedCourse) => {
   }
 };
 
-  // Filter students by course program
 const filterStudentsByCourse = (course, studentList = allStudents) => {
-  console.log("Filtering for course:", course?.code, course);
-  console.log("Student list count:", studentList.length);
-
   if (!course) {
     console.warn("No course object provided!");
     return;
   }
+
+  if (!studentList || studentList.length === 0) {
+    console.warn("No students available to filter!");
+    return;
+  }
+
+  console.log("Filtering for course:", course.code, course);
+  console.log("Student list count:", studentList.length);
 
   if (course.code === "ALL") {
     setDisplayedStudents(studentList);
@@ -145,21 +149,19 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
 
   const filtered = studentList.filter((student) => {
     if (!student.program) {
-      console.log("❌ Student without program:", student);
+      console.log("Student without program:", student);
       return false;
     }
 
     const studentProgram = student.program.toUpperCase().trim();
-    console.log(`Checking student "${student.name}" with program "${studentProgram}"`);
-
     const matches = course.matchValues.some((matchValue) =>
       studentProgram.includes(matchValue.toUpperCase())
     );
 
     if (!matches) {
-      console.log(`❌ No match for ${studentProgram} in course ${course.code}`);
-    } else {
-      console.log(`✅ Matched ${studentProgram} with course ${course.code}`);
+      console.log(
+        `Student "${student.name}" program "${student.program}" did not match course "${course.code}"`
+      );
     }
 
     return matches;
@@ -168,6 +170,7 @@ const filterStudentsByCourse = (course, studentList = allStudents) => {
   console.log("Filtered count:", filtered.length);
   setDisplayedStudents(filtered);
 };
+
 
   // Handle course selection
   const handleCourseSelect = async (course) => {
