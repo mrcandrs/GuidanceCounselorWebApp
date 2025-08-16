@@ -98,28 +98,43 @@ const StudentsListView = () => {
 
   // Filter students by course program
   const filterStudentsByCourse = (courseCode) => {
+    console.log('=== DEBUGGING FILTER ===');
     console.log('Filtering students for course:', courseCode);
-    console.log('All students:', allStudents);
+    console.log('Total students loaded:', allStudents.length);
+    console.log('Sample student data:', allStudents[0]);
     
     if (courseCode === 'ALL') {
+      console.log('Showing all students:', allStudents.length);
       setDisplayedStudents(allStudents);
     } else {
       // More flexible filtering - check if program contains the course code
       const filtered = allStudents.filter(student => {
-        if (!student.program) return false;
+        console.log('Checking student:', student.name, 'Program:', student.program);
         
-        const studentProgram = student.program.toUpperCase();
-        const targetCourse = courseCode.toUpperCase();
+        if (!student.program) {
+          console.log('Student has no program field');
+          return false;
+        }
+        
+        const studentProgram = student.program.toString().toUpperCase().trim();
+        const targetCourse = courseCode.toUpperCase().trim();
+        
+        console.log(`Comparing "${studentProgram}" with "${targetCourse}"`);
         
         // Check for exact match or if program starts with course code
-        return studentProgram === targetCourse || 
-               studentProgram.startsWith(targetCourse) ||
-               studentProgram.includes(targetCourse);
+        const matches = studentProgram === targetCourse || 
+                       studentProgram.startsWith(targetCourse) ||
+                       studentProgram.includes(targetCourse);
+        
+        console.log('Match result:', matches);
+        return matches;
       });
       
+      console.log(`Filtered ${filtered.length} students out of ${allStudents.length}`);
       console.log('Filtered students:', filtered);
       setDisplayedStudents(filtered);
     }
+    console.log('=== END DEBUGGING ===');
   };
 
   // Handle course selection
@@ -286,7 +301,30 @@ const StudentsListView = () => {
               fontSize: '14px' 
             }}>
               Showing {filteredStudents.length} of {displayedStudents.length} students
+              {/* Debug info - remove this after fixing */}
+              <br />
+              <small style={{ color: '#ef4444' }}>
+                Debug: Total loaded: {allStudents.length}, Course: {selectedCourse?.code}
+              </small>
             </div>
+            
+            {/* Add this debug section temporarily */}
+            {displayedStudents.length === 0 && allStudents.length > 0 && (
+              <div style={{ 
+                backgroundColor: '#fef2f2', 
+                border: '1px solid #fecaca', 
+                borderRadius: '8px', 
+                padding: '16px', 
+                marginBottom: '16px' 
+              }}>
+                <h4 style={{ color: '#991b1b', margin: '0 0 8px 0' }}>Debug Info:</h4>
+                <p style={{ color: '#991b1b', fontSize: '14px', margin: '0' }}>
+                  No students found for course "{selectedCourse?.code}". <br />
+                  Total students loaded: {allStudents.length} <br />
+                  Sample programs: {allStudents.slice(0, 3).map(s => s.program).join(', ')}
+                </p>
+              </div>
+            )}
             
             <table className="table">
               <thead className="table-header">
