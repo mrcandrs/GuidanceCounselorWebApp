@@ -35,15 +35,56 @@ const colorForMood = (mood) => {
     );
   };
 
-  // Monthly Reports Chart Component
+  // Monthly Reports Chart Component with enhanced tooltip
   const MonthlyReportsChart = ({ data }) => {
+    const CustomTooltip = ({ active, payload, label }) => {
+      if (active && payload && payload.length) {
+        const weekData = data.find(item => item.week === label);
+        return (
+          <div style={{
+            background: 'white',
+            padding: '12px',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}>
+            <p style={{ fontWeight: '600', margin: '0 0 8px 0' }}>{label}</p>
+            {weekData && (
+              <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 8px 0' }}>
+                {weekData.weekStart} - {weekData.weekEnd}
+              </p>
+            )}
+            {payload.map((entry, index) => (
+              <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0' }}>
+                <div style={{
+                  width: '12px',
+                  height: '12px',
+                  backgroundColor: entry.color,
+                  borderRadius: '2px'
+                }} />
+                <span style={{ fontSize: '14px', textTransform: 'capitalize' }}>
+                  {entry.name}: {entry.value}
+                </span>
+              </div>
+            ))}
+            {weekData && (
+              <p style={{ fontSize: '12px', color: '#6b7280', margin: '8px 0 0 0', borderTop: '1px solid #f3f4f6', paddingTop: '8px' }}>
+                Total: {weekData.totalEntries} entries
+              </p>
+            )}
+          </div>
+        );
+      }
+      return null;
+    };
+
     return (
       <div style={{ width: '100%', height: '300px', overflow: 'hidden' }}>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <XAxis dataKey="week" />
             <YAxis allowDecimals={false} />
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Bar dataKey="mild" fill={colorForMood("MILD")} name="Mild" />
             <Bar dataKey="moderate" fill={colorForMood("MODERATE")} name="Moderate" />
@@ -55,7 +96,6 @@ const colorForMood = (mood) => {
     );
   };
 
-
 const MoodInsightsView = () => {
   const [distribution, setDistribution] = useState([]);
   const [trends, setTrends] = useState([]);
@@ -65,28 +105,29 @@ const MoodInsightsView = () => {
   const [loading, setLoading] = useState(true);
   const [showMonthDropdown, setShowMonthDropdown] = useState(false);
 
-  //Generate months for dropdown
+  // Generate months for dropdown
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  //Generate years (current year and previous 2 years)
+  // Generate years (current year and previous 2 years)
   const currentYear = new Date().getFullYear();
   const years = [currentYear, currentYear - 1, currentYear - 2];
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [distRes, trendsRes, alertsRes] = await Promise.all([
+        setLoading(true);
+        const [distRes, trendsRes] = await Promise.all([
           axios.get(`https://guidanceofficeapi-production.up.railway.app/api/moodtracker/distribution`),
           axios.get(`https://guidanceofficeapi-production.up.railway.app/api/moodtracker/daily-trends`)
         ]);
 
         setDistribution(distRes.data || []);
         setTrends(trendsRes.data || []);
-
-        //Generate mock monthly data for now - replace with actual API call
+        
+        // Fetch monthly reports for current month/year
         await fetchMonthlyReports(selectedMonth, selectedYear);
       } catch (err) {
         console.error("Error fetching mood insights:", err);
@@ -107,26 +148,22 @@ const MoodInsightsView = () => {
 
   const fetchMonthlyReports = async (month, year) => {
     try {
-      // This would be replaced with actual API call
-      // For now, generating mock data based on selected month/year
-      const monthName = months[month];
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const weeksInMonth = Math.ceil(daysInMonth / 7);
+      setLoading(true);
       
-      const mockData = [];
-      for (let week = 1; week <= weeksInMonth; week++) {
-        mockData.push({
-          week: `Week ${week}`,
-          mild: Math.floor(Math.random() * 20) + 10,
-          moderate: Math.floor(Math.random() * 15) + 5,
-          high: Math.floor(Math.random() * 8) + 2,
-          na: Math.floor(Math.random() * 12) + 3
-        });
-      }
+      // Convert JavaScript month (0-based) to API month (1-based)
+      const apiMonth = month + 1;
       
-      setMonthlyReports(mockData);
+      const response = await axios.get(
+        `https://guidanceofficeapi-production.up.railway.app/api/moodtracker/monthly-reports?month=${apiMonth}&year=${year}`
+      );
+      
+      setMonthlyReports(response.data || []);
     } catch (err) {
       console.error("Error fetching monthly reports:", err);
+      // Set empty data on error
+      setMonthlyReports([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -259,7 +296,7 @@ const MoodInsightsView = () => {
           ) : monthlyReports.length === 0 ? (
             <div className="empty-state">
               <Calendar size={48} className="empty-icon" />
-              <p>No data available for {months[selectedMonth]} {selectedYear}</p>
+              <p>No mood data available for {months[selectedMonth]} {selectedYear}</p>
             </div>
           ) : (
             <div>
