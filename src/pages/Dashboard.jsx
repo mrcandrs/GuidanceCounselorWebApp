@@ -138,6 +138,12 @@ const GuidanceDashboard = () => {
         return <GenericFormView title="Counseling Notes" description="Keep track of guidance and counseling session notes." />;
       case 'pass':
         return <GenericFormView title="Guidance Pass" description="Generate guidance passes for approved students." />;
+      case 'referral':
+        return <GenericFormView title="Referral" description="View student referral forms." />;
+      case 'filemaintenance':
+        return <GenericFormView title="File Maintenance" description="Adjust and adapt system assets." />;
+      case 'reports':
+        return <GenericFormView title="History and Reports" description="View tracked history and detailed reports." />;
       default:
         return <StudentsListView />;
     }
