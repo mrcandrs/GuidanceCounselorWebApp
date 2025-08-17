@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History } from 'lucide-react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
@@ -14,7 +14,9 @@ const GuidanceDashboard = () => {
   const [counselor, setCounselor] = useState({ name: '', email: '' });
   const [showModal, setShowModal] = useState(false);
   const [pendingAppointments, setPendingAppointments] = useState([]);
-  //const [searchTerm, setSearchTerm] = useState('');
+  const [alerts, setAlerts] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationLoading, setNotificationLoading] = useState(false);
 
   //Use effect for pending appointments
   useEffect(() => {
@@ -32,8 +34,28 @@ const GuidanceDashboard = () => {
     fetchAppointments();
   }, []);
 
+  // Fetch alerts for notifications
+  const fetchAlerts = async () => {
+    setNotificationLoading(true);
+    try {
+      const res = await axios.get(
+        "https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts"
+      );
+      setAlerts(res.data);
+    } catch (error) {
+      console.error("Error fetching alerts:", error);
+    } finally {
+      setNotificationLoading(false);
+    }
+  };
 
-
+  // Handle notification bell click
+  const handleNotificationClick = () => {
+    if (!showNotifications) {
+      fetchAlerts();
+    }
+    setShowNotifications(!showNotifications);
+  };
 
   //Use effect for fetching Counselor from database
   useEffect(() => {
@@ -73,13 +95,6 @@ const GuidanceDashboard = () => {
     //Redirect to login
     navigate('/');
   };
-
-  const moodData = [
-    { mood: 'MILD', count: 45, color: '#34C759' },
-    { mood: 'N/A', count: 32, color: '#64748b' },
-    { mood: 'MODERATE', count: 28, color: '#009951' },
-    { mood: 'HIGH', count: 15, color: '#1B5E20' },
-  ];
 
   const sidebarItems = [
     { id: 'students', icon: Users, label: 'Students List' },
@@ -224,10 +239,150 @@ const GuidanceDashboard = () => {
             </div>
             
             <div className="header-actions">
-              <button className="notification-button">
-                <Bell size={20} />
-                <span className="notification-badge"></span>
-              </button>
+              <div style={{ position: 'relative' }}>
+                <button 
+                  className="notification-button" 
+                  onClick={handleNotificationClick}
+                  style={{ position: 'relative' }}
+                >
+                  <Bell size={20} />
+                  {alerts.length > 0 && (
+                    <span className="notification-badge" style={{ 
+                      position: 'absolute',
+                      top: '-4px',
+                      right: '-4px',
+                      backgroundColor: '#ef4444',
+                      color: 'white',
+                      borderRadius: '50%',
+                      width: '18px',
+                      height: '18px',
+                      fontSize: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 'bold'
+                    }}>
+                      {alerts.length > 9 ? '9+' : alerts.length}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notifications Dropdown */}
+                {showNotifications && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    zIndex: 1000,
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                    minWidth: '320px',
+                    maxHeight: '400px',
+                    marginTop: '8px'
+                  }}>
+                    <div style={{ 
+                      padding: '16px 20px', 
+                      borderBottom: '1px solid #e5e7eb',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>
+                        Mood Alerts
+                      </h3>
+                      <button 
+                        onClick={() => setShowNotifications(false)}
+                        style={{ 
+                          border: 'none',
+                          background: 'none',
+                          cursor: 'pointer',
+                          padding: '4px'
+                        }}
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                    
+                    <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                      {notificationLoading ? (
+                        <div style={{ padding: '20px', textAlign: 'center' }}>
+                          <p>Loading alerts...</p>
+                        </div>
+                      ) : alerts.length === 0 ? (
+                        <div style={{ padding: '20px', textAlign: 'center', color: '#6b7280' }}>
+                          <Bell size={32} style={{ opacity: 0.3, margin: '0 auto 8px' }} />
+                          <p style={{ margin: 0 }}>No alerts at the moment</p>
+                        </div>
+                      ) : (
+                        alerts.map((alert, index) => (
+                          <div 
+                            key={index} 
+                            style={{
+                              padding: '16px 20px',
+                              borderBottom: index < alerts.length - 1 ? '1px solid #f3f4f6' : 'none',
+                              background: alert.level === 'high' ? '#FEF2F2' : 
+                                         alert.level === 'moderate' ? '#FFFBEB' : '#EFF6FF'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                              <div style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                backgroundColor: alert.level === 'high' ? '#EF4444' :
+                                                alert.level === 'moderate' ? '#F59E0B' : '#3B82F6',
+                                marginTop: '6px',
+                                flexShrink: 0
+                              }} />
+                              <div style={{ flex: 1 }}>
+                                <p style={{
+                                  margin: 0,
+                                  fontSize: '14px',
+                                  color: alert.level === 'high' ? '#991B1B' :
+                                         alert.level === 'moderate' ? '#92400E' : '#1E40AF',
+                                  lineHeight: '1.4'
+                                }}>
+                                  {alert.message}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    
+                    {alerts.length > 0 && (
+                      <div style={{ 
+                        padding: '12px 20px',
+                        borderTop: '1px solid #e5e7eb',
+                        background: '#f9fafb'
+                      }}>
+                        <button 
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            border: 'none',
+                            background: 'none',
+                            color: '#6b7280',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            textAlign: 'center'
+                          }}
+                          onClick={() => {
+                            setShowNotifications(false);
+                            setActiveTab('mood');
+                          }}
+                        >
+                          View Mood Insights →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
               <div className="header-avatar">GC</div>
             </div>
           </div>
