@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, Search, Filter, Bell, Settings, LogOut, Eye, Edit, Trash2, Check, X, Clock } from 'lucide-react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
@@ -89,6 +89,9 @@ const GuidanceDashboard = () => {
     { id: 'notes', icon: Edit, label: 'Counseling Notes' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
     { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
+    { id: 'referral', icon: AtSign, label: 'Referral' },
+    { id: 'filemaintenance', icon: FileArchive, label: 'File Maintenance' },
+    { id: 'reports', icon: History, label: 'History and Reports' }
   ];
 
   const GenericFormView = ({ title, description }) => (
