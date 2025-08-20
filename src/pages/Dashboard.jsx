@@ -153,7 +153,7 @@ const GuidanceDashboard = () => {
   const sidebarItems = [
     { id: 'students', icon: Users, label: 'Students List' },
     { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
-    { id: 'endorsement', icon: FileText, label: 'Endorsement Forms' },
+    { id: 'endorsement', icon: FileText, label: 'Endorsement and Custody' },
     { id: 'consultation', icon: ClipboardList, label: 'Consultation Forms' },
     { id: 'notes', icon: Edit, label: 'Counseling Notes' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
