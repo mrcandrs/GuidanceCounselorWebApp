@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Check, X, Clock } from 'lucide-react';
+import { Calendar, Check, X, Clock, FileText } from 'lucide-react';
 import '../styles/Dashboard.css';
 
 const AppointmentApprovalView = ({ pendingAppointments }) => {
@@ -11,6 +11,43 @@ const AppointmentApprovalView = ({ pendingAppointments }) => {
   const handleReject = (appointmentId) => {
     console.log('Rejected appointment:', appointmentId);
     //Rejection logic
+  };
+
+  // Helper function to format the createdAt date
+  const formatSubmissionDate = (createdAt) => {
+    if (!createdAt) return 'Unknown';
+    
+    try {
+      const date = new Date(createdAt);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // If today, show time
+      if (diffDays === 1) {
+        return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      }
+      // If yesterday
+      else if (diffDays === 2) {
+        return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      }
+      // If within a week, show day name
+      else if (diffDays <= 7) {
+        return `${date.toLocaleDateString([], { weekday: 'long' })} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      }
+      // Otherwise show full date
+      else {
+        return date.toLocaleDateString([], { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric',
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      }
+    } catch (error) {
+      return 'Invalid date';
+    }
   };
 
   return (
@@ -56,9 +93,25 @@ const AppointmentApprovalView = ({ pendingAppointments }) => {
                       </button>
                     </div>
                   </div>
+                  
                   <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 8px 0', textTransform: 'capitalize' }}>
                     {appointment.reason}
                   </p>
+                  
+                  {/* Submission Date */}
+                  <div style={{ 
+                    fontSize: '13px', 
+                    color: '#9ca3af', 
+                    margin: '0 0 8px 0',
+                    fontStyle: 'italic',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    <FileText size={12} />
+                    Submitted: {formatSubmissionDate(appointment.createdAt)}
+                  </div>
+                  
                   <div className="appointment-meta">
                     <span className="appointment-meta-item">
                       <Calendar size={14} />
