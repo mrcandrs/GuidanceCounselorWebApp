@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
@@ -9,14 +8,69 @@ import '../styles/Dashboard.css';
 import axios from "axios";
 
 const GuidanceDashboard = () => {
-  const [activeTab, setActiveTab] = useState('students');
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Map URL paths to tab IDs
+  const pathToTabMap = {
+    '/dashboard': 'students',
+    '/dashboard/students-list': 'students',
+    '/dashboard/mood-insights': 'mood',
+    '/dashboard/endorsement-forms': 'endorsement',
+    '/dashboard/consultation-forms': 'consultation',
+    '/dashboard/counseling-notes': 'notes',
+    '/dashboard/guidance-pass': 'pass',
+    '/dashboard/appointment-approval': 'appointments',
+    '/dashboard/referral': 'referral',
+    '/dashboard/file-maintenance': 'filemaintenance',
+    '/dashboard/history-reports': 'reports'
+  };
+
+  // Map tab IDs to URL paths
+  const tabToPathMap = {
+    'students': '/dashboard/students-list',
+    'mood': '/dashboard/mood-insights',
+    'endorsement': '/dashboard/endorsement-forms',
+    'consultation': '/dashboard/consultation-forms',
+    'notes': '/dashboard/counseling-notes',
+    'pass': '/dashboard/guidance-pass',
+    'appointments': '/dashboard/appointment-approval',
+    'referral': '/dashboard/referral',
+    'filemaintenance': '/dashboard/file-maintenance',
+    'reports': '/dashboard/history-reports'
+  };
+
+  // Set active tab based on current URL
+  const [activeTab, setActiveTab] = useState(() => {
+    return pathToTabMap[location.pathname] || 'students';
+  });
+
   const [counselor, setCounselor] = useState({ name: '', email: '' });
   const [showModal, setShowModal] = useState(false);
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    const currentTab = pathToTabMap[location.pathname] || 'students';
+    setActiveTab(currentTab);
+    
+    // If user navigates to /dashboard, redirect to /dashboard/students-list
+    if (location.pathname === '/dashboard') {
+      navigate('/dashboard/students-list', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  // Handle tab changes - now updates URL
+  const handleTabChange = (tabId) => {
+    const path = tabToPathMap[tabId];
+    if (path) {
+      navigate(path);
+    }
+    setActiveTab(tabId);
+  };
 
   //Use effect for pending appointments
   useEffect(() => {
@@ -177,7 +231,7 @@ const GuidanceDashboard = () => {
           {sidebarItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleTabChange(item.id)}
               className={`nav-button ${activeTab === item.id ? 'active' : ''}`}
             >
               <item.icon size={20} />
@@ -372,7 +426,7 @@ const GuidanceDashboard = () => {
                           }}
                           onClick={() => {
                             setShowNotifications(false);
-                            setActiveTab('mood');
+                            handleTabChange('mood');
                           }}
                         >
                           View Mood Insights →
