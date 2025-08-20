@@ -16,7 +16,7 @@ const GuidanceDashboard = () => {
     '/dashboard': 'students',
     '/dashboard/students-list': 'students',
     '/dashboard/mood-insights': 'mood',
-    '/dashboard/endorsement-forms': 'endorsement',
+    '/dashboard/endorsement-custody': 'endorsement',
     '/dashboard/consultation-forms': 'consultation',
     '/dashboard/counseling-notes': 'notes',
     '/dashboard/guidance-pass': 'pass',
@@ -30,7 +30,7 @@ const GuidanceDashboard = () => {
   const tabToPathMap = {
     'students': '/dashboard/students-list',
     'mood': '/dashboard/mood-insights',
-    'endorsement': '/dashboard/endorsement-forms',
+    'endorsement': '/dashboard/endorsement-custody',
     'consultation': '/dashboard/consultation-forms',
     'notes': '/dashboard/counseling-notes',
     'pass': '/dashboard/guidance-pass',
@@ -200,7 +200,7 @@ const GuidanceDashboard = () => {
       case 'appointments':
         return <AppointmentApprovalView pendingAppointments={pendingAppointments} />;
       case 'endorsement':
-        return <GenericFormView title="Endorsement Forms" description="Manage custody and endorsement forms for students." />;
+        return <GenericFormView title="Endorsement and Custody Forms" description="Manage custody and endorsement forms for students." />;
       case 'consultation':
         return <GenericFormView title="Consultation Forms" description="Create and manage consultation and conference forms." />;
       case 'notes':
