@@ -182,7 +182,7 @@ const EndorsementCustodyView = () => {
                 onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleCreateNew();
+                handleBack();
                 }}
                 className="back-button"
                 style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
