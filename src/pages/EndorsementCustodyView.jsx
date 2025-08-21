@@ -340,9 +340,6 @@ const EndorsementCustodyView = () => {
             </div>
 
             <div className="form-actions">
-              <button type="button" onClick={handleBack} className="cancel-button">
-                Cancel
-              </button>
               <button type="submit" disabled={loading} className="save-button">
                 <Save size={20} />
                 {loading ? 'Saving...' : (editingForm ? 'Update Form' : 'Save Form')}
