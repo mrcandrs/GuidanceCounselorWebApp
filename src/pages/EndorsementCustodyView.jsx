@@ -11,7 +11,7 @@ const EndorsementCustodyView = () => {
   const [editingForm, setEditingForm] = useState(null);
   const [formData, setFormData] = useState({
     studentId: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getTodayDate(),
     gradeYearLevel: '',
     section: '',
     concerns: '',
@@ -21,6 +21,12 @@ const EndorsementCustodyView = () => {
     endorsedBy: '',
     endorsedTo: ''
   });
+
+
+  // Getting today's date
+  const getTodayDate = () => {
+   return new Date().toISOString().split('T')[0];
+ };
 
   // Fetch all forms
   const fetchForms = async () => {
@@ -227,6 +233,8 @@ const EndorsementCustodyView = () => {
                   onChange={handleInputChange}
                   required
                   className="form-input"
+                  min={getTodayDate()}
+                  max={getTodayDate()}
                 />
               </div>
             </div>
@@ -354,7 +362,7 @@ const EndorsementCustodyView = () => {
         </div>
       </div>
     );
-  }
+}
 
   return (
     <div className="endorsement-custody-container">

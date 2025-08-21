@@ -552,3 +552,13 @@
 .create-button-override:hover {
   background-color: #0369a1 !important;
 }
+
+/* Add to your EndorsementCustodyView.css */
+.content {
+  overflow-y: auto;
+  height: calc(100vh - 120px);
+}
+
+.endorsement-custody-container {
+  min-height: fit-content;
+}
