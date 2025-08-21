@@ -177,10 +177,19 @@ const EndorsementCustodyView = () => {
     return (
       <div className="endorsement-custody-container">
         <div className="form-header">
-          <button onClick={handleBack} className="back-button">
-            <ArrowLeft size={20} />
-            Back to List
-          </button>
+          <button 
+                type="button"
+                onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleCreateNew();
+                }}
+                className="back-button"
+                style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
+                >
+                <ArrowLeft size={20} />
+                Back to List
+            </button>
           <h2 className="form-title">
             {editingForm ? 'Edit' : 'Create'} Endorsement - Custody Form
           </h2>
@@ -359,7 +368,6 @@ const EndorsementCustodyView = () => {
                 onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Create New clicked!'); // Add this to test
                 handleCreateNew();
                 }}
                 className="create-button"
