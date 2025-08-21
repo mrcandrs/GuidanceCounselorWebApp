@@ -354,9 +354,19 @@ const EndorsementCustodyView = () => {
         
         <div className="card-header">
           <div className="header-actions">
-            <button onClick={handleCreateNew} className="create-button">
-              <Plus size={20} />
-              Create New
+            <button 
+                type="button"
+                onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Create New clicked!'); // Add this to test
+                handleCreateNew();
+                }}
+                className="create-button"
+                style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
+                >
+                <Plus size={20} />
+                Create New
             </button>
             <button className="filter-button">
               <Filter size={20} />
