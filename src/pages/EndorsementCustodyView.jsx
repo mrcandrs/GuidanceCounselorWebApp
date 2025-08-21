@@ -211,7 +211,7 @@ const EndorsementCustodyView = () => {
                   <option value="">Select Student</option>
                   {students.map(student => (
                     <option key={student.studentId} value={student.studentId}>
-                      {student.firstName} {student.lastName} - {student.studentNumber}
+                      {student.FullName}- {student.studentNumber}
                     </option>
                   ))}
                 </select>
