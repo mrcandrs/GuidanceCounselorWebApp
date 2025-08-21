@@ -1028,39 +1028,3 @@ html, body {
     align-self: flex-start;
   }
 }
-
-/* Keep the whole app pinned to the viewport height */
-html, body {
-  height: 100%;
-}
-
-/* Avoid horizontal jitter from 100vw, and cap height */
-.dashboard-container {
-  width: 100%;        /* was 100vw */
-  height: 100vh;      /* cap to viewport */
-  overflow: hidden;   /* prevent page from growing with content */
-}
-
-/* Make the sidebar stay in place and scroll internally if needed */
-.sidebar {
-  position: sticky;   /* pin in the viewport */
-  top: 0;
-  height: 100vh;      /* fixed to viewport height */
-  overflow-y: auto;   /* its own scroll */
-  flex-shrink: 0;     /* never shrink below 256px */
-}
-
-/* Right column: cap to viewport and let only the inner content scroll */
-.main-content {
-  height: 100vh;      /* cap right column to viewport */
-  overflow: hidden;   /* prevent column from expanding the page */
-  display: flex;
-  flex-direction: column;
-}
-
-/* This is the actual scroll area on the right */
-.content {
-  flex: 1;
-  min-height: 0;      /* IMPORTANT in flex to allow scrolling */
-  overflow-y: auto;
-}
