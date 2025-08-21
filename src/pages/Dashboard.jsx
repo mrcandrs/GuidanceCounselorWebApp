@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X } from 'lucide-react';
+import { 
+  Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, AtSign, 
+  Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X, Menu 
+} from 'lucide-react';
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
@@ -11,6 +14,9 @@ import axios from "axios";
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Add mobile menu state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Map URL paths to tab IDs
   const pathToTabMap = {
@@ -53,6 +59,30 @@ const GuidanceDashboard = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
 
+  // Close mobile menu when screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest('.sidebar') && !event.target.closest('.mobile-menu-button')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMobileMenuOpen]);
+
   // Update active tab when URL changes
   useEffect(() => {
     const currentTab = pathToTabMap[location.pathname] || 'students';
@@ -71,6 +101,8 @@ const GuidanceDashboard = () => {
       navigate(path);
     }
     setActiveTab(tabId);
+    // Close mobile menu after selection
+    setIsMobileMenuOpen(false);
   };
 
   //Use effect for pending appointments
@@ -114,29 +146,29 @@ const GuidanceDashboard = () => {
 
   //Use effect for fetching Counselor from database
   useEffect(() => {
-  const fetchCounselor = async () => {
-    try {
-      const token = localStorage.getItem('authToken'); //must be set during login
-      console.log("Stored token:", token);
-      if (!token) {
-        console.error('No token found');
-        return;
-      }
-
-      const res = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/counselor/me',
-        {
-          headers: { Authorization: `Bearer ${token}` },
+    const fetchCounselor = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        console.log("Stored token:", token);
+        if (!token) {
+          console.error('No token found');
+          return;
         }
-      );
 
-      setCounselor(res.data);
-    } catch (err) {
-      console.error('Failed to fetch counselor:', err);
-    }
-  };
+        const res = await axios.get(
+          'https://guidanceofficeapi-production.up.railway.app/api/counselor/me',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-  fetchCounselor();
+        setCounselor(res.data);
+      } catch (err) {
+        console.error('Failed to fetch counselor:', err);
+      }
+    };
+
+    fetchCounselor();
   }, []);
 
   const handleLogout = () => {
@@ -171,8 +203,8 @@ const GuidanceDashboard = () => {
       <div className="card">
         <p style={{ color: '#6b7280', marginBottom: '24px' }}>{description}</p>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', gap: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
             <button className="primary-button">
               <Plus size={20} />
               Create New
@@ -221,8 +253,20 @@ const GuidanceDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      {/* Mobile Menu Button */}
+      <button 
+        className="mobile-menu-button"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        aria-label="Toggle mobile menu"
+      >
+        <Menu size={20} />
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && <div className={`sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} />}
+
       {/* Sidebar */}
-      <div className="sidebar">
+      <div className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <h1 className="sidebar-title">Guidance Portal</h1>
           <p className="sidebar-subtitle">Counselor Dashboard</p>
@@ -236,7 +280,7 @@ const GuidanceDashboard = () => {
               className={`nav-button ${activeTab === item.id ? 'active' : ''}`}
             >
               <item.icon size={20} />
-              {item.label}
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
@@ -246,37 +290,41 @@ const GuidanceDashboard = () => {
           <div className="user-info">
             <div className="user-avatar">
               {counselor.name ? counselor.name.charAt(0) : 'GC'}
-              </div>
+            </div>
             <div>
               <p className="user-name">{counselor.name || 'Loading...'}</p>
               <p className="user-email">{counselor.email || ''}</p>
             </div>
           </div>
           <div className="user-actions">
-            <button className="user-action-button settings-button">
+            <button className="user-action-button settings-button" title="Settings">
               <Settings size={16} />
             </button>
 
             {/* Logout button */}
-            <button className="user-action-button logout-button" onClick={() => setShowModal(true)}>
+            <button 
+              className="user-action-button logout-button" 
+              onClick={() => setShowModal(true)}
+              title="Logout"
+            >
               <LogOut size={16} />
             </button>
 
             {showModal && (
-            <div className="modal-overlay">
-            <div className="modal">
-            <h3>Are you sure you want to log out?</h3>
-            <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setShowModal(false)}>
-                Cancel
-              </button>
-              <button className="confirm-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="modal-overlay">
+                <div className="modal">
+                  <h3>Are you sure you want to log out?</h3>
+                  <div className="modal-actions">
+                    <button className="cancel-btn" onClick={() => setShowModal(false)}>
+                      Cancel
+                    </button>
+                    <button className="confirm-btn" onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -299,6 +347,7 @@ const GuidanceDashboard = () => {
                   className="notification-button" 
                   onClick={handleNotificationClick}
                   style={{ position: 'relative' }}
+                  title="Notifications"
                 >
                   <Bell size={20} />
                   {alerts.length > 0 && (
@@ -334,6 +383,7 @@ const GuidanceDashboard = () => {
                     borderRadius: '8px',
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                     minWidth: '320px',
+                    maxWidth: '90vw',
                     maxHeight: '400px',
                     marginTop: '8px'
                   }}>

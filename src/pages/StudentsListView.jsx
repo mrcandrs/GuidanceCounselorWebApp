@@ -66,7 +66,7 @@ const CourseSelectionView = ({ courses, handleCourseSelect }) => (
   </div>
 );
 
-// Move StudentsTableView OUTSIDE of the main component
+// Enhanced StudentsTableView with better mobile support
 const StudentsTableView = ({ 
   selectedCourse, 
   handleBackToCourseSelection, 
@@ -79,7 +79,7 @@ const StudentsTableView = ({
 }) => (
   <div className="page-container">
     <div className="page-header">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <button 
           onClick={handleBackToCourseSelection}
           className="back-button"
@@ -92,7 +92,8 @@ const StudentsTableView = ({
           }}
         >
           <ArrowLeft size={16} />
-          Back to Courses
+          <span className="hidden-mobile">Back to Courses</span>
+          <span className="show-mobile">Back</span>
         </button>
         <div>
           <h2 className="page-title">
@@ -123,7 +124,7 @@ const StudentsTableView = ({
         </div>
         <button className="filter-button" type="button">
           <Filter size={20} />
-          Filter
+          <span className="hidden-mobile">Filter</span>
         </button>
       </div>
 
@@ -137,7 +138,7 @@ const StudentsTableView = ({
           <p>Loading students...</p>
         </div>
       ) : (
-        <div style={{ overflowX: "auto" }}>
+        <div className="table-container">
           <div style={{ 
             marginBottom: '16px', 
             color: '#6b7280', 
@@ -151,10 +152,10 @@ const StudentsTableView = ({
               <tr>
                 <th className="table-header-cell">Student</th>
                 <th className="table-header-cell">Student No.</th>
-                <th className="table-header-cell">Program and Year</th>
-                <th className="table-header-cell">Last Mood Level</th>
-                <th className="table-header-cell">Date Registered</th>
-                <th className="table-header-cell">Last Login</th>
+                <th className="table-header-cell hidden-mobile">Program and Year</th>
+                <th className="table-header-cell">Mood Level</th>
+                <th className="table-header-cell hidden-mobile">Date Registered</th>
+                <th className="table-header-cell hidden-mobile">Last Login</th>
                 <th className="table-header-cell">Actions</th>
               </tr>
             </thead>
@@ -168,12 +169,15 @@ const StudentsTableView = ({
                       </div>
                       <div>
                         <div className="student-name">{student.name || 'N/A'}</div>
+                        <div className="student-status show-mobile">
+                          {student.program || 'N/A'} - {student.section || 'N/A'}
+                        </div>
                         <div className="student-status">{student.status || 'Active'}</div>
                       </div>
                     </div>
                   </td>
                   <td className="table-cell">{student.studentno || 'N/A'}</td>
-                  <td className="table-cell">
+                  <td className="table-cell hidden-mobile">
                     {student.program || 'N/A'} - {student.section || 'N/A'}
                   </td>
                   <td className="table-cell">
@@ -181,9 +185,9 @@ const StudentsTableView = ({
                       {student.lastMood || "N/A"}
                     </span>
                   </td>
-                  <td className="table-cell">
+                  <td className="table-cell hidden-mobile">
                     {student.dateregistered ? new Date(student.dateregistered).toLocaleString('en-US', {
-                        month: 'long',
+                        month: 'short',
                         day: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
@@ -191,9 +195,9 @@ const StudentsTableView = ({
                         hour12: true,
                     }) : 'N/A'}
                   </td>
-                  <td className="table-cell">
+                  <td className="table-cell hidden-mobile">
                     {student.lastlogin ? new Date(student.lastlogin).toLocaleString('en-US', {
-                        month: 'long',
+                        month: 'short',
                         day: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
@@ -203,13 +207,13 @@ const StudentsTableView = ({
                   </td>
                   <td className="table-cell">
                     <div className="action-buttons">
-                      <button className="action-button action-view" type="button">
+                      <button className="action-button action-view" type="button" title="View">
                         <Eye size={16} />
                       </button>
-                      <button className="action-button action-edit" type="button">
+                      <button className="action-button action-edit" type="button" title="Edit">
                         <Edit size={16} />
                       </button>
-                      <button className="action-button action-delete" type="button">
+                      <button className="action-button action-delete" type="button" title="Delete">
                         <Trash2 size={16} />
                       </button>
                     </div>
