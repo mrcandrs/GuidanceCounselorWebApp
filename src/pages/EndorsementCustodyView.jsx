@@ -11,7 +11,7 @@ const EndorsementCustodyView = () => {
   const [editingForm, setEditingForm] = useState(null);
   const [formData, setFormData] = useState({
     studentId: '',
-    date: getTodayDate(),
+    date: new Date().toISOString().split('T')[0],
     gradeYearLevel: '',
     section: '',
     concerns: '',
@@ -21,12 +21,6 @@ const EndorsementCustodyView = () => {
     endorsedBy: '',
     endorsedTo: ''
   });
-
-
-  // Getting today's date
-  const getTodayDate = () => {
-   return new Date().toISOString().split('T')[0];
- };
 
   // Fetch all forms
   const fetchForms = async () => {
@@ -97,7 +91,7 @@ const EndorsementCustodyView = () => {
       // Reset form and refresh data
       setFormData({
         studentId: '',
-        date: getTodayDate(),
+        date: new Date().toISOString().split('T')[0],
         gradeYearLevel: '',
         section: '',
         concerns: '',
@@ -160,7 +154,7 @@ const EndorsementCustodyView = () => {
     setEditingForm(null);
     setFormData({
       studentId: '',
-      date: getTodayDate(),
+      date: new Date().toISOString().split('T')[0],
       gradeYearLevel: '',
       section: '',
       concerns: '',
@@ -233,8 +227,6 @@ const EndorsementCustodyView = () => {
                   onChange={handleInputChange}
                   required
                   className="form-input"
-                  min={getTodayDate()}
-                  max={getTodayDate()}
                 />
               </div>
             </div>
