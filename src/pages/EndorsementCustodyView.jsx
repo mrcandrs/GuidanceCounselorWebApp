@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
 import axios from 'axios';
-import './EndorsementCustodyView.css';
+import '../styles/EndorsementCustodyView.css';
 
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
