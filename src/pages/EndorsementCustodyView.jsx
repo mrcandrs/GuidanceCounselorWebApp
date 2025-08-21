@@ -97,7 +97,7 @@ const EndorsementCustodyView = () => {
       // Reset form and refresh data
       setFormData({
         studentId: '',
-        date: new Date().toISOString().split('T')[0],
+        date: getTodayDate(),
         gradeYearLevel: '',
         section: '',
         concerns: '',
@@ -160,7 +160,7 @@ const EndorsementCustodyView = () => {
     setEditingForm(null);
     setFormData({
       studentId: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getTodayDate(),
       gradeYearLevel: '',
       section: '',
       concerns: '',
