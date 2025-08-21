@@ -551,12 +551,14 @@
   background-color: #0369a1 !important;
 }
 
-/* Add to your EndorsementCustodyView.css for scrolling */
-.content {
-  overflow-y: auto;
-  height: calc(100vh - 120px);
+/* Fix form layout - add at the end of your CSS file */
+.endorsement-form-card {
+  max-width: none !important;
+  margin: 0 !important;
+  width: 100% !important;
 }
 
 .endorsement-custody-container {
-  min-height: fit-content;
+  width: 100% !important;
+  max-width: 100% !important;
 }
