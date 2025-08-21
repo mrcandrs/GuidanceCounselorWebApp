@@ -340,10 +340,15 @@ const EndorsementCustodyView = () => {
             </div>
 
             <div className="form-actions">
-              <button type="submit" disabled={loading} className="save-button">
+            <button 
+                type="submit"
+                disabled={loading}
+                className="save-button"
+                style={{ pointerEvents: 'auto', zIndex: 999 }}
+                >
                 <Save size={20} />
                 {loading ? 'Saving...' : (editingForm ? 'Update Form' : 'Save Form')}
-              </button>
+            </button>
             </div>
           </form>
         </div>
