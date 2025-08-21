@@ -4,6 +4,7 @@ import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, 
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
+import EndorsementCustodyView from './EndorsementCustodyView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
@@ -200,7 +201,7 @@ const GuidanceDashboard = () => {
       case 'appointments':
         return <AppointmentApprovalView pendingAppointments={pendingAppointments} />;
       case 'endorsement':
-        return <GenericFormView title="Endorsement and Custody Forms" description="Manage custody and endorsement forms for students." />;
+        return <EndorsementCustodyView />;
       case 'consultation':
         return <GenericFormView title="Consultation Forms" description="Create and manage consultation and conference forms." />;
       case 'notes':
