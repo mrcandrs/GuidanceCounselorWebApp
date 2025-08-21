@@ -468,3 +468,88 @@
     font-size: 12px;
   }
 }
+
+/* Add this to your EndorsementCustodyView.css file */
+
+/* Enhanced Create Button with higher specificity */
+.endorsement-card .create-button {
+  background-color: #0477BF !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: background-color 0.2s !important;
+  /* Ensure button is clickable */
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 1 !important;
+  /* Reset any inherited styles */
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.endorsement-card .create-button:hover {
+  background-color: #0369a1 !important;
+  transform: none !important;
+}
+
+.endorsement-card .create-button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1) !important;
+}
+
+.endorsement-card .create-button:active {
+  background-color: #0284c7 !important;
+}
+
+/* Ensure the header-actions container doesn't block clicks */
+.endorsement-card .header-actions {
+  display: flex !important;
+  gap: 16px !important;
+  position: relative !important;
+  z-index: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure the card-header doesn't interfere */
+.endorsement-card .card-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 24px !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Reset any form interference if the button is inside a form */
+.endorsement-card form .create-button {
+  type: button;
+}
+
+/* Alternative: If the above doesn't work, try this simpler approach */
+.create-button-override {
+  all: unset !important;
+  background-color: #0477BF !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  pointer-events: auto !important;
+}
+
+.create-button-override:hover {
+  background-color: #0369a1 !important;
+}

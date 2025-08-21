@@ -14,7 +14,7 @@ const EndorsementCustodyView = () => {
     date: new Date().toISOString().split('T')[0],
     gradeYearLevel: '',
     section: '',
-    comments: '',
+    concerns: '',
     interventions: '',
     recommendations: '',
     referrals: '',
@@ -94,7 +94,7 @@ const EndorsementCustodyView = () => {
         date: new Date().toISOString().split('T')[0],
         gradeYearLevel: '',
         section: '',
-        comments: '',
+        concerns: '',
         interventions: '',
         recommendations: '',
         referrals: '',
@@ -120,7 +120,7 @@ const EndorsementCustodyView = () => {
       date: new Date(form.date).toISOString().split('T')[0],
       gradeYearLevel: form.gradeYearLevel,
       section: form.section,
-      comments: form.comments,
+      concerns: form.concerns,
       interventions: form.interventions,
       recommendations: form.recommendations,
       referrals: form.referrals,
@@ -157,7 +157,7 @@ const EndorsementCustodyView = () => {
       date: new Date().toISOString().split('T')[0],
       gradeYearLevel: '',
       section: '',
-      comments: '',
+      concerns: '',
       interventions: '',
       recommendations: '',
       referrals: '',
@@ -254,26 +254,26 @@ const EndorsementCustodyView = () => {
                   value={formData.section}
                   onChange={handleInputChange}
                   className="form-input"
-                  placeholder="e.g., A, STEM-1"
+                  placeholder="e.g., BSIT-4B"
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="comments" className="form-label">Comments</label>
+              <label htmlFor="concerns" className="form-label">Concern/s:</label>
               <textarea
-                id="comments"
-                name="comments"
-                value={formData.comments}
+                id="concerns"
+                name="concerns"
+                value={formData.concerns}
                 onChange={handleInputChange}
                 className="form-textarea"
                 rows="4"
-                placeholder="Enter comments here..."
+                placeholder="Enter concern/s here..."
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="interventions" className="form-label">Interventions</label>
+              <label htmlFor="interventions" className="form-label">Intervention/s:</label>
               <textarea
                 id="interventions"
                 name="interventions"
@@ -281,12 +281,12 @@ const EndorsementCustodyView = () => {
                 onChange={handleInputChange}
                 className="form-textarea"
                 rows="4"
-                placeholder="Describe interventions provided..."
+                placeholder="Describe intervention/s provided..."
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="recommendations" className="form-label">Recommendations</label>
+              <label htmlFor="recommendations" className="form-label">Recommendation/s:</label>
               <textarea
                 id="recommendations"
                 name="recommendations"
@@ -294,12 +294,12 @@ const EndorsementCustodyView = () => {
                 onChange={handleInputChange}
                 className="form-textarea"
                 rows="4"
-                placeholder="Provide recommendations..."
+                placeholder="Provide recommendation/s..."
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="referrals" className="form-label">Referrals</label>
+              <label htmlFor="referrals" className="form-label">Referral/s:</label>
               <textarea
                 id="referrals"
                 name="referrals"
@@ -307,13 +307,13 @@ const EndorsementCustodyView = () => {
                 onChange={handleInputChange}
                 className="form-textarea"
                 rows="3"
-                placeholder="External referrals if any..."
+                placeholder="External referral/s if any..."
               />
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="endorsedBy" className="form-label">Endorsed by</label>
+                <label htmlFor="endorsedBy" className="form-label">Endorsed by:</label>
                 <input
                   type="text"
                   id="endorsedBy"
@@ -321,7 +321,7 @@ const EndorsementCustodyView = () => {
                   value={formData.endorsedBy}
                   onChange={handleInputChange}
                   className="form-input"
-                  placeholder="Name and signature of guidance counselor"
+                  placeholder="Name of guidance counselor"
                 />
               </div>
 
@@ -334,7 +334,7 @@ const EndorsementCustodyView = () => {
                   value={formData.endorsedTo}
                   onChange={handleInputChange}
                   className="form-input"
-                  placeholder="Name and signature of parent/guardian"
+                  placeholder="Name of parent/guardian"
                 />
               </div>
             </div>
