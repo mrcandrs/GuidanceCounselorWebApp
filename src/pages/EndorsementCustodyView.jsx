@@ -27,6 +27,13 @@ const formatManilaDate = (dateString) => {
   });
 };
 
+// Utility function to get current date in Manila timezone formatted for input[type="date"]
+const getCurrentManilaDate = () => {
+  const now = new Date();
+  const manilaDate = new Date(now.toLocaleString('en-CA', { timeZone: 'Asia/Manila' }));
+  return manilaDate.toISOString().split('T')[0];
+};
+
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
@@ -37,7 +44,7 @@ const EndorsementCustodyView = () => {
   const [showView, setShowView] = useState(false);
   const [formData, setFormData] = useState({
     studentId: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getCurrentManilaDate(),
     gradeYearLevel: '',
     section: '',
     concerns: '',
@@ -178,7 +185,7 @@ const EndorsementCustodyView = () => {
       const counselorDetails = await fetchCurrentCounselor();
       setFormData({
         studentId: '',
-        date: new Date().toISOString().split('T')[0],
+        date: getCurrentManilaDate(),
         gradeYearLevel: '',
         section: '',
         concerns: '',
@@ -251,7 +258,7 @@ const EndorsementCustodyView = () => {
     
     setFormData({
       studentId: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getCurrentManilaDate(),
       gradeYearLevel: '',
       section: '',
       concerns: '',
