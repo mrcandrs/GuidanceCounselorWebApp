@@ -27,6 +27,16 @@ const formatManilaDate = (dateString) => {
   });
 };
 
+// Utility function to get current date in Manila timezone for input fields
+const getCurrentManilaDate = () => {
+  const now = new Date();
+  const manilaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+  const year = manilaTime.getFullYear();
+  const month = String(manilaTime.getMonth() + 1).padStart(2, '0');
+  const day = String(manilaTime.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
@@ -37,7 +47,7 @@ const EndorsementCustodyView = () => {
   const [showView, setShowView] = useState(false);
   const [formData, setFormData] = useState({
     studentId: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getCurrentManilaDate(),
     gradeYearLevel: '',
     section: '',
     concerns: '',
@@ -114,7 +124,7 @@ const EndorsementCustodyView = () => {
     }));
   };
 
-    // Handle student selection change and fetch student details
+  // Handle student selection change and fetch student details
   const handleStudentChange = async (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -178,7 +188,7 @@ const EndorsementCustodyView = () => {
       const counselorDetails = await fetchCurrentCounselor();
       setFormData({
         studentId: '',
-        date: new Date().toISOString().split('T')[0],
+        date: getCurrentManilaDate(),
         gradeYearLevel: '',
         section: '',
         concerns: '',
@@ -199,7 +209,7 @@ const EndorsementCustodyView = () => {
     }
   };
 
-    // Handle view
+  // Handle view
   const handleView = (form) => {
     setViewingForm(form);
     setShowView(true);
@@ -251,7 +261,7 @@ const EndorsementCustodyView = () => {
     
     setFormData({
       studentId: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getCurrentManilaDate(),
       gradeYearLevel: '',
       section: '',
       concerns: '',
@@ -270,7 +280,7 @@ const EndorsementCustodyView = () => {
     setEditingForm(null);
   };
 
-    // Handle back from view
+  // Handle back from view
   const handleBackFromView = () => {
     setShowView(false);
     setViewingForm(null);
@@ -281,18 +291,18 @@ const EndorsementCustodyView = () => {
       <div className="endorsement-custody-container">
         <div className="form-header">
           <button 
-                type="button"
-                onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleBack();
-                }}
-                className="back-button"
-                style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
-                >
-                <ArrowLeft size={20} />
-                Back to List
-            </button>
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBack();
+            }}
+            className="back-button"
+            style={{ pointerEvents: 'auto', zIndex: 999 }}
+          >
+            <ArrowLeft size={20} />
+            Back to List
+          </button>
           <h2 className="form-title">
             {editingForm ? 'Edit' : 'Create'} Endorsement - Custody Form
           </h2>
@@ -444,40 +454,40 @@ const EndorsementCustodyView = () => {
             </div>
 
             <div className="form-actions">
-            <button 
+              <button 
                 type="submit"
                 disabled={loading}
                 className="save-button"
                 style={{ pointerEvents: 'auto', zIndex: 999 }}
-                >
+              >
                 <Save size={20} />
                 {loading ? 'Saving...' : (editingForm ? 'Update Form' : 'Save Form')}
-            </button>
+              </button>
             </div>
           </form>
         </div>
       </div>
     );
-}
+  }
 
-// When the endorsement form is viewed
+  // When the endorsement form is viewed
   if (showView && viewingForm) {
     return (
       <div className="endorsement-custody-container">
         <div className="form-header">
-	          <button 
-              type="button"
-              onClick={(e) => {
+          <button 
+            type="button"
+            onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               handleBackFromView();
-              }}
-              className="back-button"
-              style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
-              >
-              <ArrowLeft size={20} />
-		        Back to List
-            </button>
+            }}
+            className="back-button"
+            style={{ pointerEvents: 'auto', zIndex: 999 }}
+          >
+            <ArrowLeft size={20} />
+            Back to List
+          </button>
           <h2 className="form-title">
             View Endorsement - Custody Form
           </h2>
@@ -579,7 +589,6 @@ const EndorsementCustodyView = () => {
                 {formatManilaDate(viewingForm.date)}
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -596,17 +605,17 @@ const EndorsementCustodyView = () => {
         <div className="card-header">
           <div className="header-actions">
             <button 
-                type="button"
-                onClick={(e) => {
+              type="button"
+              onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 handleCreateNew();
-                }}
-                className="create-button"
-                style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
-                >
-                <Plus size={20} />
-                Create New
+              }}
+              className="create-button"
+              style={{ pointerEvents: 'auto', zIndex: 999 }}
+            >
+              <Plus size={20} />
+              Create New
             </button>
             <button className="filter-button">
               <Filter size={20} />
@@ -667,15 +676,15 @@ const EndorsementCustodyView = () => {
                         <button 
                           type="button"
                           onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleView(form);
-                        }}
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleView(form);
+                          }}
                           className="action-button view-button"
-                          style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
-		                      title="View"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
+                          title="View"
                         >
-                        <Eye size={16} />
+                          <Eye size={16} />
                         </button>
                         <button 
                           onClick={() => handleEdit(form)}
