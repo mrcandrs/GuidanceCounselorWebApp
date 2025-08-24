@@ -220,7 +220,7 @@ const EndorsementCustodyView = () => {
     setEditingForm(form);
     setFormData({
       studentId: form.studentId,
-      date: new Date(form.date).toISOString().split('T')[0],
+      date: getCurrentManilaDate(),
       gradeYearLevel: form.gradeYearLevel,
       section: form.section,
       concerns: form.concerns,
