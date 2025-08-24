@@ -346,6 +346,14 @@
   justify-content: center;
 }
 
+.view-button {
+  color: #059669;
+}
+
+.view-button:hover {
+  background-color: rgba(5, 150, 105, 0.1);
+}
+
 .edit-button {
   color: #0477BF;
 }
@@ -450,6 +458,63 @@
   box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
 }
 
+/* View Mode Styles */
+.view-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.view-field {
+  padding: 12px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.view-textarea {
+  min-height: 80px;
+  align-items: flex-start;
+  padding-top: 12px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.view-field .student-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.view-field .student-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #0477BF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.view-field .student-name {
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.view-field .student-number {
+  font-size: 12px;
+  color: #6b7280;
+}
+
 /* Print styles */
 @media print {
   .form-actions,
@@ -465,6 +530,10 @@
   
   .forms-table {
     font-size: 12px;
+  }
+    
+  .view-form {
+    break-inside: avoid;
   }
 }
 
