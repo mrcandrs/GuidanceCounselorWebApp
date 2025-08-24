@@ -686,9 +686,15 @@ const EndorsementCustodyView = () => {
                         >
                           <Eye size={16} />
                         </button>
-                        <button 
-                          onClick={() => handleEdit(form)}
+		                    <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleEdit(form);
+                          }}
                           className="action-button edit-button"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="Edit"
                         >
                           <Edit size={16} />
