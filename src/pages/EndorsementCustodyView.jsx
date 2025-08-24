@@ -161,7 +161,7 @@ const EndorsementCustodyView = () => {
         interventions: '',
         recommendations: '',
         referrals: '',
-        endorsedBy: counselorDetails?.name && counselorDetails?.email || '',
+        endorsedBy: counselorDetails ? `${counselorDetails.name} (${counselorDetails.email})` : '',
         endorsedTo: ''
       });
       setShowForm(false);
@@ -234,7 +234,7 @@ const EndorsementCustodyView = () => {
       interventions: '',
       recommendations: '',
       referrals: '',
-      endorsedBy: counselorDetails?.name && counselorDetails?.email || '',
+      endorsedBy: counselorDetails ? `${counselorDetails.name} (${counselorDetails.email})` : '',
       endorsedTo: ''
     });
     setShowForm(true);
