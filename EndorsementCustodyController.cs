@@ -402,5 +402,44 @@ namespace GuidanceOfficeAPI.Controllers
                 return StatusCode(500, new { message = "Error fetching student details", error = ex.Message });
             }
         }
+
+        // GET: api/endorsement-custody/current-counselor
+        [HttpGet("current-counselor")]
+        public async Task<ActionResult<object>> GetCurrentCounselorDetails()
+        {
+            try
+            {
+                // Get counselor ID from JWT token
+                var counselorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(counselorIdClaim) || !int.TryParse(counselorIdClaim, out int counselorId))
+                {
+                    return Unauthorized(new { message = "Invalid counselor authentication" });
+                }
+
+                var counselor = await _context.Counselors
+                    .Where(c => c.CounselorId == counselorId)
+                    .Select(c => new {
+                        CounselorId = c.CounselorId,
+                        Name = c.Name,
+                        Email = c.Email
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (counselor != null)
+                {
+                    return Ok(new {
+                        counselorId = counselor.CounselorId,
+                        name = counselor.Name,
+                        email = counselor.Email
+                    });
+                }
+
+                return NotFound(new { message = "Counselor not found" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error fetching counselor details", error = ex.Message });
+            }
+        }
     }
 }

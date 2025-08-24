@@ -59,6 +59,23 @@ const EndorsementCustodyView = () => {
     }
   };
 
+  // Fetch current counselor details
+  const fetchCurrentCounselor = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/current-counselor',
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching counselor details:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     fetchForms();
     fetchStudents();
@@ -134,6 +151,7 @@ const EndorsementCustodyView = () => {
       });
 
       // Reset form and refresh data
+      const counselorDetails = await fetchCurrentCounselor();
       setFormData({
         studentId: '',
         date: new Date().toISOString().split('T')[0],
@@ -143,7 +161,7 @@ const EndorsementCustodyView = () => {
         interventions: '',
         recommendations: '',
         referrals: '',
-        endorsedBy: '',
+        endorsedBy: counselorDetails?.name || '',
         endorsedTo: ''
       });
       setShowForm(false);
@@ -201,8 +219,12 @@ const EndorsementCustodyView = () => {
   };
 
   // Handle create new
-  const handleCreateNew = () => {
+  const handleCreateNew = async () => {
     setEditingForm(null);
+    
+    // Fetch counselor details and auto-populate endorsedBy field
+    const counselorDetails = await fetchCurrentCounselor();
+    
     setFormData({
       studentId: '',
       date: new Date().toISOString().split('T')[0],
@@ -212,7 +234,7 @@ const EndorsementCustodyView = () => {
       interventions: '',
       recommendations: '',
       referrals: '',
-      endorsedBy: '',
+      endorsedBy: counselorDetails?.name || '',
       endorsedTo: ''
     });
     setShowForm(true);
