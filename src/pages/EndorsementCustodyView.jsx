@@ -417,14 +417,19 @@ const EndorsementCustodyView = () => {
     return (
       <div className="endorsement-custody-container">
         <div className="form-header">
-          <button 
-            type="button"
-            onClick={handleBackFromView}
-            className="back-button"
-          >
-            <ArrowLeft size={20} />
-            Back to List
-          </button>
+	          <button 
+              type="button"
+              onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBackFromView();
+              }}
+              className="back-button"
+              style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
+              >
+              <ArrowLeft size={20} />
+		        Back to List
+            </button>
           <h2 className="form-title">
             View Endorsement - Custody Form
           </h2>
