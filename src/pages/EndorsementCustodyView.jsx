@@ -509,11 +509,6 @@ const EndorsementCustodyView = () => {
                 <label className="form-label">Date</label>
                 <div className="view-field">
                   {formatManilaDate(viewingForm.date)}
-                  {new Date(viewingForm.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
                 </div>
               </div>
             </div>
@@ -582,13 +577,6 @@ const EndorsementCustodyView = () => {
               <label className="form-label">Created:</label>
               <div className="view-field">
                 {formatManilaDate(viewingForm.date)}
-                {new Date(viewingForm.createdAt).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
               </div>
             </div>
 
