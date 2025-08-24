@@ -694,8 +694,14 @@ const EndorsementCustodyView = () => {
                           <Edit size={16} />
                         </button>
                         <button 
-                          onClick={() => handleDelete(form.custodyId)}
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDelete(form.custodyId);
+                          }}
                           className="action-button delete-button"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="Delete"
                         >
                           <Trash2 size={16} />
