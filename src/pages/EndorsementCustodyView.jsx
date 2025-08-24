@@ -27,6 +27,13 @@ const formatManilaDate = (dateString) => {
   });
 };
 
+// Utility function to get current date in Manila timezone for form input
+const getCurrentManilaDate = () => {
+  const now = new Date();
+  const manilaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+  return manilaTime.toISOString().split('T')[0];
+};
+
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
@@ -37,7 +44,7 @@ const EndorsementCustodyView = () => {
   const [showView, setShowView] = useState(false);
   const [formData, setFormData] = useState({
     studentId: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getCurrentManilaDate(),
     gradeYearLevel: '',
     section: '',
     concerns: '',
@@ -178,14 +185,14 @@ const EndorsementCustodyView = () => {
       const counselorDetails = await fetchCurrentCounselor();
       setFormData({
         studentId: '',
-        date: new Date().toISOString().split('T')[0],
+        date: getCurrentManilaDate(),
         gradeYearLevel: '',
         section: '',
         concerns: '',
         interventions: '',
         recommendations: '',
         referrals: '',
-        endorsedBy: counselorDetails?.name || '',
+        endorsedBy: counselorDetails ? `${counselorDetails.name} (${counselorDetails.email})` : '',
         endorsedTo: ''
       });
       setShowForm(false);
@@ -251,14 +258,14 @@ const EndorsementCustodyView = () => {
     
     setFormData({
       studentId: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getCurrentManilaDate(),
       gradeYearLevel: '',
       section: '',
       concerns: '',
       interventions: '',
       recommendations: '',
       referrals: '',
-      endorsedBy: counselorDetails?.name || '',
+              endorsedBy: counselorDetails ? `${counselorDetails.name} (${counselorDetails.email})` : '',
       endorsedTo: ''
     });
     setShowForm(true);
