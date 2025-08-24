@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Plus, Filter, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
 import axios from 'axios';
 import '../styles/EndorsementCustodyView.css';
 
@@ -9,6 +9,8 @@ const EndorsementCustodyView = () => {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingForm, setEditingForm] = useState(null);
+  const [viewingForm, setViewingForm] = useState(null);
+  const [showView, setShowView] = useState(false);
   const [formData, setFormData] = useState({
     studentId: '',
     date: new Date().toISOString().split('T')[0],
@@ -155,6 +157,12 @@ const EndorsementCustodyView = () => {
     }
   };
 
+  // Handle view
+  const handleView = (form) => {
+    setViewingForm(form);
+    setShowView(true);
+  };
+
   // Handle edit
   const handleEdit = (form) => {
     setEditingForm(form);
@@ -214,6 +222,12 @@ const EndorsementCustodyView = () => {
   const handleBack = () => {
     setShowForm(false);
     setEditingForm(null);
+  };
+
+  // Handle back from view
+  const handleBackFromView = () => {
+    setShowView(false);
+    setViewingForm(null);
   };
 
   if (showForm) {
@@ -397,7 +411,145 @@ const EndorsementCustodyView = () => {
         </div>
       </div>
     );
-}
+  }
+
+  if (showView && viewingForm) {
+    return (
+      <div className="endorsement-custody-container">
+        <div className="form-header">
+          <button 
+            type="button"
+            onClick={handleBackFromView}
+            className="back-button"
+          >
+            <ArrowLeft size={20} />
+            Back to List
+          </button>
+          <h2 className="form-title">
+            View Endorsement - Custody Form
+          </h2>
+        </div>
+
+        <div className="endorsement-form-card">
+          <div className="view-form">
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Student</label>
+                <div className="view-field">
+                  <div className="student-info">
+                    <div className="student-avatar">
+                      {viewingForm.student?.firstName?.charAt(0) || 'S'}
+                    </div>
+                    <div>
+                      <div className="student-name">
+                        {viewingForm.student?.firstName} {viewingForm.student?.lastName}
+                      </div>
+                      <div className="student-number">
+                        {viewingForm.student?.studentNumber}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Date</label>
+                <div className="view-field">
+                  {new Date(viewingForm.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Grade/Year Level</label>
+                <div className="view-field">
+                  {viewingForm.gradeYearLevel || '-'}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Section</label>
+                <div className="view-field">
+                  {viewingForm.section || '-'}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Concern/s:</label>
+              <div className="view-field view-textarea">
+                {viewingForm.concerns || '-'}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Intervention/s:</label>
+              <div className="view-field view-textarea">
+                {viewingForm.interventions || '-'}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Recommendation/s:</label>
+              <div className="view-field view-textarea">
+                {viewingForm.recommendations || '-'}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Referral/s:</label>
+              <div className="view-field view-textarea">
+                {viewingForm.referrals || '-'}
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Endorsed by:</label>
+                <div className="view-field">
+                  {viewingForm.endorsedBy || '-'}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Endorsed to:</label>
+                <div className="view-field">
+                  {viewingForm.endorsedTo || '-'}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Created:</label>
+              <div className="view-field">
+                {new Date(viewingForm.createdAt).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+            </div>
+
+            {viewingForm.counselor && (
+              <div className="form-group">
+                <label className="form-label">Counselor:</label>
+                <div className="view-field">
+                  {viewingForm.counselor.name} ({viewingForm.counselor.email})
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="endorsement-custody-container">
@@ -477,6 +629,13 @@ const EndorsementCustodyView = () => {
                     <td>{form.endorsedTo || '-'}</td>
                     <td>
                       <div className="action-buttons">
+                        <button 
+                          onClick={() => handleView(form)}
+                          className="action-button view-button"
+                          title="View"
+                        >
+                          <Eye size={16} />
+                        </button>
                         <button 
                           onClick={() => handleEdit(form)}
                           className="action-button edit-button"
