@@ -521,7 +521,7 @@ const EndorsementCustodyView = () => {
                     </div>
                     <div>
                       <div className="student-name">
-                        {viewingForm.student?.firstName} {viewingForm.student?.lastName}
+                        {viewingForm.student?.fullName}
                       </div>
                       <div className="student-number">
                         {viewingForm.student?.studentNumber}
