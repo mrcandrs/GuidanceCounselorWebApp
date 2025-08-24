@@ -13,10 +13,30 @@ namespace GuidanceOfficeAPI.Controllers
     public class EndorsementCustodyController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly TimeZoneInfo _manilaTimeZone;
 
         public EndorsementCustodyController(AppDbContext context)
         {
             _context = context;
+            _manilaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+        }
+
+        // Helper method to convert UTC to Manila time
+        private DateTime ConvertToManilaTime(DateTime utcDateTime)
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, _manilaTimeZone);
+        }
+
+        // Helper method to convert Manila time to UTC for database storage
+        private DateTime ConvertToUtc(DateTime manilaDateTime)
+        {
+            return TimeZoneInfo.ConvertTimeToUtc(manilaDateTime, _manilaTimeZone);
+        }
+
+        // Helper method to get current Manila time
+        private DateTime GetCurrentManilaTime()
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _manilaTimeZone);
         }
 
         // GET: api/endorsement-custody
@@ -25,39 +45,40 @@ namespace GuidanceOfficeAPI.Controllers
         {
             try
             {
-                var forms = await _context.EndorsementCustodyForms
+                var formsFromDb = await _context.EndorsementCustodyForms
                     .Include(f => f.Student)
                     .Include(f => f.Counselor)
                     .OrderByDescending(f => f.Date)
-                    .Select(f => new EndorsementCustodyFormDto
-                    {
-                        CustodyId = f.CustodyId,
-                        StudentId = f.StudentId,
-                        CounselorId = f.CounselorId,
-                        Date = f.Date,
-                        GradeYearLevel = f.GradeYearLevel,
-                        Section = f.Section,
-                        Concerns = f.Concerns,
-                        Interventions = f.Interventions,
-                        Recommendations = f.Recommendations,
-                        Referrals = f.Referrals,
-                        EndorsedBy = f.EndorsedBy,
-                        EndorsedTo = f.EndorsedTo,
-                        CreatedAt = f.CreatedAt,
-                        Student = f.Student != null ? new StudentDto
-                        {
-                            StudentId = f.Student.StudentId,
-                            FullName = f.Student.FullName,
-                            StudentNumber = f.Student.StudentNumber
-                        } : null,
-                        Counselor = f.Counselor != null ? new CounselorDto
-                        {
-                            CounselorId = f.Counselor.CounselorId,
-                            Name = f.Counselor.Name,
-                            Email = f.Counselor.Email
-                        } : null
-                    })
                     .ToListAsync();
+
+                var forms = formsFromDb.Select(f => new EndorsementCustodyFormDto
+                {
+                    CustodyId = f.CustodyId,
+                    StudentId = f.StudentId,
+                    CounselorId = f.CounselorId,
+                    Date = f.Date,
+                    GradeYearLevel = f.GradeYearLevel,
+                    Section = f.Section,
+                    Concerns = f.Concerns,
+                    Interventions = f.Interventions,
+                    Recommendations = f.Recommendations,
+                    Referrals = f.Referrals,
+                    EndorsedBy = f.EndorsedBy,
+                    EndorsedTo = f.EndorsedTo,
+                    CreatedAt = ConvertToManilaTime(f.CreatedAt),
+                    Student = f.Student != null ? new StudentDto
+                    {
+                        StudentId = f.Student.StudentId,
+                        FullName = f.Student.FullName,
+                        StudentNumber = f.Student.StudentNumber
+                    } : null,
+                    Counselor = f.Counselor != null ? new CounselorDto
+                    {
+                        CounselorId = f.Counselor.CounselorId,
+                        Name = f.Counselor.Name,
+                        Email = f.Counselor.Email
+                    } : null
+                }).ToList();
 
                 return Ok(forms);
             }
@@ -73,44 +94,45 @@ namespace GuidanceOfficeAPI.Controllers
         {
             try
             {
-                var form = await _context.EndorsementCustodyForms
+                var formFromDb = await _context.EndorsementCustodyForms
                     .Include(f => f.Student)
                     .Include(f => f.Counselor)
                     .Where(f => f.CustodyId == id)
-                    .Select(f => new EndorsementCustodyFormDto
-                    {
-                        CustodyId = f.CustodyId,
-                        StudentId = f.StudentId,
-                        CounselorId = f.CounselorId,
-                        Date = f.Date,
-                        GradeYearLevel = f.GradeYearLevel,
-                        Section = f.Section,
-                        Concerns = f.Concerns,
-                        Interventions = f.Interventions,
-                        Recommendations = f.Recommendations,
-                        Referrals = f.Referrals,
-                        EndorsedBy = f.EndorsedBy,
-                        EndorsedTo = f.EndorsedTo,
-                        CreatedAt = f.CreatedAt,
-                        Student = f.Student != null ? new StudentDto
-                        {
-                            StudentId = f.Student.StudentId,
-                            FullName = f.Student.FullName,
-                            StudentNumber = f.Student.StudentNumber
-                        } : null,
-                        Counselor = f.Counselor != null ? new CounselorDto
-                        {
-                            CounselorId = f.Counselor.CounselorId,
-                            Name = f.Counselor.Name,
-                            Email = f.Counselor.Email
-                        } : null
-                    })
                     .FirstOrDefaultAsync();
 
-                if (form == null)
+                if (formFromDb == null)
                 {
                     return NotFound(new { message = "Endorsement custody form not found" });
                 }
+
+                var form = new EndorsementCustodyFormDto
+                {
+                    CustodyId = formFromDb.CustodyId,
+                    StudentId = formFromDb.StudentId,
+                    CounselorId = formFromDb.CounselorId,
+                    Date = formFromDb.Date,
+                    GradeYearLevel = formFromDb.GradeYearLevel,
+                    Section = formFromDb.Section,
+                    Concerns = formFromDb.Concerns,
+                    Interventions = formFromDb.Interventions,
+                    Recommendations = formFromDb.Recommendations,
+                    Referrals = formFromDb.Referrals,
+                    EndorsedBy = formFromDb.EndorsedBy,
+                    EndorsedTo = formFromDb.EndorsedTo,
+                    CreatedAt = ConvertToManilaTime(formFromDb.CreatedAt),
+                    Student = formFromDb.Student != null ? new StudentDto
+                    {
+                        StudentId = formFromDb.Student.StudentId,
+                        FullName = formFromDb.Student.FullName,
+                        StudentNumber = formFromDb.Student.StudentNumber
+                    } : null,
+                    Counselor = formFromDb.Counselor != null ? new CounselorDto
+                    {
+                        CounselorId = formFromDb.Counselor.CounselorId,
+                        Name = formFromDb.Counselor.Name,
+                        Email = formFromDb.Counselor.Email
+                    } : null
+                };
 
                 return Ok(form);
             }
@@ -153,46 +175,47 @@ namespace GuidanceOfficeAPI.Controllers
                     Referrals = createDto.Referrals,
                     EndorsedBy = createDto.EndorsedBy,
                     EndorsedTo = createDto.EndorsedTo,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 _context.EndorsementCustodyForms.Add(form);
                 await _context.SaveChangesAsync();
 
                 // Fetch the created form with related data
-                var createdForm = await _context.EndorsementCustodyForms
+                var createdFormFromDb = await _context.EndorsementCustodyForms
                     .Include(f => f.Student)
                     .Include(f => f.Counselor)
                     .Where(f => f.CustodyId == form.CustodyId)
-                    .Select(f => new EndorsementCustodyFormDto
-                    {
-                        CustodyId = f.CustodyId,
-                        StudentId = f.StudentId,
-                        CounselorId = f.CounselorId,
-                        Date = f.Date,
-                        GradeYearLevel = f.GradeYearLevel,
-                        Section = f.Section,
-                        Concerns = f.Concerns,
-                        Interventions = f.Interventions,
-                        Recommendations = f.Recommendations,
-                        Referrals = f.Referrals,
-                        EndorsedBy = f.EndorsedBy,
-                        EndorsedTo = f.EndorsedTo,
-                        CreatedAt = f.CreatedAt,
-                        Student = f.Student != null ? new StudentDto
-                        {
-                            StudentId = f.Student.StudentId,
-                            FullName = f.Student.FullName,
-                            StudentNumber = f.Student.StudentNumber
-                        } : null,
-                        Counselor = f.Counselor != null ? new CounselorDto
-                        {
-                            CounselorId = f.Counselor.CounselorId,
-                            Name = f.Counselor.Name,
-                            Email = f.Counselor.Email
-                        } : null
-                    })
                     .FirstOrDefaultAsync();
+
+                var createdForm = new EndorsementCustodyFormDto
+                {
+                    CustodyId = createdFormFromDb.CustodyId,
+                    StudentId = createdFormFromDb.StudentId,
+                    CounselorId = createdFormFromDb.CounselorId,
+                    Date = createdFormFromDb.Date,
+                    GradeYearLevel = createdFormFromDb.GradeYearLevel,
+                    Section = createdFormFromDb.Section,
+                    Concerns = createdFormFromDb.Concerns,
+                    Interventions = createdFormFromDb.Interventions,
+                    Recommendations = createdFormFromDb.Recommendations,
+                    Referrals = createdFormFromDb.Referrals,
+                    EndorsedBy = createdFormFromDb.EndorsedBy,
+                    EndorsedTo = createdFormFromDb.EndorsedTo,
+                    CreatedAt = ConvertToManilaTime(createdFormFromDb.CreatedAt),
+                    Student = createdFormFromDb.Student != null ? new StudentDto
+                    {
+                        StudentId = createdFormFromDb.Student.StudentId,
+                        FullName = createdFormFromDb.Student.FullName,
+                        StudentNumber = createdFormFromDb.Student.StudentNumber
+                    } : null,
+                    Counselor = createdFormFromDb.Counselor != null ? new CounselorDto
+                    {
+                        CounselorId = createdFormFromDb.Counselor.CounselorId,
+                        Name = createdFormFromDb.Counselor.Name,
+                        Email = createdFormFromDb.Counselor.Email
+                    } : null
+                };
 
                 return CreatedAtAction(nameof(GetEndorsementCustodyForm),
                     new { id = form.CustodyId }, createdForm);
@@ -302,40 +325,41 @@ namespace GuidanceOfficeAPI.Controllers
         {
             try
             {
-                var forms = await _context.EndorsementCustodyForms
+                var formsFromDb = await _context.EndorsementCustodyForms
                     .Include(f => f.Student)
                     .Include(f => f.Counselor)
                     .Where(f => f.StudentId == studentId)
                     .OrderByDescending(f => f.Date)
-                    .Select(f => new EndorsementCustodyFormDto
-                    {
-                        CustodyId = f.CustodyId,
-                        StudentId = f.StudentId,
-                        CounselorId = f.CounselorId,
-                        Date = f.Date,
-                        GradeYearLevel = f.GradeYearLevel,
-                        Section = f.Section,
-                        Concerns = f.Concerns,
-                        Interventions = f.Interventions,
-                        Recommendations = f.Recommendations,
-                        Referrals = f.Referrals,
-                        EndorsedBy = f.EndorsedBy,
-                        EndorsedTo = f.EndorsedTo,
-                        CreatedAt = f.CreatedAt,
-                        Student = f.Student != null ? new StudentDto
-                        {
-                            StudentId = f.Student.StudentId,
-                            FullName = f.Student.FullName,
-                            StudentNumber = f.Student.StudentNumber
-                        } : null,
-                        Counselor = f.Counselor != null ? new CounselorDto
-                        {
-                            CounselorId = f.Counselor.CounselorId,
-                            Name = f.Counselor.Name,
-                            Email = f.Counselor.Email
-                        } : null
-                    })
                     .ToListAsync();
+
+                var forms = formsFromDb.Select(f => new EndorsementCustodyFormDto
+                {
+                    CustodyId = f.CustodyId,
+                    StudentId = f.StudentId,
+                    CounselorId = f.CounselorId,
+                    Date = f.Date,
+                    GradeYearLevel = f.GradeYearLevel,
+                    Section = f.Section,
+                    Concerns = f.Concerns,
+                    Interventions = f.Interventions,
+                    Recommendations = f.Recommendations,
+                    Referrals = f.Referrals,
+                    EndorsedBy = f.EndorsedBy,
+                    EndorsedTo = f.EndorsedTo,
+                    CreatedAt = ConvertToManilaTime(f.CreatedAt),
+                    Student = f.Student != null ? new StudentDto
+                    {
+                        StudentId = f.Student.StudentId,
+                        FullName = f.Student.FullName,
+                        StudentNumber = f.Student.StudentNumber
+                    } : null,
+                    Counselor = f.Counselor != null ? new CounselorDto
+                    {
+                        CounselorId = f.Counselor.CounselorId,
+                        Name = f.Counselor.Name,
+                        Email = f.Counselor.Email
+                    } : null
+                }).ToList();
 
                 return Ok(forms);
             }

@@ -3,6 +3,30 @@ import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'luci
 import axios from 'axios';
 import '../styles/EndorsementCustodyView.css';
 
+// Utility function to format dates in Manila timezone
+const formatManilaDateTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-PH', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
+const formatManilaDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-PH', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
@@ -477,11 +501,7 @@ const EndorsementCustodyView = () => {
               <div className="form-group">
                 <label className="form-label">Date</label>
                 <div className="view-field">
-                  {new Date(viewingForm.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {formatManilaDate(viewingForm.date)}
                 </div>
               </div>
             </div>
@@ -549,13 +569,7 @@ const EndorsementCustodyView = () => {
             <div className="form-group">
               <label className="form-label">Created:</label>
               <div className="view-field">
-                {new Date(viewingForm.createdAt).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+                {formatManilaDateTime(viewingForm.createdAt)}
               </div>
             </div>
 
@@ -643,7 +657,7 @@ const EndorsementCustodyView = () => {
                         </div>
                       </div>
                     </td>
-                    <td>{new Date(form.date).toLocaleDateString()}</td>
+                    <td>{formatManilaDate(form.date)}</td>
                     <td>
                       {form.gradeYearLevel} {form.section && `- ${form.section}`}
                     </td>
