@@ -399,7 +399,7 @@ const EndorsementCustodyView = () => {
                   name="endorsedBy"
                   value={formData.endorsedBy}
                   onChange={handleInputChange}
-                  className="readonly-input"
+                  className="form-input form-input--readonly"
                   placeholder="Name of guidance counselor"
                   readOnly
                 />

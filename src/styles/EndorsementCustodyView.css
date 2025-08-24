@@ -162,12 +162,6 @@
   gap: 20px;
 }
 
-.readonly-input {
-  background-color: #f3f3f3; /* light grey background */
-  color: #6b7280;            /* grey text */
-  cursor: not-allowed;       /* show disabled cursor */
-}
-
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -264,6 +258,21 @@
 .save-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Modifier for readonly fields */
+.form-input--readonly {
+  background-color: #f3f4f6;  /* light gray background */
+  color: #6b7280;             /* muted text */
+  cursor: not-allowed;
+  border-color: #d1d5db;      /* keep normal border */
+}
+
+/* Prevent green/red validation borders */
+.form-input--readonly:valid,
+.form-input--readonly:invalid {
+  border-color: #d1d5db;
+  box-shadow: none;
 }
 
 /* Table Styles */
