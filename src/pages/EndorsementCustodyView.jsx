@@ -34,6 +34,30 @@ const getCurrentManilaDate = () => {
   return manilaDate.toISOString().split('T')[0];
 };
 
+// Debug utility function to decode and log JWT token (remove in production)
+const debugToken = () => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      console.log('=== TOKEN DEBUG ===');
+      console.log('Full token payload:', tokenPayload);
+      console.log('Available claims:', Object.keys(tokenPayload));
+      console.log('CounselorId:', tokenPayload.CounselorId);
+      console.log('counselorId:', tokenPayload.counselorId);
+      console.log('id:', tokenPayload.id);
+      console.log('sub:', tokenPayload.sub);
+      console.log('userId:', tokenPayload.userId);
+      console.log('===================');
+      return tokenPayload;
+    } catch (e) {
+      console.error('Error parsing token:', e);
+      return null;
+    }
+  }
+  return null;
+};
+
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
@@ -94,6 +118,17 @@ const EndorsementCustodyView = () => {
   const fetchCurrentCounselor = async () => {
     try {
       const token = localStorage.getItem('authToken');
+      
+      // Debug: Log token structure (remove in production)
+      if (token) {
+        try {
+          const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+          console.log('fetchCurrentCounselor - Token payload:', tokenPayload);
+        } catch (e) {
+          console.error('Error parsing token in fetchCurrentCounselor:', e);
+        }
+      }
+      
       const response = await axios.get(
         'https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/current-counselor',
         {
@@ -110,6 +145,8 @@ const EndorsementCustodyView = () => {
   useEffect(() => {
     fetchForms();
     fetchStudents();
+    // Debug token on component mount
+    debugToken();
   }, []);
 
   // Handle form input changes
@@ -236,6 +273,23 @@ const EndorsementCustodyView = () => {
 
     try {
       const token = localStorage.getItem('authToken');
+      
+      // Debug: Check if token exists
+      if (!token) {
+        console.error('No auth token found');
+        alert('Authentication token not found. Please log in again.');
+        return;
+      }
+
+      // Debug: Log token structure (remove in production)
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        console.log('Token payload:', tokenPayload);
+        console.log('CounselorId in token:', tokenPayload.CounselorId);
+      } catch (e) {
+        console.error('Error parsing token:', e);
+      }
+
       await axios.delete(
         `https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/${custodyId}`,
         {
@@ -245,7 +299,20 @@ const EndorsementCustodyView = () => {
       fetchForms();
     } catch (error) {
       console.error('Error deleting form:', error);
-      alert('Error deleting form. Please try again.');
+      
+      // Better error handling based on status code
+      if (error.response?.status === 401) {
+        alert('Authentication failed. Please log in again.');
+        // Optionally redirect to login
+        // window.location.href = '/login';
+      } else if (error.response?.status === 403) {
+        alert('You do not have permission to delete this form.');
+      } else if (error.response?.status === 404) {
+        alert('Form not found. It may have already been deleted.');
+        fetchForms(); // Refresh the list
+      } else {
+        alert(`Error deleting form: ${error.response?.data?.message || error.message}`);
+      }
     }
   };
 
