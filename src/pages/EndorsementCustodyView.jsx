@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
+import { FileText, Plus, Filter, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
 import axios from 'axios';
 import '../styles/EndorsementCustodyView.css';
 
@@ -69,6 +69,49 @@ const EndorsementCustodyView = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+    // Handle student selection change and fetch student details
+  const handleStudentChange = async (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // If a student is selected, fetch their details from Career Planning Form
+    if (value) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(
+          `https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/student-details/${value}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        const studentDetails = response.data;
+        
+        // Auto-populate Grade/Year Level and Section
+        setFormData(prev => ({
+          ...prev,
+          gradeYearLevel: studentDetails.gradeYearLevel || '',
+          section: studentDetails.section || ''
+        }));
+
+        console.log(`Student details fetched from ${studentDetails.source}:`, studentDetails);
+      } catch (error) {
+        console.error('Error fetching student details:', error);
+        // Don't show error to user, just log it
+      }
+    } else {
+      // Clear the fields if no student is selected
+      setFormData(prev => ({
+        ...prev,
+        gradeYearLevel: '',
+        section: ''
+      }));
+    }
   };
 
   // Handle form submission
@@ -204,7 +247,7 @@ const EndorsementCustodyView = () => {
                   id="studentId"
                   name="studentId"
                   value={formData.studentId}
-                  onChange={handleInputChange}
+                  onChange={handleStudentChange}
                   required
                   className="form-select"
                 >
