@@ -214,9 +214,16 @@ const EndorsementCustodyView = () => {
       
       const method = editingForm ? 'put' : 'post';
 
-      await axios[method](url, formData, {
+      const response = await axios[method](url, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
+      // Show success message
+      if (editingForm) {
+        alert('Endorsement custody form updated successfully!');
+      } else {
+        alert('Endorsement custody form created successfully!');
+      }
 
       // Reset form and refresh data
       const counselorDetails = await fetchCurrentCounselor();
@@ -237,7 +244,15 @@ const EndorsementCustodyView = () => {
       fetchForms();
     } catch (error) {
       console.error('Error saving form:', error);
-      alert('Error saving form. Please try again.');
+      if (error.response?.status === 401) {
+        alert('Authentication failed. Please log in again.');
+      } else if (error.response?.status === 403) {
+        alert('You do not have permission to perform this action.');
+      } else if (error.response?.status === 404) {
+        alert('Form not found. It may have been deleted.');
+      } else {
+        alert(`Error saving form: ${error.response?.data?.message || error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -647,11 +662,22 @@ const EndorsementCustodyView = () => {
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Created:</label>
-              <div className="view-field">
-                {formatManilaDate(viewingForm.date)}
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Created:</label>
+                <div className="view-field">
+                  {viewingForm.createdAt ? formatManilaDateTime(viewingForm.createdAt) : formatManilaDate(viewingForm.date)}
+                </div>
               </div>
+
+              {viewingForm.updatedAt && (
+                <div className="form-group">
+                  <label className="form-label">Last Updated:</label>
+                  <div className="view-field">
+                    {formatManilaDateTime(viewingForm.updatedAt)}
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>
