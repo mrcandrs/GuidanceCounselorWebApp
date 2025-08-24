@@ -565,14 +565,6 @@ const EndorsementCustodyView = () => {
               </div>
             </div>
 
-            {viewingForm.counselor && (
-              <div className="form-group">
-                <label className="form-label">Counselor:</label>
-                <div className="view-field">
-                  {viewingForm.counselor.name} ({viewingForm.counselor.email})
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
