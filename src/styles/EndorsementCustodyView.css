@@ -162,6 +162,12 @@
   gap: 20px;
 }
 
+.readonly-input {
+  background-color: #f3f3f3; /* light grey background */
+  color: #6b7280;            /* grey text */
+  cursor: not-allowed;       /* show disabled cursor */
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
