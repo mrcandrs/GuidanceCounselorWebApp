@@ -630,11 +630,17 @@ const EndorsementCustodyView = () => {
                     <td>
                       <div className="action-buttons">
                         <button 
-                          onClick={() => handleView(form)}
+                          type="button"
+                          onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleView(form);
+                        }}
                           className="action-button view-button"
-                          title="View"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }} // Temporary override
+		                      title="View"
                         >
-                          <Eye size={16} />
+                        <Eye size={16} />
                         </button>
                         <button 
                           onClick={() => handleEdit(form)}
