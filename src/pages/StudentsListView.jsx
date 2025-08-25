@@ -253,7 +253,7 @@ const StudentsListView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
 
-// Updated handleDelete function - WITH credentials to match server CORS
+// Updated handleDelete for nuclear CORS test - NO credentials
 const handleDelete = async (studentId) => {
   if (!window.confirm('Are you sure you want to delete this student?')) return;
 
@@ -271,16 +271,21 @@ const handleDelete = async (studentId) => {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        timeout: 10000,
-        withCredentials: true // Changed to true to match CORS config
+        timeout: 10000
+        // Remove withCredentials entirely for this test
       }
     );
     
     console.log('Delete response:', response);
     
     if (response.status === 204 || response.status === 200) {
-      // Refresh the students list
-      await fetchAllStudents();
+      // Refresh the students list - but make sure this function exists
+      if (typeof fetchAllStudents === 'function') {
+        await fetchAllStudents();
+      } else {
+        // Force page refresh if fetchAllStudents isn't available
+        window.location.reload();
+      }
       alert('Student deleted successfully!');
     } else {
       throw new Error(`Unexpected response status: ${response.status}`);
@@ -291,7 +296,6 @@ const handleDelete = async (studentId) => {
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
       
       if (error.response.status === 401) {
         alert('Authentication failed. Please log in again.');
@@ -303,15 +307,15 @@ const handleDelete = async (studentId) => {
         alert('Student not found.');
         return;
       } else {
-        alert(`Server error: ${error.response.data?.message || error.response.statusText}`);
+        alert(`Server error: ${error.response.data?.message || 'Unknown error'}`);
         return;
       }
     } else if (error.request) {
-      console.error('Request made but no response received:', error.request);
-      alert('Network error: Unable to reach the server. Please check your internet connection and try again.');
+      console.error('Network error - no response received');
+      alert('Network error: Unable to reach the server. Please check your connection.');
     } else {
-      console.error('Error setting up request:', error.message);
-      alert(`Error: ${error.message}`);
+      console.error('Request setup error:', error.message);
+      alert(`Request error: ${error.message}`);
     }
   }
 };
