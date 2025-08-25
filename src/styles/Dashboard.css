@@ -543,6 +543,10 @@ html, body {
   color: #ef4444;
 }
 
+.action-delete:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
 /* Mood Badges */
 .mood-badge {
   padding: 2px 8px;
