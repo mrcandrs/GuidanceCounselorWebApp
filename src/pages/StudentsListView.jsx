@@ -254,23 +254,74 @@ const StudentsListView = () => {
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
 
   // Handle delete
-  const handleDelete = async (studentId) => {
-    if (!window.confirm('Are you sure you want to delete this student?')) return;
+const handleDelete = async (studentId) => {
+  if (!window.confirm('Are you sure you want to delete this student?')) return;
 
-    try {
-      const token = localStorage.getItem('authToken');
-      await axios.delete(
-        `https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      fetchAllStudents();
-    } catch (error) {
-      console.error('Error deleting student:', error);
-      alert('Error deleting student. Please try again.');
+  try {
+    const token = localStorage.getItem('authToken');
+    
+    // Add better error handling and logging
+    console.log('Attempting to delete student with ID:', studentId);
+    console.log('Using token:', token ? 'Token exists' : 'No token found');
+    
+    const response = await axios.delete(
+      `https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}`,
+      {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        timeout: 10000, // 10 second timeout
+        withCredentials: false // Disable credentials for CORS
+      }
+    );
+    
+    console.log('Delete response:', response);
+    
+    if (response.status === 204 || response.status === 200) {
+      // Refresh the students list
+      await fetchAllStudents();
+      alert('Student deleted successfully!');
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`);
     }
-  };
+  } catch (error) {
+    console.error('Error deleting student:', error);
+    
+    // More detailed error logging
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+      
+      if (error.response.status === 401) {
+        alert('Authentication failed. Please log in again.');
+        // Redirect to login or refresh token
+        return;
+      } else if (error.response.status === 403) {
+        alert('You do not have permission to delete students.');
+        return;
+      } else if (error.response.status === 404) {
+        alert('Student not found.');
+        return;
+      } else {
+        alert(`Server error: ${error.response.data?.message || error.response.statusText}`);
+        return;
+      }
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('Request made but no response received:', error.request);
+      alert('Network error: Unable to reach the server. Please check your internet connection and try again.');
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error('Error setting up request:', error.message);
+      alert(`Error: ${error.message}`);
+    }
+  }
+};
 
   // Course configuration
   const courses = [
