@@ -75,7 +75,8 @@ const StudentsTableView = ({
   isLoading, 
   filteredStudents, 
   displayedStudents,
-  getMoodBadgeClass 
+  getMoodBadgeClass,
+  handleDelete 
 }) => (
   <div className="page-container">
     <div className="page-header">
@@ -211,7 +212,7 @@ const StudentsTableView = ({
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleDelete(student.studentId);
+                            handleDelete(student.id);
                           }}
                           className="action-button action-delete"
                           style={{ pointerEvents: 'auto', zIndex: 999 }}
