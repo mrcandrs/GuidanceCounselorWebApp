@@ -253,7 +253,7 @@ const StudentsListView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
 
-// Updated handleDelete function
+// Updated handleDelete function - WITH credentials to match server CORS
 const handleDelete = async (studentId) => {
   if (!window.confirm('Are you sure you want to delete this student?')) return;
 
@@ -272,8 +272,7 @@ const handleDelete = async (studentId) => {
           'Accept': 'application/json'
         },
         timeout: 10000,
-        // Remove withCredentials since your CORS config doesn't allow it
-        // withCredentials: false
+        withCredentials: true // Changed to true to match CORS config
       }
     );
     
