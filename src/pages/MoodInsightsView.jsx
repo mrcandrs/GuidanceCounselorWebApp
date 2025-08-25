@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, ChevronDown } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import '../styles/Dashboard.css';
-import axios from "axios";
+import api from '../services/api';
 
 //Mood colors
 const colorForMood = (mood) => {
@@ -120,8 +120,8 @@ const MoodInsightsView = () => {
       try {
         setLoading(true);
         const [distRes, trendsRes] = await Promise.all([
-          axios.get(`https://guidanceofficeapi-production.up.railway.app/api/moodtracker/distribution`),
-          axios.get(`https://guidanceofficeapi-production.up.railway.app/api/moodtracker/daily-trends`)
+          api.get(`/moodtracker/distribution`),
+          api.get(`/moodtracker/daily-trends`)
         ]);
 
         setDistribution(distRes.data || []);
@@ -153,8 +153,8 @@ const MoodInsightsView = () => {
       // Convert JavaScript month (0-based) to API month (1-based)
       const apiMonth = month + 1;
       
-      const response = await axios.get(
-        `https://guidanceofficeapi-production.up.railway.app/api/moodtracker/monthly-reports?month=${apiMonth}&year=${year}`
+      const response = await api.get(
+        `/moodtracker/monthly-reports?month=${apiMonth}&year=${year}`
       );
       
       setMonthlyReports(response.data || []);

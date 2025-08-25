@@ -6,7 +6,7 @@ import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
 import EndorsementCustodyView from './EndorsementCustodyView';
 import '../styles/Dashboard.css';
-import axios from "axios";
+import api from '../services/api';
 
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
@@ -77,8 +77,8 @@ const GuidanceDashboard = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get(
-          "https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"
+        const res = await api.get(
+          "/guidanceappointment/pending-appointments"
         );
         setPendingAppointments(res.data);
       } catch (error) {
@@ -93,8 +93,8 @@ const GuidanceDashboard = () => {
   const fetchAlerts = async () => {
     setNotificationLoading(true);
     try {
-      const res = await axios.get(
-        "https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts"
+      const res = await api.get(
+        "/moodtracker/alerts"
       );
       setAlerts(res.data);
     } catch (error) {
@@ -123,12 +123,7 @@ const GuidanceDashboard = () => {
         return;
       }
 
-      const res = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/counselor/me',
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await api.get('/counselor/me');
 
       setCounselor(res.data);
     } catch (err) {

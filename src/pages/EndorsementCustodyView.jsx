@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
-import axios from 'axios';
+import api from '../services/api';
 import '../styles/EndorsementCustodyView.css';
 
 // Utility function to format dates in Manila timezone
@@ -62,13 +62,7 @@ const EndorsementCustodyView = () => {
   const fetchForms = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody',
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get('/endorsement-custody');
       setForms(response.data);
     } catch (error) {
       console.error('Error fetching forms:', error);
@@ -80,13 +74,7 @@ const EndorsementCustodyView = () => {
   // Fetch students for dropdown
   const fetchStudents = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/student',
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get('/student');
       setStudents(response.data);
     } catch (error) {
       console.error('Error fetching students:', error);
@@ -96,13 +84,7 @@ const EndorsementCustodyView = () => {
   // Fetch current counselor details
   const fetchCurrentCounselor = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/current-counselor',
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.get('/endorsement-custody/current-counselor');
       return response.data;
     } catch (error) {
       console.error('Error fetching counselor details:', error);
@@ -135,12 +117,8 @@ const EndorsementCustodyView = () => {
     // If a student is selected, fetch their details from Career Planning Form
     if (value) {
       try {
-        const token = localStorage.getItem('authToken');
-        const response = await axios.get(
-          `https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/student-details/${value}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+        const response = await api.get(
+          `/endorsement-custody/student-details/${value}`
         );
 
         const studentDetails = response.data;
@@ -254,13 +232,7 @@ const EndorsementCustodyView = () => {
     if (!window.confirm('Are you sure you want to delete this form?')) return;
 
     try {
-      const token = localStorage.getItem('authToken');
-      await axios.delete(
-        `https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/${custodyId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.delete(`/endorsement-custody/${custodyId}`);
       fetchForms();
     } catch (error) {
       console.error('Error deleting form:', error);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Eye, Edit, Trash2, Users, ArrowLeft } from 'lucide-react';
 import '../styles/Dashboard.css';
-import axios from "axios";
+import api from '../services/api';
 
 // Move CourseSelectionView OUTSIDE of the main component
 const CourseSelectionView = ({ courses, handleCourseSelect }) => (
@@ -254,17 +254,11 @@ const StudentsListView = () => {
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
 
   // Handle delete
-  const handleDelete = async (studentId) => {
+    const handleDelete = async (studentId) => {
     if (!window.confirm('Are you sure you want to delete this student?')) return;
-
+    
     try {
-      const token = localStorage.getItem('authToken');
-      await axios.delete(
-        `https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.delete(`/student/${studentId}`);
       fetchAllStudents();
     } catch (error) {
       console.error('Error deleting student:', error);
@@ -360,10 +354,7 @@ const StudentsListView = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        "https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood",
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+      const response = await api.get("/student/students-with-mood");
       setAllStudents(response.data);
       setHasLoadedStudents(true);
     } catch (error) {
