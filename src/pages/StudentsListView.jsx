@@ -206,12 +206,19 @@ const StudentsTableView = ({
                       <button className="action-button action-view" type="button">
                         <Eye size={16} />
                       </button>
-                      <button className="action-button action-edit" type="button">
-                        <Edit size={16} />
-                      </button>
-                      <button className="action-button action-delete" type="button">
-                        <Trash2 size={16} />
-                      </button>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDelete(form.studentId);
+                          }}
+                          className="action-button action-delete"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                     </div>
                   </td>
                 </tr>
@@ -313,6 +320,25 @@ const StudentsListView = () => {
       ]
     }
   ];
+
+  // Handle delete
+  const handleDelete = async (studentId) => {
+    if (!window.confirm('Are you sure you want to delete this student?')) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(
+        `https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      fetchAllStudents();
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      alert('Error deleting student. Please try again.');
+    }
+  };
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
