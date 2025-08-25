@@ -3,26 +3,6 @@ import { Search, Filter, Eye, Edit, Trash2, Users, ArrowLeft } from 'lucide-reac
 import '../styles/Dashboard.css';
 import axios from "axios";
 
-// Handle delete
-  const handleDelete = async (studentId) => {
-    if (!window.confirm('Are you sure you want to delete this student?')) return;
-
-    try {
-      const token = localStorage.getItem('authToken');
-      await axios.delete(
-        `https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      fetchAllStudents();
-    } catch (error) {
-      console.error('Error deleting student:', error);
-      alert('Error deleting student. Please try again.');
-    }
-  };
-
-
 // Move CourseSelectionView OUTSIDE of the main component
 const CourseSelectionView = ({ courses, handleCourseSelect }) => (
   <div className="page-container">
@@ -231,7 +211,7 @@ const StudentsTableView = ({
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleDelete();
+                            handleDelete(student.studentId);
                           }}
                           className="action-button action-delete"
                           style={{ pointerEvents: 'auto', zIndex: 999 }}
@@ -271,6 +251,25 @@ const StudentsListView = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
+
+  // Handle delete
+  const handleDelete = async (studentId) => {
+    if (!window.confirm('Are you sure you want to delete this student?')) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(
+        `https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      fetchAllStudents();
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      alert('Error deleting student. Please try again.');
+    }
+  };
 
   // Course configuration
   const courses = [
@@ -442,6 +441,7 @@ const StudentsListView = () => {
       filteredStudents={filteredStudents}
       displayedStudents={displayedStudents}
       getMoodBadgeClass={getMoodBadgeClass}
+      handleDelete={handleDelete}
     />
   ) : (
     <CourseSelectionView 
