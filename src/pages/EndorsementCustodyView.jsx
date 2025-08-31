@@ -517,7 +517,7 @@ const EndorsementCustodyView = () => {
                 <div className="view-field">
                   <div className="student-info">
                     <div className="student-avatar">
-                      {viewingForm.student?.firstName?.charAt(0) || 'S'}
+                      {viewingForm.student?.fullName?.charAt(0) || 'S'}
                     </div>
                     <div>
                       <div className="student-name">
