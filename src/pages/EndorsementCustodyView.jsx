@@ -680,7 +680,7 @@ const EndorsementCustodyView = () => {
                     <td>
                       <div className="student-info">
                         <div className="student-avatar">
-                          {form.student?.firstName?.charAt(0) || 'S'}
+                          {form.student?.fullName?.charAt(0) || 'S'}
                         </div>
                         <div>
                           <div className="student-name">
