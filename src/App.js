@@ -15,7 +15,7 @@ function App() {
         <Route path="/dashboard/students-list" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/mood-insights" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/endorsement-custody" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/dashboard/consultation-forms" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard/consultation-conference-forms" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/counseling-notes" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/guidance-pass" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/appointment-approval" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

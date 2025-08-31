@@ -18,7 +18,7 @@ const GuidanceDashboard = () => {
     '/dashboard/students-list': 'students',
     '/dashboard/mood-insights': 'mood',
     '/dashboard/endorsement-custody': 'endorsement',
-    '/dashboard/consultation-forms': 'consultation',
+    '/dashboard/consultation-conference-forms': 'consultation',
     '/dashboard/counseling-notes': 'notes',
     '/dashboard/guidance-pass': 'pass',
     '/dashboard/appointment-approval': 'appointments',
@@ -32,7 +32,7 @@ const GuidanceDashboard = () => {
     'students': '/dashboard/students-list',
     'mood': '/dashboard/mood-insights',
     'endorsement': '/dashboard/endorsement-custody',
-    'consultation': '/dashboard/consultation-forms',
+    'consultation': '/dashboard/consultation-conference-forms',
     'notes': '/dashboard/counseling-notes',
     'pass': '/dashboard/guidance-pass',
     'appointments': '/dashboard/appointment-approval',
@@ -155,7 +155,7 @@ const GuidanceDashboard = () => {
     { id: 'students', icon: Users, label: 'Students List' },
     { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
     { id: 'endorsement', icon: FileText, label: 'Endorsement and Custody' },
-    { id: 'consultation', icon: ClipboardList, label: 'Consultation Forms' },
+    { id: 'consultation', icon: ClipboardList, label: 'Consultation/Conference Forms' },
     { id: 'notes', icon: Edit, label: 'Counseling Notes' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
     { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
@@ -203,7 +203,7 @@ const GuidanceDashboard = () => {
       case 'endorsement':
         return <EndorsementCustodyView />;
       case 'consultation':
-        return <GenericFormView title="Consultation Forms" description="Create and manage consultation and conference forms." />;
+        return <GenericFormView title="Consultation/Conference Forms" description="Create and manage consultation and conference forms." />;
       case 'notes':
         return <GenericFormView title="Counseling Notes" description="Keep track of guidance and counseling session notes." />;
       case 'pass':
