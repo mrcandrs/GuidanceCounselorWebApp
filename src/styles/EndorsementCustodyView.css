@@ -112,6 +112,13 @@
   color: #d1d5db;
 }
 
+/* Time display in table */
+.time-display {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
 /* Form Header */
 .form-header {
   display: flex;
@@ -210,6 +217,22 @@
   cursor: pointer;
 }
 
+/* Time input specific styles */
+.form-input[type="time"] {
+  cursor: pointer;
+}
+
+.form-input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.form-input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba(4, 119, 191, 0.1);
+}
+
 /* Form Actions */
 .form-actions {
   display: flex;
@@ -262,10 +285,10 @@
 
 /* Modifier for readonly fields */
 .form-input--readonly {
-  background-color: #f3f4f6;  /* light gray background */
-  color: #6b7280;             /* muted text */
+  background-color: #f3f4f6;
+  color: #6b7280;
   cursor: not-allowed;
-  border-color: #d1d5db;      /* keep normal border */
+  border-color: #d1d5db;
 }
 
 /* Prevent green/red validation borders */
@@ -385,6 +408,63 @@
   background-color: rgba(239, 68, 68, 0.1);
 }
 
+/* View Mode Styles */
+.view-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.view-field {
+  padding: 12px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.view-textarea {
+  min-height: 80px;
+  align-items: flex-start;
+  padding-top: 12px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.view-field .student-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.view-field .student-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #0477BF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.view-field .student-name {
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.view-field .student-number {
+  font-size: 12px;
+  color: #6b7280;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .form-row {
@@ -473,63 +553,6 @@
   box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
 }
 
-/* View Mode Styles */
-.view-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.view-field {
-  padding: 12px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #374151;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-}
-
-.view-textarea {
-  min-height: 80px;
-  align-items: flex-start;
-  padding-top: 12px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.view-field .student-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.view-field .student-avatar {
-  width: 32px;
-  height: 32px;
-  background-color: #0477BF;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.view-field .student-name {
-  font-weight: 500;
-  color: #1f2937;
-  margin-bottom: 2px;
-}
-
-.view-field .student-number {
-  font-size: 12px;
-  color: #6b7280;
-}
-
 /* Print styles */
 @media print {
   .form-actions,
@@ -566,11 +589,9 @@
   font-size: 14px !important;
   font-weight: 500 !important;
   transition: background-color 0.2s !important;
-  /* Ensure button is clickable */
   pointer-events: auto !important;
   position: relative !important;
   z-index: 1 !important;
-  /* Reset any inherited styles */
   text-decoration: none !important;
   outline: none !important;
   box-shadow: none !important;

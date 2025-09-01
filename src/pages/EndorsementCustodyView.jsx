@@ -37,6 +37,28 @@ const getCurrentManilaDate = () => {
   return `${year}-${month}-${day}`;
 };
 
+// Utility function to get current time in Manila timezone for input fields
+const getCurrentManilaTime = () => {
+  const now = new Date();
+  const manilaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+  const hours = String(manilaTime.getHours()).padStart(2, '0');
+  const minutes = String(manilaTime.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
+// Utility function to format time for display
+const formatTime = (timeString) => {
+  if (!timeString) return '-';
+  const [hours, minutes] = timeString.split(':');
+  const date = new Date();
+  date.setHours(parseInt(hours), parseInt(minutes));
+  return date.toLocaleTimeString('en-PH', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
@@ -48,6 +70,7 @@ const EndorsementCustodyView = () => {
   const [formData, setFormData] = useState({
     studentId: '',
     date: getCurrentManilaDate(),
+    time: getCurrentManilaTime(),
     gradeYearLevel: '',
     section: '',
     concerns: '',
@@ -180,7 +203,14 @@ const EndorsementCustodyView = () => {
       
       const method = editingForm ? 'put' : 'post';
 
-      const response = await axios[method](url, formData, {
+      // Combine date and time for submission
+      const submissionData = {
+        ...formData,
+        // Convert date and time to ISO string for backend
+        dateTime: new Date(`${formData.date}T${formData.time}:00`).toISOString()
+      };
+
+      const response = await axios[method](url, submissionData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -191,12 +221,12 @@ const EndorsementCustodyView = () => {
         alert('Endorsement custody form created successfully!');
       }
 
-
       // Reset form and refresh data
       const counselorDetails = await fetchCurrentCounselor();
       setFormData({
         studentId: '',
         date: getCurrentManilaDate(),
+        time: getCurrentManilaTime(),
         gradeYearLevel: '',
         section: '',
         concerns: '',
@@ -234,9 +264,16 @@ const EndorsementCustodyView = () => {
   // Handle edit
   const handleEdit = (form) => {
     setEditingForm(form);
+    
+    // Extract date and time from the form's date field
+    const formDate = new Date(form.date);
+    const dateStr = formDate.toISOString().split('T')[0];
+    const timeStr = formDate.toTimeString().split(' ')[0].substring(0, 5);
+    
     setFormData({
       studentId: form.studentId,
-      date: getCurrentManilaDate(),
+      date: dateStr,
+      time: timeStr,
       gradeYearLevel: form.gradeYearLevel,
       section: form.section,
       concerns: form.concerns,
@@ -278,6 +315,7 @@ const EndorsementCustodyView = () => {
     setFormData({
       studentId: '',
       date: getCurrentManilaDate(),
+      time: getCurrentManilaTime(),
       gradeYearLevel: '',
       section: '',
       concerns: '',
@@ -345,7 +383,9 @@ const EndorsementCustodyView = () => {
                   ))}
                 </select>
               </div>
+            </div>
 
+            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="date" className="form-label">Date *</label>
                 <input
@@ -353,6 +393,19 @@ const EndorsementCustodyView = () => {
                   id="date"
                   name="date"
                   value={formData.date}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="time" className="form-label">Time *</label>
+                <input
+                  type="time"
+                  id="time"
+                  name="time"
+                  value={formData.time}
                   onChange={handleInputChange}
                   required
                   className="form-input"
@@ -530,11 +583,20 @@ const EndorsementCustodyView = () => {
                   </div>
                 </div>
               </div>
+            </div>
 
+            <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Date</label>
                 <div className="view-field">
                   {formatManilaDate(viewingForm.date)}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Time</label>
+                <div className="view-field">
+                  {viewingForm.time ? formatTime(viewingForm.time) : formatTime(new Date(viewingForm.date).toTimeString().substring(0, 5))}
                 </div>
               </div>
             </div>
@@ -667,7 +729,7 @@ const EndorsementCustodyView = () => {
               <thead>
                 <tr>
                   <th>Student</th>
-                  <th>Date</th>
+                  <th>Date & Time</th>
                   <th>Grade/Section</th>
                   <th>Endorsed By</th>
                   <th>Endorsed To</th>
@@ -692,7 +754,12 @@ const EndorsementCustodyView = () => {
                         </div>
                       </div>
                     </td>
-                    <td>{formatManilaDate(form.date)}</td>
+                    <td>
+                      <div>{formatManilaDate(form.date)}</div>
+                      <div className="time-display">
+                        {form.time ? formatTime(form.time) : formatTime(new Date(form.date).toTimeString().substring(0, 5))}
+                      </div>
+                    </td>
                     <td>
                       {form.gradeYearLevel} {form.section && `- ${form.section}`}
                     </td>
@@ -713,7 +780,7 @@ const EndorsementCustodyView = () => {
                         >
                           <Eye size={16} />
                         </button>
-		                    <button 
+                        <button 
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
