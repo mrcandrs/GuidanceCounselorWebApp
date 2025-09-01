@@ -5,8 +5,10 @@ import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
 import EndorsementCustodyView from './EndorsementCustodyView';
+import ConsultationConferenceView from './ConsultationConferenceView';
 import '../styles/Dashboard.css';
 import axios from "axios";
+import ConsultationConferenceView from './ConsultationConferenceView';
 
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
@@ -203,7 +205,7 @@ const GuidanceDashboard = () => {
       case 'endorsement':
         return <EndorsementCustodyView />;
       case 'consultation':
-        return <GenericFormView title="Consultation/Conference Forms" description="Create and manage consultation and conference forms." />;
+        return <ConsultationConferenceView />;
       case 'notes':
         return <GenericFormView title="Counseling Notes" description="Keep track of guidance and counseling session notes." />;
       case 'pass':
