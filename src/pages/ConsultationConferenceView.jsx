@@ -278,10 +278,10 @@ const ConsultationConferenceView = () => {
       section: form.section,
       concerns: form.concerns,
       remarks: form.remarks,
-      counselorname: form.counselorname,
-      parentguardian: form.parentguardian,
-      schoolpersonnel: form.schoolpersonnel,
-      parentcontactnumber: form.parentcontactnumber
+      counselorname: form.counselorName,    
+      parentguardian: form.parentGuardian,
+      schoolpersonnel: form.schoolPersonnel,
+      parentcontactnumber: form.parentContactNumber
     });
     setShowForm(true);
   };
@@ -309,7 +309,7 @@ const ConsultationConferenceView = () => {
   const handleCreateNew = async () => {
     setEditingForm(null); 
         
-    // Fetch counselor details and auto-populate endorsedBy field
+    // Fetch counselor details and auto-populate Counselor Name field
     const counselorDetails = await fetchCurrentCounselor();
     
     setFormData({
@@ -539,7 +539,7 @@ const ConsultationConferenceView = () => {
     );
   }
 
-  // When the endorsement form is viewed
+  // When the consultation/conference form is viewed
   if (showView && viewingForm) {
     return (
       <div className="endorsement-custody-container">
@@ -635,14 +635,14 @@ const ConsultationConferenceView = () => {
               <div className="form-group">
                 <label className="form-label">Name of Guidance Counselor:</label>
                 <div className="view-field">
-                  {viewingForm.counselorname || '-'}
+                  {viewingForm.counselorName || '-'}
                 </div>
               </div>
 
               <div className="form-group">
                 <label className="form-label">Name of Parents/Guardians:</label>
                 <div className="view-field">
-                  {viewingForm.parentguardian || '-'}
+                  {viewingForm.parentGuardian || '-'}
                 </div>
               </div>
             </div>
@@ -650,14 +650,14 @@ const ConsultationConferenceView = () => {
             <div className="form-group">
                 <label className="form-label">Name of School Personnel with Designation:</label>
                 <div className="view-field">
-                  {viewingForm.schoolpersonnel || '-'}
+                  {viewingForm.schoolPersonnel || '-'}
                 </div>
               </div>
 
             <div className="form-group">
                 <label className="form-label">Contact Number of Parents/Guardians:</label>
                 <div className="view-field">
-                  {viewingForm.schoolpersonnel || '-'}
+                  {viewingForm.parentContactNumber || '-'}
                 </div>
               </div>
 
@@ -763,8 +763,8 @@ const ConsultationConferenceView = () => {
                     <td>
                       {form.gradeYearLevel} {form.section && `- ${form.section}`}
                     </td>
-                    <td>{form.counselorname || '-'}</td>
-                    <td>{form.parentguardian || '-'}</td>
+                    <td>{form.counselorName || '-'}</td>
+                    <td>{form.parentGuardian || '-'}</td>
                     <td>
                       <div className="action-buttons">
                         <button 
