@@ -8,7 +8,6 @@ import EndorsementCustodyView from './EndorsementCustodyView';
 import ConsultationConferenceView from './ConsultationConferenceView';
 import '../styles/Dashboard.css';
 import axios from "axios";
-import ConsultationConferenceView from './ConsultationConferenceView';
 
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
