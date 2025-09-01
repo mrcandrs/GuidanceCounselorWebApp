@@ -627,7 +627,7 @@ const ConsultationConferenceView = () => {
             <div className="form-group">
               <label className="form-label">Remarks:</label>
               <div className="view-field view-textarea">
-                {viewingForm.interventions || '-'}
+                {viewingForm.remarks || '-'}
               </div>
             </div>
 
