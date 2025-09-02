@@ -1,0 +1,539 @@
+/* Student Details Styles */
+
+.student-details-container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  width: 100%;
+}
+
+/* Header Styles */
+.student-details-header {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-divider {
+  height: 24px;
+  width: 1px;
+  background-color: #d1d5db;
+}
+
+.student-title-section h1 {
+  margin: 0;
+}
+
+.student-details-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.student-details-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-status-badge {
+  padding: 6px 12px;
+  background-color: #10b981;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+/* Tab Navigation Styles */
+.tab-navigation {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 32px;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 4px;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: #374151;
+  border-bottom-color: #d1d5db;
+}
+
+.tab-button.tab-active {
+  color: #0477BF;
+  border-bottom-color: #0477BF;
+}
+
+/* Content Styles */
+.student-details-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Loading Styles */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #6b7280;
+}
+
+/* Overview Layout */
+.overview-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+.basic-info-section {
+  grid-column: 1;
+}
+
+.mood-status-section {
+  grid-column: 2;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.info-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.info-icon {
+  color: #9ca3af;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+.info-subvalue {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 2px 0 0 0;
+}
+
+/* Mood Status Card */
+.mood-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.mood-status-icon {
+  color: #ec4899;
+}
+
+.recent-mood-content {
+  margin-bottom: 16px;
+}
+
+.recent-mood-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.recent-mood-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.recent-mood-notes {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.recent-mood-date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.view-full-history-button {
+  width: 100%;
+  padding: 8px 16px;
+  background-color: #dbeafe;
+  color: #0477BF;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.view-full-history-button:hover {
+  background-color: #bfdbfe;
+}
+
+/* Forms Grid */
+.forms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.form-card {
+  min-height: 200px;
+}
+
+.form-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.form-card-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.form-card-text {
+  flex: 1;
+}
+
+.form-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.form-card-description {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Form Icons */
+.form-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.form-icon-consent {
+  color: #3b82f6;
+}
+
+.form-icon-inventory {
+  color: #10b981;
+}
+
+.form-icon-career {
+  color: #8b5cf6;
+}
+
+/* Form Status Icons */
+.form-status-icon {
+  flex-shrink: 0;
+}
+
+.form-status-success {
+  color: #10b981;
+}
+
+.form-status-error {
+  color: #ef4444;
+}
+
+/* Form Card Content */
+.form-card-content {
+  margin-top: auto;
+}
+
+.form-submission-date {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.form-not-submitted {
+  font-size: 13px;
+  color: #ef4444;
+  margin-bottom: 12px;
+}
+
+/* Form View Buttons */
+.form-view-button {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-view-button-consent {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.form-view-button-consent:hover {
+  background-color: #2563eb;
+}
+
+.form-view-button-inventory {
+  background-color: #10b981;
+  color: white;
+}
+
+.form-view-button-inventory:hover {
+  background-color: #059669;
+}
+
+.form-view-button-career {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.form-view-button-career:hover {
+  background-color: #7c3aed;
+}
+
+/* Mood History Styles */
+.mood-history-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.mood-history-header {
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mood-history-title-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mood-history-icon {
+  color: #ec4899;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.mood-history-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 4px 0 0 0;
+}
+
+.mood-history-content {
+  padding: 24px;
+}
+
+.mood-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mood-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.mood-entry-badge {
+  flex-shrink: 0;
+}
+
+.mood-entry-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.mood-entry-notes {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.mood-entry-date {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 0;
+}
+
+.empty-icon {
+  color: #d1d5db;
+  margin: 0 auto 16px;
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.empty-description {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .overview-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .basic-info-section {
+    grid-column: 1;
+  }
+  
+  .mood-status-section {
+    grid-column: 1;
+  }
+  
+  .forms-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .header-divider {
+    display: none;
+  }
+  
+  .student-details-content {
+    padding: 24px 16px;
+  }
+  
+  .tab-container {
+    padding: 0 16px;
+    gap: 24px;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .forms-grid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .tab-container {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .tab-button {
+    padding: 12px 0;
+    justify-content: flex-start;
+  }
+}

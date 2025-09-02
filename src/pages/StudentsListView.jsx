@@ -76,7 +76,8 @@ const StudentsTableView = ({
   filteredStudents, 
   displayedStudents,
   getMoodBadgeClass,
-  handleDelete 
+  handleDelete,
+  handleView
 }) => (
   <div className="page-container">
     <div className="page-header">
@@ -204,9 +205,19 @@ const StudentsTableView = ({
                   </td>
                   <td className="table-cell">
                     <div className="action-buttons">
-                      <button className="action-button action-view" type="button">
-                        <Eye size={16} />
-                      </button>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleView(student.id);
+                          }}
+                          className="action-button action-view"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
+                          title="View"
+                        >
+                          <Eye size={16} />
+                        </button>
                         <button 
                           type="button"
                           onClick={(e) => {
@@ -252,6 +263,15 @@ const StudentsListView = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
+  const [viewingStudentId, setViewingStudentId] = useState(null);
+
+const handleView = (studentId) => {
+  setViewingStudentId(studentId);
+};
+
+const handleBackFromDetails = () => {
+  setViewingStudentId(null);
+};
 
 // Updated handleDelete for nuclear CORS test - NO credentials
 const handleDelete = async (studentId) => {
@@ -479,6 +499,10 @@ const handleDelete = async (studentId) => {
     );
   });
 
+    if (viewingStudentId) {
+  return <StudentDetailsView studentId={viewingStudentId} onBack={handleBackFromDetails} />;
+}
+
   // Clean return statement
   return selectedCourse ? (
     <StudentsTableView 
@@ -491,6 +515,7 @@ const handleDelete = async (studentId) => {
       displayedStudents={displayedStudents}
       getMoodBadgeClass={getMoodBadgeClass}
       handleDelete={handleDelete}
+      handleView={handleView}
     />
   ) : (
     <CourseSelectionView 
