@@ -15,7 +15,7 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.student-details-header-content {
+.student-header-content {
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
@@ -24,19 +24,19 @@
   align-items: center;
 }
 
-.student-details-header-left {
+.student-header-left {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.student-details-header-divider {
+.student-header-divider {
   height: 24px;
   width: 1px;
   background-color: #d1d5db;
 }
 
-.student-details-title-section h1 {
+.student-title-section h1 {
   margin: 0;
 }
 
@@ -53,13 +53,13 @@
   margin: 0;
 }
 
-.student-details-header-right {
+.student-header-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.student-details-status-badge {
+.student-status-badge {
   padding: 6px 12px;
   background-color: #10b981;
   color: white;
@@ -69,12 +69,12 @@
 }
 
 /* Tab Navigation Styles */
-.student-details-tab-navigation {
+.student-tab-navigation {
   background-color: white;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.student-details-tab-container {
+.student-tab-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
@@ -82,7 +82,7 @@
   gap: 32px;
 }
 
-.student-details-tab-button {
+.student-tab-button {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -97,12 +97,12 @@
   transition: all 0.2s;
 }
 
-.student-details-tab-button:hover {
+.student-tab-button:hover {
   color: #374151;
   border-bottom-color: #d1d5db;
 }
 
-.student-details-tab-button.student-details-tab-active {
+.student-tab-button.student-details-tab-active {
   color: #0477BF;
   border-bottom-color: #0477BF;
 }
@@ -115,7 +115,7 @@
 }
 
 /* Loading Styles */
-.student-details-loading-container {
+.student-loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -125,52 +125,52 @@
 }
 
 /* Overview Layout */
-.student-details-overview-layout {
+.student-overview-layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 32px;
 }
 
-.student-details-basic-info-section {
+.student-basic-info-section {
   grid-column: 1;
 }
 
-.student-details-mood-status-section {
+.student-mood-status-section {
   grid-column: 2;
 }
 
 /* Info Grid */
-.student-details-info-grid {
+.student-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
   margin-top: 24px;
 }
 
-.student-details-info-column {
+.student-info-column {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.student-details-info-item {
+.student-info-item {
   display: flex;
   align-items: flex-start;
   gap: 12px;
 }
 
-.student-details-info-icon {
+.student-info-icon {
   color: #9ca3af;
   margin-top: 2px;
   flex-shrink: 0;
 }
 
-.student-details-info-content {
+.student-info-content {
   min-width: 0;
   flex: 1;
 }
 
-.student-details-info-label {
+.student-info-label {
   font-size: 12px;
   color: #6b7280;
   margin: 0 0 4px 0;
@@ -179,60 +179,60 @@
   font-weight: 500;
 }
 
-.student-details-info-value {
+.student-info-value {
   font-size: 14px;
   font-weight: 500;
   color: #1f2937;
   margin: 0;
 }
 
-.student-details-info-subvalue {
+.student-info-subvalue {
   font-size: 13px;
   color: #6b7280;
   margin: 2px 0 0 0;
 }
 
 /* Mood Status Card */
-.student-details-mood-status-header {
+.student-mood-status-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.student-details-mood-status-icon {
+.student-mood-status-icon {
   color: #ec4899;
 }
 
-.student-details-recent-mood-content {
+.student-recent-mood-content {
   margin-bottom: 16px;
 }
 
-.student-details-recent-mood-item {
+.student-recent-mood-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.student-details-recent-mood-label {
+.student-recent-mood-label {
   font-size: 12px;
   color: #6b7280;
   font-weight: 500;
 }
 
-.student-details-recent-mood-notes {
+.student-recent-mood-notes {
   font-size: 14px;
   color: #374151;
   margin-bottom: 4px;
 }
 
-.student-details-recent-mood-date {
+.student-recent-mood-date {
   font-size: 12px;
   color: #9ca3af;
 }
 
-.student-details-view-full-history-button {
+.student-view-full-history-button {
   width: 100%;
   padding: 8px 16px;
   background-color: #dbeafe;
@@ -245,102 +245,102 @@
   transition: background-color 0.2s;
 }
 
-.student-details-view-full-history-button:hover {
+.student-view-full-history-button:hover {
   background-color: #bfdbfe;
 }
 
 /* Forms Grid */
-.student-details-forms-grid {
+.student-forms-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
 }
 
-.student-details-form-card {
+.student-form-card {
   min-height: 200px;
 }
 
-.student-details-form-card-header {
+.student-form-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 16px;
 }
 
-.student-details-form-card-info {
+.student-form-card-info {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   flex: 1;
 }
 
-.student-details-form-card-text {
+.student-form-card-text {
   flex: 1;
 }
 
-.student-details-form-card-title {
+.student-form-card-title {
   font-size: 16px;
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 4px 0;
 }
 
-.student-details-form-card-description {
+.student-form-card-description {
   font-size: 13px;
   color: #6b7280;
   margin: 0;
 }
 
 /* Form Icons */
-.student-details-form-icon {
+.student-form-icon {
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-.student-details-form-icon-consent {
+.student-form-icon-consent {
   color: #3b82f6;
 }
 
-.student-details-form-icon-inventory {
+.student-form-icon-inventory {
   color: #10b981;
 }
 
-.student-details-form-icon-career {
+.student-form-icon-career {
   color: #8b5cf6;
 }
 
 /* Form Status Icons */
-.student-details-form-status-icon {
+.student-form-status-icon {
   flex-shrink: 0;
 }
 
-.student-details-form-status-success {
+.student-form-status-success {
   color: #10b981;
 }
 
-.student-details-form-status-error {
+.student-form-status-error {
   color: #ef4444;
 }
 
 /* Form Card Content */
-.student-details-form-card-content {
+.student-form-card-content {
   margin-top: auto;
 }
 
-.student-details-form-submission-date {
+.student-form-submission-date {
   font-size: 13px;
   color: #6b7280;
   margin-bottom: 12px;
 }
 
-.student-details-form-not-submitted {
+.student-form-not-submitted {
   font-size: 13px;
   color: #ef4444;
   margin-bottom: 12px;
 }
 
 /* Form View Buttons */
-.student-details-form-view-button {
+.student-form-view-button {
   width: 100%;
   padding: 8px 16px;
   border: none;
@@ -351,73 +351,73 @@
   transition: all 0.2s;
 }
 
-.student-details-form-view-button-consent {
+.student-form-view-button-consent {
   background-color: #3b82f6;
   color: white;
 }
 
-.student-details-form-view-button-consent:hover {
+.student-form-view-button-consent:hover {
   background-color: #2563eb;
 }
 
-.student-details-form-view-button-inventory {
+.student-form-view-button-inventory {
   background-color: #10b981;
   color: white;
 }
 
-.student-details-form-view-button-inventory:hover {
+.student-form-view-button-inventory:hover {
   background-color: #059669;
 }
 
-.student-details-form-view-button-career {
+.student-form-view-button-career {
   background-color: #8b5cf6;
   color: white;
 }
 
-.student-details-form-view-button-career:hover {
+.student-form-view-button-career:hover {
   background-color: #7c3aed;
 }
 
 /* Mood History Styles */
-.student-details-mood-history-card {
+.student-mood-history-card {
   padding: 0;
   overflow: hidden;
 }
 
-.student-details-mood-history-header {
+.student-mood-history-header {
   padding: 24px;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.student-details-mood-history-title-section {
+.student-mood-history-title-section {
   display: flex;
   align-items: flex-start;
   gap: 12px;
 }
 
-.student-details-mood-history-icon {
+.student-mood-history-icon {
   color: #ec4899;
   margin-top: 2px;
   flex-shrink: 0;
 }
 
-.student-details-mood-history-subtitle {
+.student-mood-history-subtitle {
   font-size: 14px;
   color: #6b7280;
   margin: 4px 0 0 0;
 }
 
-.student-details-mood-history-content {
+.student-mood-history-content {
   padding: 24px;
 }
 
-.student-details-mood-history-list {
+.student-mood-history-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.student-details-mood-entry {
+.student-mood-entry {
   display: flex;
   align-items: flex-start;
   gap: 16px;
@@ -426,86 +426,86 @@
   border-radius: 8px;
 }
 
-.student-details-mood-entry-badge {
+.student-mood-entry-badge {
   flex-shrink: 0;
 }
 
-.student-details-mood-entry-content {
+.student-mood-entry-content {
   flex: 1;
   min-width: 0;
 }
 
-.student-details-mood-entry-notes {
+.student-mood-entry-notes {
   font-size: 14px;
   font-weight: 500;
   color: #1f2937;
   margin: 0 0 4px 0;
 }
 
-.student-details-mood-entry-date {
+.student-mood-entry-date {
   font-size: 12px;
   color: #6b7280;
   margin: 0;
 }
 
 /* Empty State */
-.student-details-empty-state {
+.student-empty-state {
   text-align: center;
   padding: 48px 0;
 }
 
-.student-details-empty-icon {
+.student-empty-icon {
   color: #d1d5db;
   margin: 0 auto 16px;
 }
 
-.student-details-empty-title {
+.student-empty-title {
   font-size: 18px;
   font-weight: 500;
   color: #1f2937;
   margin: 0 0 8px 0;
 }
 
-.student-details-empty-description {
+.student-empty-description {
   color: #6b7280;
   margin: 0;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .student-details-overview-layout {
+  .student-overview-layout {
     grid-template-columns: 1fr;
     gap: 24px;
   }
 
-  .student-details-basic-info-section {
+  .student-basic-info-section {
     grid-column: 1;
   }
 
-  .student-details-mood-status-section {
+  .student-mood-status-section {
     grid-column: 1;
   }
 
-  .student-details-forms-grid {
+  .student-forms-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .student-details-header-content {
+  .student-header-content {
     padding: 16px;
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
 
-  .student-details-header-left {
+  .student-header-left {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
 
-  .student-details-header-divider {
+  .student-header-divider {
     display: none;
   }
 
@@ -513,28 +513,28 @@
     padding: 24px 16px;
   }
 
-  .student-details-tab-container {
+  .student-tab-container {
     padding: 0 16px;
     gap: 24px;
   }
 
-  .student-details-info-grid {
+  .student-info-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
 
-  .student-details-forms-grid {
+  .student-forms-grid {
     gap: 16px;
   }
 }
 
 @media (max-width: 640px) {
-  .student-details-tab-container {
+  .student-tab-container {
     flex-direction: column;
     gap: 0;
   }
 
-  .student-details-tab-button {
+  .student-tab-button {
     padding: 12px 0;
     justify-content: flex-start;
   }
