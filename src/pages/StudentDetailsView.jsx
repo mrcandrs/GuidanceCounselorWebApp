@@ -178,9 +178,20 @@ const StudentDetailsView = ({ studentId, onBack }) => {
           <AlertCircle size={48} className="student-empty-icon" />
           <h3 className="student-empty-title">Student Not Found</h3>
           <p className="student-empty-description">Unable to load student details.</p>
-          <button onClick={onBack} className="student-primary-button" style={{ marginTop: '16px' }}>
-            Back to Students
-          </button>
+        <button 
+          onClick={onBack}
+          className="student-primary-button"
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
+        >
+          <ArrowLeft size={16} />
+          Back to Students
+        </button>
         </div>
       </div>
     );
