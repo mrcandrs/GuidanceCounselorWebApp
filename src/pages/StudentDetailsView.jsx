@@ -119,20 +119,22 @@ const StudentDetailsView = ({ studentId, onBack }) => {
   const getMoodBadgeClass = (mood) => {
     switch (mood?.toUpperCase()) {
       case 'MILD':
-        return 'mood-badge mood-mild';
+        return 'student-mood-badge student-mood-mild';
       case 'MODERATE':
-        return 'mood-badge mood-moderate';
+        return 'student-mood-badge student-moderate';
       case 'HIGH':
-        return 'mood-badge mood-high';
+        return 'student-mood-badge student-mood-high';
       default:
-        return 'mood-badge mood-neutral';
+        return 'student-mood-badge student-mood-neutral';
     }
   };
 
   const getStatusIcon = (submitted) => {
-    return submitted ? 
-      <CheckCircle className="form-status-icon form-status-success" /> : 
-      <XCircle className="form-status-icon form-status-error" />;
+    return submitted ? (
+      <CheckCircle className="student-form-status-icon student-form-status-success" />
+    ) : (
+      <XCircle className="student-form-status-icon student-form-status-error" />
+    );
   };
 
   const handleViewForm = (formType) => {
@@ -161,8 +163,8 @@ const StudentDetailsView = ({ studentId, onBack }) => {
   if (loading) {
     return (
       <div className="student-details-container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
+        <div className="student-loading-container">
+          <div className="student-loading-spinner"></div>
           <p>Loading student details...</p>
         </div>
       </div>
@@ -172,11 +174,11 @@ const StudentDetailsView = ({ studentId, onBack }) => {
   if (!student) {
     return (
       <div className="student-details-container">
-        <div className="loading-container">
-          <AlertCircle size={48} className="empty-icon" />
-          <h3 className="empty-title">Student Not Found</h3>
-          <p className="empty-description">Unable to load student details.</p>
-          <button onClick={onBack} className="primary-button" style={{ marginTop: '16px' }}>
+        <div className="student-loading-container">
+          <AlertCircle size={48} className="student-empty-icon" />
+          <h3 className="student-empty-title">Student Not Found</h3>
+          <p className="student-empty-description">Unable to load student details.</p>
+          <button onClick={onBack} className="student-primary-button" style={{ marginTop: '16px' }}>
             Back to Students
           </button>
         </div>
@@ -188,17 +190,13 @@ const StudentDetailsView = ({ studentId, onBack }) => {
     <div className="student-details-container">
       {/* Header */}
       <div className="student-details-header">
-        <div className="header-content">
-          <div className="header-left">
-            <button
-              onClick={onBack}
-              className="back-button"
-              type="button"
-            >
+        <div className="student-header-content">
+          <div className="student-header-left">
+            <button onClick={onBack} className="student-back-button" type="button">
               <ArrowLeft size={16} />
               Back to Students
             </button>
-            <div className="header-divider"></div>
+            <div className="student-header-divider"></div>
             <div className="student-title-section">
               <h1 className="student-details-title">{student.fullName || student.name}</h1>
               <p className="student-details-subtitle">
@@ -206,34 +204,32 @@ const StudentDetailsView = ({ studentId, onBack }) => {
               </p>
             </div>
           </div>
-          <div className="header-right">
-            <span className="student-status-badge">
-              Active
-            </span>
+          <div className="student-header-right">
+            <span className="student-status-badge">Active</span>
           </div>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="tab-navigation">
-        <div className="tab-container">
+      <div className="student-tab-navigation">
+        <div className="student-tab-container">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`tab-button ${activeTab === 'overview' ? 'tab-active' : ''}`}
+            className={`student-tab-button ${activeTab === 'overview' ? 'student-tab-active' : ''}`}
           >
             <User size={16} />
             Overview
           </button>
           <button
             onClick={() => setActiveTab('forms')}
-            className={`tab-button ${activeTab === 'forms' ? 'tab-active' : ''}`}
+            className={`student-tab-button ${activeTab === 'forms' ? 'student-tab-active' : ''}`}
           >
             <FileText size={16} />
             Forms
           </button>
           <button
             onClick={() => setActiveTab('mood')}
-            className={`tab-button ${activeTab === 'mood' ? 'tab-active' : ''}`}
+            className={`student-tab-button ${activeTab === 'mood' ? 'student-tab-active' : ''}`}
           >
             <Heart size={16} />
             Mood Tracking
@@ -244,42 +240,42 @@ const StudentDetailsView = ({ studentId, onBack }) => {
       {/* Content */}
       <div className="student-details-content">
         {activeTab === 'overview' && (
-          <div className="overview-layout">
-            {/* Basic Information */}
-            <div className="basic-info-section">
-              <div className="card">
-                <h2 className="card-title">Basic Information</h2>
-                <div className="info-grid">
-                  <div className="info-column">
-                    <div className="info-item">
-                      <User className="info-icon" size={20} />
-                      <div className="info-content">
-                        <p className="info-label">Full Name</p>
-                        <p className="info-value">{student.fullName || student.name}</p>
+          <div className="student-overview-layout">
+            {/* Basic Info */}
+            <div className="student-basic-info-section">
+              <div className="student-card">
+                <h2 className="student-card-title">Basic Information</h2>
+                <div className="student-info-grid">
+                  <div className="student-info-column">
+                    <div className="student-info-item">
+                      <User className="student-info-icon" size={20} />
+                      <div className="student-info-content">
+                        <p className="student-info-label">Full Name</p>
+                        <p className="student-info-value">{student.fullName || student.name}</p>
                       </div>
                     </div>
-                    <div className="info-item">
-                      <GraduationCap className="info-icon" size={20} />
-                      <div className="info-content">
-                        <p className="info-label">Program & Year</p>
-                        <p className="info-value">{student.program}</p>
-                        <p className="info-subvalue">{student.gradeYear}</p>
+                    <div className="student-info-item">
+                      <GraduationCap className="student-info-icon" size={20} />
+                      <div className="student-info-content">
+                        <p className="student-info-label">Program & Year</p>
+                        <p className="student-info-value">{student.program}</p>
+                        <p className="student-info-subvalue">{student.gradeYear}</p>
                       </div>
                     </div>
-                    <div className="info-item">
-                      <Mail className="info-icon" size={20} />
-                      <div className="info-content">
-                        <p className="info-label">Email Address</p>
-                        <p className="info-value">{student.email}</p>
+                    <div className="student-info-item">
+                      <Mail className="student-info-icon" size={20} />
+                      <div className="student-info-content">
+                        <p className="student-info-label">Email Address</p>
+                        <p className="student-info-value">{student.email}</p>
                       </div>
                     </div>
                   </div>
-                  <div className="info-column">
-                    <div className="info-item">
-                      <Calendar className="info-icon" size={20} />
-                      <div className="info-content">
-                        <p className="info-label">Date Registered</p>
-                        <p className="info-value">
+                  <div className="student-info-column">
+                    <div className="student-info-item">
+                      <Calendar className="student-info-icon" size={20} />
+                      <div className="student-info-content">
+                        <p className="student-info-label">Date Registered</p>
+                        <p className="student-info-value">
                           {new Date(student.dateRegistered).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
@@ -288,16 +284,18 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                         </p>
                       </div>
                     </div>
-                    <div className="info-item">
-                      <Clock className="info-icon" size={20} />
-                      <div className="info-content">
-                        <p className="info-label">Last Login</p>
-                        <p className="info-value">
-                          {student.lastLogin ? new Date(student.lastLogin).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          }) : 'Never'}
+                    <div className="student-info-item">
+                      <Clock className="student-info-icon" size={20} />
+                      <div className="student-info-content">
+                        <p className="student-info-label">Last Login</p>
+                        <p className="student-info-value">
+                          {student.lastLogin
+                            ? new Date(student.lastLogin).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })
+                            : 'Never'}
                         </p>
                       </div>
                     </div>
@@ -307,33 +305,30 @@ const StudentDetailsView = ({ studentId, onBack }) => {
             </div>
 
             {/* Recent Mood Status */}
-            <div className="mood-status-section">
-              <div className="card">
-                <div className="mood-status-header">
-                  <h2 className="card-title">Recent Mood Status</h2>
-                  <Heart className="mood-status-icon" size={20} />
+            <div className="student-mood-status-section">
+              <div className="student-card">
+                <div className="student-mood-status-header">
+                  <h2 className="student-card-title">Recent Mood Status</h2>
+                  <Heart className="student-mood-status-icon" size={20} />
                 </div>
                 {moodHistory.length > 0 ? (
-                  <div className="recent-mood-content">
-                    <div className="recent-mood-item">
-                      <span className="recent-mood-label">Latest</span>
+                  <div className="student-recent-mood-content">
+                    <div className="student-recent-mood-item">
+                      <span className="student-recent-mood-label">Latest</span>
                       <span className={getMoodBadgeClass(moodHistory[0].moodLevel)}>
                         {moodHistory[0].moodLevel}
                       </span>
                     </div>
-                    <div className="recent-mood-date">
+                    <div className="student-recent-mood-date">
                       {new Date(moodHistory[0].entryDate).toLocaleDateString()}
                     </div>
                   </div>
                 ) : (
-                  <div className="recent-mood-content">
-                    <p className="empty-description">No mood entries yet</p>
+                  <div className="student-recent-mood-content">
+                    <p className="student-empty-description">No mood entries yet</p>
                   </div>
                 )}
-                <button 
-                  onClick={() => setActiveTab('mood')}
-                  className="view-full-history-button"
-                >
+                <button onClick={() => setActiveTab('mood')} className="student-view-full-history-button">
                   View Full History
                 </button>
               </div>
@@ -342,123 +337,121 @@ const StudentDetailsView = ({ studentId, onBack }) => {
         )}
 
         {activeTab === 'forms' && (
-          <div className="forms-grid">
+          <div className="student-forms-grid">
             {/* Consent Form */}
-            <div className="card form-card">
-              <div className="form-card-header">
-                <div className="form-card-info">
-                  <Users className="form-icon form-icon-consent" size={24} />
-                  <div className="form-card-text">
-                    <h3 className="form-card-title">Client Consent Form</h3>
-                    <p className="form-card-description">Parental consent and agreement</p>
+            <div className="student-card student-form-card">
+              <div className="student-form-card-header">
+                <div className="student-form-card-info">
+                  <Users className="student-form-icon student-form-icon-consent" size={24} />
+                  <div className="student-form-card-text">
+                    <h3 className="student-form-card-title">Client Consent Form</h3>
+                    <p className="student-form-card-description">Parental consent and agreement</p>
                   </div>
                 </div>
                 {getStatusIcon(forms.consentForm?.submitted)}
               </div>
-              
+
               {forms.consentForm?.submitted ? (
-                <div className="form-card-content">
-                  <div className="form-submission-date">
+                <div className="student-form-card-content">
+                  <div className="student-form-submission-date">
                     Submitted: {new Date(forms.consentForm.date).toLocaleDateString()}
                   </div>
-                  <button 
-                    className="form-view-button form-view-button-consent"
-                    onClick={() => handleViewForm('consentForm')}
+                  <button
+                    className="student-form-view-button student-form-view-button-consent"
+                    onClick={() => setViewingForm('consentForm')}
                   >
                     View Form
                   </button>
                 </div>
               ) : (
-                <div className="form-not-submitted">Not submitted</div>
+                <div className="student-form-not-submitted">Not submitted</div>
               )}
             </div>
 
             {/* Inventory Form */}
-            <div className="card form-card">
-              <div className="form-card-header">
-                <div className="form-card-info">
-                  <FileText className="form-icon form-icon-inventory" size={24} />
-                  <div className="form-card-text">
-                    <h3 className="form-card-title">Individual Inventory</h3>
-                    <p className="form-card-description">Personal background information</p>
+            <div className="student-card student-form-card">
+              <div className="student-form-card-header">
+                <div className="student-form-card-info">
+                  <FileText className="student-form-icon student-form-icon-inventory" size={24} />
+                  <div className="student-form-card-text">
+                    <h3 className="student-form-card-title">Individual Inventory</h3>
+                    <p className="student-form-card-description">Personal background information</p>
                   </div>
                 </div>
                 {getStatusIcon(forms.inventoryForm?.submitted)}
               </div>
-              
+
               {forms.inventoryForm?.submitted ? (
-                <div className="form-card-content">
-                  <div className="form-submission-date">
+                <div className="student-form-card-content">
+                  <div className="student-form-submission-date">
                     Submitted: {new Date(forms.inventoryForm.date).toLocaleDateString()}
                   </div>
-                  <button 
-                    className="form-view-button form-view-button-inventory"
-                    onClick={() => handleViewForm('inventoryForm')}
+                  <button
+                    className="student-form-view-button student-form-view-button-inventory"
+                    onClick={() => setViewingForm('inventoryForm')}
                   >
                     View Form
                   </button>
                 </div>
               ) : (
-                <div className="form-not-submitted">Not submitted</div>
+                <div className="student-form-not-submitted">Not submitted</div>
               )}
             </div>
 
             {/* Career Planning Form */}
-            <div className="card form-card">
-              <div className="form-card-header">
-                <div className="form-card-info">
-                  <TrendingUp className="form-icon form-icon-career" size={24} />
-                  <div className="form-card-text">
-                    <h3 className="form-card-title">Career Planning</h3>
-                    <p className="form-card-description">Career goals and planning</p>
+            <div className="student-card student-form-card">
+              <div className="student-form-card-header">
+                <div className="student-form-card-info">
+                  <TrendingUp className="student-form-icon student-form-icon-career" size={24} />
+                  <div className="student-form-card-text">
+                    <h3 className="student-form-card-title">Career Planning</h3>
+                    <p className="student-form-card-description">Career goals and planning</p>
                   </div>
                 </div>
                 {getStatusIcon(forms.careerForm?.submitted)}
               </div>
-              
+
               {forms.careerForm?.submitted ? (
-                <div className="form-card-content">
-                  <div className="form-submission-date">
+                <div className="student-form-card-content">
+                  <div className="student-form-submission-date">
                     Submitted: {new Date(forms.careerForm.date).toLocaleDateString()}
                   </div>
-                  <button 
-                    className="form-view-button form-view-button-career"
-                    onClick={() => handleViewForm('careerForm')}
+                  <button
+                    className="student-form-view-button student-form-view-button-career"
+                    onClick={() => setViewingForm('careerForm')}
                   >
                     View Form
                   </button>
                 </div>
               ) : (
-                <div className="form-not-submitted">Not submitted</div>
+                <div className="student-form-not-submitted">Not submitted</div>
               )}
             </div>
           </div>
         )}
 
         {activeTab === 'mood' && (
-          <div className="card mood-history-card">
-            <div className="mood-history-header">
-              <div className="mood-history-title-section">
-                <Heart className="mood-history-icon" size={24} />
+          <div className="student-card student-mood-history-card">
+            <div className="student-mood-history-header">
+              <div className="student-mood-history-title-section">
+                <Heart className="student-mood-history-icon" size={24} />
                 <div>
-                  <h2 className="card-title">Mood Tracking History</h2>
-                  <p className="mood-history-subtitle">Track student's emotional well-being over time</p>
+                  <h2 className="student-card-title">Mood Tracking History</h2>
+                  <p className="student-mood-history-subtitle">Track student's emotional well-being over time</p>
                 </div>
               </div>
             </div>
-            
-            <div className="mood-history-content">
+
+            <div className="student-mood-history-content">
               {moodHistory.length > 0 ? (
-                <div className="mood-history-list">
+                <div className="student-mood-history-list">
                   {moodHistory.map((entry, index) => (
-                    <div key={index} className="mood-entry">
-                      <div className="mood-entry-badge">
-                        <span className={getMoodBadgeClass(entry.moodLevel)}>
-                          {entry.moodLevel}
-                        </span>
+                    <div key={index} className="student-mood-entry">
+                      <div className="student-mood-entry-badge">
+                        <span className={getMoodBadgeClass(entry.moodLevel)}>{entry.moodLevel}</span>
                       </div>
-                      <div className="mood-entry-content">
-                        <div className="mood-entry-date">
+                      <div className="student-mood-entry-content">
+                        <div className="student-mood-entry-date">
                           {new Date(entry.entryDate).toLocaleDateString('en-US', {
                             weekday: 'long',
                             year: 'numeric',
@@ -471,10 +464,10 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                   ))}
                 </div>
               ) : (
-                <div className="empty-state">
-                  <AlertCircle className="empty-icon" size={48} />
-                  <h3 className="empty-title">No mood entries</h3>
-                  <p className="empty-description">This student hasn't submitted any mood entries yet.</p>
+                <div className="student-empty-state">
+                  <AlertCircle className="student-empty-icon" size={48} />
+                  <h3 className="student-empty-title">No mood entries</h3>
+                  <p className="student-empty-description">This student hasn't submitted any mood entries yet.</p>
                 </div>
               )}
             </div>
