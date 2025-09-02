@@ -121,7 +121,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
       case 'MILD':
         return 'student-mood-badge student-mood-mild';
       case 'MODERATE':
-        return 'student-mood-badge student-moderate';
+        return 'student-mood-badge student-mood-moderate';
       case 'HIGH':
         return 'student-mood-badge student-mood-high';
       default:
