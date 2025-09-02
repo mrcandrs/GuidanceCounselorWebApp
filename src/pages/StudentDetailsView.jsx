@@ -223,13 +223,20 @@ const StudentDetailsView = ({ studentId, onBack }) => {
       {/* Tab Navigation */}
       <div className="student-tab-navigation">
         <div className="student-tab-container">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`student-tab-button ${activeTab === 'overview' ? 'student-tab-active' : ''}`}
-          >
-            <User size={16} />
-            Overview
-          </button>
+        <button 
+          onClick={() => setActiveTab('overview')}
+          className={`student-tab-button ${activeTab === 'overview' ? 'student-tab-active' : ''}`}
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
+        >
+          <User size={16} />
+          Overview
+        </button>
           <button
             onClick={() => setActiveTab('forms')}
             className={`student-tab-button ${activeTab === 'forms' ? 'student-tab-active' : ''}`}
