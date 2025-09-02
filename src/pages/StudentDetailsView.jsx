@@ -178,20 +178,9 @@ const StudentDetailsView = ({ studentId, onBack }) => {
           <AlertCircle size={48} className="student-empty-icon" />
           <h3 className="student-empty-title">Student Not Found</h3>
           <p className="student-empty-description">Unable to load student details.</p>
-        <button 
-          onClick={onBack}
-          className="student-primary-button"
-          type="button"
-          style={{
-            position: 'relative',
-            zIndex: 9999,
-            pointerEvents: 'auto',
-            cursor: 'pointer'
-          }}
-        >
-          <ArrowLeft size={16} />
-          Back to Students
-        </button>
+          <button onClick={onBack} className="student-primary-button" style={{ marginTop: '16px' }}>
+            Back to Students
+          </button>
         </div>
       </div>
     );
@@ -203,10 +192,20 @@ const StudentDetailsView = ({ studentId, onBack }) => {
       <div className="student-details-header">
         <div className="student-header-content">
           <div className="student-header-left">
-            <button onClick={onBack} className="student-back-button" type="button">
-              <ArrowLeft size={16} />
-              Back to Students
-            </button>
+        <button 
+          onClick={onBack}
+          className="student-back-button"
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
+        >
+          <ArrowLeft size={16} />
+          Back to Students
+        </button>
             <div className="student-header-divider"></div>
             <div className="student-title-section">
               <h1 className="student-details-title">{student.fullName || student.name}</h1>
