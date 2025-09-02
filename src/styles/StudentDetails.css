@@ -249,6 +249,34 @@
   background-color: #bfdbfe;
 }
 
+/* Mood Badges */
+.mood-badge {
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.student-mood-mild {
+  background-color: #34C759;
+  color: #ffff;
+}
+
+.student-mood-moderate {
+  background-color: #009951;
+  color: #ffff;
+}
+
+.student-mood-high {
+  background-color: #1B5E20;
+  color: #ffff;
+}
+
+.student-mood-neutral {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
 /* Forms Grid */
 .student-forms-grid {
   display: grid;

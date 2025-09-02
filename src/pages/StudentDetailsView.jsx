@@ -362,8 +362,18 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                     <p className="student-empty-description">No mood entries yet</p>
                   </div>
                 )}
-                <button onClick={() => setActiveTab('mood')} className="student-view-full-history-button">
-                  View Full History
+                <button 
+                    onClick={() => setActiveTab('mood')}
+                    className="student-view-full-history-button"
+                    type="button"
+                    style={{
+                        position: 'relative',
+                        zIndex: 9999,
+                        pointerEvents: 'auto',
+                        cursor: 'pointer'
+                    }}
+                >
+                View Full History
                 </button>
               </div>
             </div>
