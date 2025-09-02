@@ -223,6 +223,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
       {/* Tab Navigation */}
       <div className="student-tab-navigation">
         <div className="student-tab-container">
+        {/* Overview */}
         <button 
           onClick={() => setActiveTab('overview')}
           className={`student-tab-button ${activeTab === 'overview' ? 'student-tab-active' : ''}`}
@@ -237,20 +238,36 @@ const StudentDetailsView = ({ studentId, onBack }) => {
           <User size={16} />
           Overview
         </button>
-          <button
-            onClick={() => setActiveTab('forms')}
-            className={`student-tab-button ${activeTab === 'forms' ? 'student-tab-active' : ''}`}
-          >
-            <FileText size={16} />
-            Forms
-          </button>
-          <button
-            onClick={() => setActiveTab('mood')}
-            className={`student-tab-button ${activeTab === 'mood' ? 'student-tab-active' : ''}`}
-          >
-            <Heart size={16} />
-            Mood Tracking
-          </button>
+        {/* Forms */}
+        <button 
+          onClick={() => setActiveTab('forms')}
+          className={`student-tab-button ${activeTab === 'forms' ? 'student-tab-active' : ''}`}
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
+        >
+          <FileText size={16} />
+          Forms
+        </button>
+        {/* Mood Tracking */}
+        <button 
+          onClick={() => setActiveTab('mood')}
+          className={`student-tab-button ${activeTab === 'mood' ? 'student-tab-active' : ''}`}
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
+        >
+          <Heart size={16} />
+          Mood Tracking
+        </button>
         </div>
       </div>
 
