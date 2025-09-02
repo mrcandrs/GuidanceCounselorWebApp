@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, User, Calendar, Mail, Phone, MapPin, FileText, TrendingUp, Heart, GraduationCap, Users, Clock, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import '../styles/StudentDetails.css';
 import axios from 'axios';
-//import ConsentFormView from './ConsentFormView';
-//import InventoryFormView from './InventoryFormView';
-//import CareerFormView from './CareerFormView';
+import ConsentFormView from './ConsentFormView';
+import InventoryFormView from './InventoryFormView';
+import CareerFormView from './CareerFormView';
 
 const StudentDetailsView = ({ studentId, onBack }) => {
   const [student, setStudent] = useState(null);
@@ -146,7 +146,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
   };
 
   // If viewing a form, render the appropriate form viewer
-  /*if (viewingForm) {
+  if (viewingForm) {
     const formData = forms[viewingForm]?.data;
     switch (viewingForm) {
       case 'consentForm':
@@ -158,7 +158,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
       default:
         return null;
     }
-  }*/
+  }
 
   if (loading) {
     return (

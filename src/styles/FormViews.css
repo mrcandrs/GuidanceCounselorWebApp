@@ -1,0 +1,387 @@
+/* Form Views Styles */
+
+.form-view-container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  width: 100%;
+}
+
+/* Form Header Styles */
+.form-view-header {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.form-title-section {
+  flex: 1;
+}
+
+.form-title-with-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.form-header-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.form-view-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.form-view-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.form-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 20px;
+}
+
+.status-icon-success {
+  color: #10b981;
+}
+
+.status-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+}
+
+/* Section Navigation */
+.form-section-nav {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.section-nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+}
+
+.section-nav-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.section-nav-button:hover {
+  color: #374151;
+  border-bottom-color: #d1d5db;
+}
+
+.section-nav-button.section-nav-active {
+  color: #0477BF;
+  border-bottom-color: #0477BF;
+}
+
+/* Form Content */
+.form-view-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.form-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  min-width: 0;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 32px;
+}
+
+.form-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Form Info Grid */
+.form-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.form-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+  word-wrap: break-word;
+}
+
+/* Status Values */
+.status-agreed {
+  color: #10b981 !important;
+}
+
+.status-not-agreed {
+  color: #ef4444 !important;
+}
+
+.status-yes {
+  color: #10b981 !important;
+}
+
+.status-no {
+  color: #6b7280 !important;
+}
+
+/* Assessment Lists */
+.assessment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assessment-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border-left: 4px solid #0477BF;
+}
+
+.assessment-number {
+  font-size: 16px;
+  font-weight: bold;
+  color: #0477BF;
+  flex-shrink: 0;
+  width: 24px;
+}
+
+.assessment-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* Siblings List */
+.siblings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sibling-item {
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.sibling-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sibling-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.sibling-details {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.sibling-occupation {
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Work Experience List */
+.work-experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.work-item {
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.work-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.work-company {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.work-position {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.work-duration {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Empty States */
+.empty-description {
+  color: #9ca3af;
+  font-style: italic;
+  margin: 16px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .form-sections-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-view-content {
+    padding: 24px 16px;
+  }
+  
+  .form-card {
+    padding: 24px;
+  }
+  
+  .section-nav-container {
+    padding: 0 16px;
+    gap: 16px;
+  }
+  
+  .section-nav-button {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+  
+  .form-sections-grid {
+    gap: 24px;
+  }
+  
+  .form-section {
+    margin-bottom: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-content {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .header-divider {
+    display: none;
+  }
+  
+  .section-nav-container {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .section-nav-button {
+    padding: 12px 0;
+    justify-content: flex-start;
+    border-bottom: none;
+    border-left: 2px solid transparent;
+    padding-left: 12px;
+  }
+  
+  .section-nav-button.section-nav-active {
+    border-bottom: none;
+    border-left-color: #0477BF;
+    background-color: #f0f9ff;
+  }
+  
+  .form-title-with-icon {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
