@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Eye, Edit, Trash2, Users, ArrowLeft } from 'lucide-react';
+import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
