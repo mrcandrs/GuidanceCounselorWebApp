@@ -83,7 +83,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
 
       // Check Inventory Form  
       try {
-        const inventoryResponse = await axios.get(`${API_BASE}/student/${studentId}/inventory-form`, { headers });
+        const inventoryResponse = await axios.get(`${API_BASE.replace('/api', '')}/api/inventory/${studentId}`, { headers });
         setForms(prev => ({
           ...prev,
           inventoryForm: inventoryResponse.data ? {
@@ -98,7 +98,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
 
       // Check Career Planning Form
       try {
-        const careerResponse = await axios.get(`${API_BASE}/student/${studentId}/career-form`, { headers });
+        const careerResponse = await axios.get(`${API_BASE.replace('/api', '')}/api/careerplanning/${studentId}`, { headers });
         setForms(prev => ({
           ...prev,
           careerForm: careerResponse.data ? {
