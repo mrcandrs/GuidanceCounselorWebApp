@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, Users, Calendar, CheckCircle, FileText } from 'lucide-react';
+import jsPDF from "jspdf";
 import '../styles/FormViews.css';
 
 const ConsentFormView = ({ data, onBack }) => {
@@ -17,6 +18,27 @@ const ConsentFormView = ({ data, onBack }) => {
       </div>
     );
   }
+
+  //Handling downloadable PDF
+  const handleDownloadPDF = () => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Client Consent Form", 20, 20);
+
+  doc.setFontSize(12);
+  doc.text(`Student Name: ${data.student?.fullName || 'N/A'}`, 20, 40);
+  doc.text(`Parent/Guardian Name: ${data.parentName || 'N/A'}`, 20, 50);
+  doc.text(`Date Signed: ${data.signedDate ? new Date(data.signedDate).toLocaleDateString() : 'N/A'}`, 20, 60);
+  doc.text(`Consent Status: ${data.isAgreed ? 'Agreed' : 'Not Agreed'}`, 20, 70);
+
+  if (data.counselor) {
+    doc.text(`Counselor Name: ${data.counselor.name || 'N/A'}`, 20, 90);
+    doc.text(`Counselor Email: ${data.counselor.email || 'N/A'}`, 20, 100);
+  }
+
+  doc.save(`ConsentForm_${data.consentId}.pdf`);
+};
 
   return (
     <div className="form-view-container">
@@ -54,6 +76,20 @@ const ConsentFormView = ({ data, onBack }) => {
               <CheckCircle className="status-icon-success" size={16} />
               <span className="status-text">Submitted</span>
             </div>
+
+              <button 
+                onClick={handleDownloadPDF}
+                className="download-pdf-button"
+                type="button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+              >
+                Download PDF
+              </button>
           </div>
         </div>
       </div>

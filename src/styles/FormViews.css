@@ -330,6 +330,23 @@
   margin: 16px 0;
 }
 
+/* Download PDF Button */
+.download-pdf-button {
+  padding: 6px 12px;
+  background-color: #0477BF;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.download-pdf-button:hover {
+  background-color: #0369a1;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .form-sections-grid {
