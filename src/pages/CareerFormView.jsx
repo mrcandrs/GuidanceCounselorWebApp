@@ -299,14 +299,20 @@ const CareerFormView = ({ data, onBack }) => {
       <div className="form-view-header">
         <div className="header-content">
           <div className="header-left">
-            <button
-              onClick={onBack}
-              className="back-button"
-              type="button"
-            >
-              <ArrowLeft size={16} />
-              Back to Student Details
-            </button>
+              <button 
+                onClick={onBack}
+                className="student-back-button"
+                type="button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+              >
+                <ArrowLeft size={16} />
+                Back to Student Details
+              </button>
             <div className="header-divider"></div>
             <div className="form-title-section">
               <div className="form-title-with-icon">
@@ -334,9 +340,16 @@ const CareerFormView = ({ data, onBack }) => {
             const Icon = section.icon;
             return (
               <button
-                key={section.id}
+		            key={section.id} 
                 onClick={() => setActiveSection(section.id)}
                 className={`section-nav-button ${activeSection === section.id ? 'section-nav-active' : ''}`}
+                type="button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
               >
                 <Icon size={16} />
                 {section.label}
