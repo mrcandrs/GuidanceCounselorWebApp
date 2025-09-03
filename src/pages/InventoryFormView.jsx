@@ -227,24 +227,26 @@ const InventoryFormView = ({ data, onBack }) => {
   );
 
   const renderEducationInfo = () => (
-    <div className="form-section">
-      <h3 className="form-section-title">Educational Background</h3>
-      <div className="form-info-grid">
-        <div className="form-info-item">
-          <span className="form-label">Elementary:</span>
-          <span className="form-value">{data.elementary || 'N/A'}</span>
-        </div>
-        <div className="form-info-item">
-          <span className="form-label">Junior High School:</span>
-          <span className="form-value">{data.juniorHigh || 'N/A'}</span>
-        </div>
-        <div className="form-info-item">
-          <span className="form-label">Senior High School:</span>
-          <span className="form-value">{data.seniorHigh || 'N/A'}</span>
-        </div>
-        <div className="form-info-item">
-          <span className="form-label">College:</span>
-          <span className="form-value">{data.college || 'N/A'}</span>
+    <div className="form-sections-grid">
+      <div className="form-section">
+        <h3 className="form-section-title">Educational Background</h3>
+        <div className="form-info-grid">
+          <div className="form-info-item">
+            <span className="form-label">Elementary:</span>
+            <span className="form-value">{data.elementary || 'N/A'}</span>
+          </div>
+          <div className="form-info-item">
+            <span className="form-label">Junior High School:</span>
+            <span className="form-value">{data.juniorHigh || 'N/A'}</span>
+          </div>
+          <div className="form-info-item">
+            <span className="form-label">Senior High School:</span>
+            <span className="form-value">{data.seniorHigh || 'N/A'}</span>
+          </div>
+          <div className="form-info-item">
+            <span className="form-label">College:</span>
+            <span className="form-value">{data.college || 'N/A'}</span>
+          </div>
         </div>
       </div>
       
@@ -411,20 +413,14 @@ const InventoryFormView = ({ data, onBack }) => {
       <div className="form-view-header">
         <div className="header-content">
           <div className="header-left">
-              <button 
-                onClick={onBack}
-                className="student-back-button"
-                type="button"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
-              >
-                <ArrowLeft size={16} />
-                Back to Student Details
-              </button>
+            <button
+              onClick={onBack}
+              className="back-button"
+              type="button"
+            >
+              <ArrowLeft size={16} />
+              Back to Student Details
+            </button>
             <div className="header-divider"></div>
             <div className="form-title-section">
               <div className="form-title-with-icon">
@@ -452,16 +448,9 @@ const InventoryFormView = ({ data, onBack }) => {
             const Icon = section.icon;
             return (
               <button
-		            key={section.id} 
+                key={section.id}
                 onClick={() => setActiveSection(section.id)}
                 className={`section-nav-button ${activeSection === section.id ? 'section-nav-active' : ''}`}
-                type="button"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
               >
                 <Icon size={16} />
                 {section.label}
