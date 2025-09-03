@@ -24,14 +24,20 @@ const ConsentFormView = ({ data, onBack }) => {
       <div className="form-view-header">
         <div className="header-content">
           <div className="header-left">
-            <button
-              onClick={onBack}
-              className="back-button"
-              type="button"
-            >
-              <ArrowLeft size={16} />
-              Back to Student Details
-            </button>
+              <button 
+                onClick={onBack}
+                className="student-back-button"
+                type="button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+              >
+                <ArrowLeft size={16} />
+                Back to Student Details
+              </button>
             <div className="header-divider"></div>
             <div className="form-title-section">
               <div className="form-title-with-icon">
