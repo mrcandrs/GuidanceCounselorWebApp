@@ -13,6 +13,33 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+.form-view-header .header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-view-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.form-view-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-view-header .header-divider {
+  height: 24px;
+  width: 1px;
+  background-color: #d1d5db;
+}
+
 .form-title-section {
   flex: 1;
 }
