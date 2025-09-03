@@ -400,12 +400,19 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                   <div className="student-form-submission-date">
                     Submitted: {new Date(forms.consentForm.date).toLocaleDateString()}
                   </div>
-                  <button
-                    className="student-form-view-button student-form-view-button-consent"
-                    onClick={() => setViewingForm('consentForm')}
-                  >
-                    View Form
-                  </button>
+                    <button 
+                      onClick={() => setViewingForm('consentForm')}
+                      className="student-form-view-button student-form-view-button-consent"
+                      type="button"
+                      style={{
+                        position: 'relative',
+                        zIndex: 9999,
+                        pointerEvents: 'auto',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      View Form
+                    </button>
                 </div>
               ) : (
                 <div className="student-form-not-submitted">Not submitted</div>
@@ -418,7 +425,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                 <div className="student-form-card-info">
                   <FileText className="student-form-icon student-form-icon-inventory" size={24} />
                   <div className="student-form-card-text">
-                    <h3 className="student-form-card-title">Individual Inventory</h3>
+                    <h3 className="student-form-card-title">Individual Inventory Form</h3>
                     <p className="student-form-card-description">Personal background information</p>
                   </div>
                 </div>
@@ -430,12 +437,19 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                   <div className="student-form-submission-date">
                     Submitted: {new Date(forms.inventoryForm.date).toLocaleDateString()}
                   </div>
-                  <button
-                    className="student-form-view-button student-form-view-button-inventory"
-                    onClick={() => setViewingForm('inventoryForm')}
-                  >
-                    View Form
-                  </button>
+                    <button 
+                      onClick={() => setViewingForm('inventoryForm')}
+                      className="student-form-view-button student-form-view-button-inventory"
+                      type="button"
+                      style={{
+                        position: 'relative',
+                        zIndex: 9999,
+                        pointerEvents: 'auto',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      View Form
+                    </button>
                 </div>
               ) : (
                 <div className="student-form-not-submitted">Not submitted</div>
@@ -448,7 +462,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                 <div className="student-form-card-info">
                   <TrendingUp className="student-form-icon student-form-icon-career" size={24} />
                   <div className="student-form-card-text">
-                    <h3 className="student-form-card-title">Career Planning</h3>
+                    <h3 className="student-form-card-title">Career Planning Form</h3>
                     <p className="student-form-card-description">Career goals and planning</p>
                   </div>
                 </div>
@@ -460,12 +474,19 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                   <div className="student-form-submission-date">
                     Submitted: {new Date(forms.careerForm.date).toLocaleDateString()}
                   </div>
-                  <button
-                    className="student-form-view-button student-form-view-button-career"
-                    onClick={() => setViewingForm('careerForm')}
-                  >
-                    View Form
-                  </button>
+                    <button 
+                      onClick={() => setViewingForm('careerForm')}
+                      className="student-form-view-button student-form-view-button-career"
+                      type="button"
+                      style={{
+                        position: 'relative',
+                        zIndex: 9999,
+                        pointerEvents: 'auto',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      View Form
+                    </button>
                 </div>
               ) : (
                 <div className="student-form-not-submitted">Not submitted</div>
