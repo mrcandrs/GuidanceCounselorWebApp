@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, FileText, Calendar, CheckCircle, User, Home, Heart, GraduationCap, Briefcase } from 'lucide-react';
+import jsPDF from 'jspdf';
 import '../styles/FormViews.css';
 
 const InventoryFormView = ({ data, onBack }) => {
@@ -28,6 +29,156 @@ const InventoryFormView = ({ data, onBack }) => {
     { id: 'work', label: 'Work Experience', icon: Briefcase },
     { id: 'health', label: 'Health', icon: Heart }
   ];
+
+  //Handling downloadable PDF
+  const handleDownloadPDF = () => {
+  const doc = new jsPDF();
+  let yPosition = 20;
+
+  //Helper function to add text with automatic page breaks
+  const addText = (text, x, y, fontSize = 10) => {
+    doc.setFontSize(fontSize);
+    if (y > 280) { // If near bottom of page
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(text, x, y);
+    return y + (fontSize === 16 ? 10 : fontSize === 12 ? 8 : 6);
+  };
+
+  //Header
+  yPosition = addText("Individual Inventory Form", 20, yPosition, 16);
+  yPosition = addText(`Generated on: ${new Date().toLocaleDateString()}`, 20, yPosition, 10);
+  yPosition += 5;
+
+  //Basic Information
+  yPosition = addText("PERSONAL INFORMATION", 20, yPosition, 12);
+  yPosition = addText(`Full Name: ${data.fullName || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Nickname: ${data.nickname || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Student Number: ${data.studentNumber || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Program: ${data.program || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Gender: ${data.gender || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Birthday: ${data.birthday ? new Date(data.birthday).toLocaleDateString() : 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Nationality: ${data.nationality || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Civil Status: ${data.civilStatus || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Religion: ${data.religion || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  //Spouse Information (if married)
+  if (data.civilStatus === 'Married') {
+    yPosition = addText("SPOUSE INFORMATION", 20, yPosition, 12);
+    yPosition = addText(`Spouse Name: ${data.spouseName || 'N/A'}`, 25, yPosition);
+    yPosition = addText(`Spouse Age: ${data.spouseAge || 'N/A'}`, 25, yPosition);
+    yPosition = addText(`Spouse Occupation: ${data.spouseOccupation || 'N/A'}`, 25, yPosition);
+    yPosition = addText(`Spouse Contact: ${data.spouseContact || 'N/A'}`, 25, yPosition);
+    yPosition += 5;
+  }
+
+  //Contact Information
+  yPosition = addText("CONTACT INFORMATION", 20, yPosition, 12);
+  yPosition = addText(`Phone Number: ${data.phoneNumber || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Primary Email: ${data.email1 || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Secondary Email: ${data.email2 || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Present Address: ${data.presentAddress || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Permanent Address: ${data.permanentAddress || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Provincial Address: ${data.provincialAddress || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  //Family Information
+  yPosition = addText("FAMILY INFORMATION", 20, yPosition, 12);
+  yPosition = addText("Father's Information:", 25, yPosition, 11);
+  yPosition = addText(`  Name: ${data.fatherName || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Status: ${data.fatherStatus || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Occupation: ${data.fatherOccupation || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Contact: ${data.fatherContact || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Income: ${data.fatherIncome || 'N/A'}`, 25, yPosition);
+
+  yPosition = addText("Mother's Information:", 25, yPosition, 11);
+  yPosition = addText(`  Name: ${data.motherName || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Status: ${data.motherStatus || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Occupation: ${data.motherOccupation || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Contact: ${data.motherContact || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`  Income: ${data.motherIncome || 'N/A'}`, 25, yPosition);
+
+  if (data.guardianName) {
+    yPosition = addText("Guardian Information:", 25, yPosition, 11);
+    yPosition = addText(`  Name: ${data.guardianName}`, 25, yPosition);
+    yPosition = addText(`  Contact: ${data.guardianContact || 'N/A'}`, 25, yPosition);
+  }
+
+  //Siblings
+  if (data.siblings && data.siblings.length > 0) {
+    yPosition = addText("Siblings:", 25, yPosition, 11);
+    data.siblings.forEach((sibling, index) => {
+      yPosition = addText(`  ${index + 1}. ${sibling.name || 'N/A'} - Age: ${sibling.age || 'N/A'}, Gender: ${sibling.gender || 'N/A'}`, 25, yPosition);
+      yPosition = addText(`     ${sibling.programOrOccupation || 'N/A'} at ${sibling.schoolOrCompany || 'N/A'}`, 25, yPosition);
+    });
+  }
+  yPosition += 5;
+
+  //Educational Background
+  yPosition = addText("EDUCATIONAL BACKGROUND", 20, yPosition, 12);
+  yPosition = addText(`Elementary: ${data.elementary || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Junior High School: ${data.juniorHigh || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Senior High School: ${data.seniorHigh || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`College: ${data.college || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  //Interests & Activities
+  yPosition = addText("INTERESTS & ACTIVITIES", 20, yPosition, 12);
+  yPosition = addText(`Sports: ${data.sports || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Hobbies: ${data.hobbies || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Talents: ${data.talents || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Socio-Civic Activities: ${data.socioCivic || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`School Organizations: ${data.schoolOrg || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  //Work Experience
+  yPosition = addText("WORK EXPERIENCE", 20, yPosition, 12);
+  if (data.workExperience && data.workExperience.length > 0) {
+    data.workExperience.forEach((work, index) => {
+      yPosition = addText(`${index + 1}. Company: ${work.company || 'N/A'}`, 25, yPosition);
+      yPosition = addText(`   Position: ${work.position || 'N/A'}`, 25, yPosition);
+      yPosition = addText(`   Duration: ${work.duration || 'N/A'}`, 25, yPosition);
+    });
+  } else {
+    yPosition = addText("No work experience recorded", 25, yPosition);
+  }
+  yPosition += 5;
+
+  //Health Information
+  yPosition = addText("HEALTH INFORMATION", 20, yPosition, 12);
+  yPosition = addText(`Ever been hospitalized: ${data.wasHospitalized ? 'Yes' : 'No'}`, 25, yPosition);
+  if (data.wasHospitalized) {
+    yPosition = addText(`  Reason: ${data.hospitalizedReason || 'N/A'}`, 25, yPosition);
+  }
+  yPosition = addText(`Had operation: ${data.hadOperation ? 'Yes' : 'No'}`, 25, yPosition);
+  if (data.hadOperation) {
+    yPosition = addText(`  Reason: ${data.operationReason || 'N/A'}`, 25, yPosition);
+  }
+  yPosition = addText(`Has illness: ${data.hasIllness ? 'Yes' : 'No'}`, 25, yPosition);
+  if (data.hasIllness) {
+    yPosition = addText(`  Details: ${data.illnessDetails || 'N/A'}`, 25, yPosition);
+  }
+  yPosition = addText(`Takes medication: ${data.takesMedication ? 'Yes' : 'No'}`, 25, yPosition);
+  if (data.takesMedication) {
+    yPosition = addText(`  Details: ${data.medicationDetails || 'N/A'}`, 25, yPosition);
+  }
+  yPosition = addText(`Family illness history: ${data.familyIllness || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Last doctor visit: ${data.lastDoctorVisit ? new Date(data.lastDoctorVisit).toLocaleDateString() : 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Visit reason: ${data.visitReason || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  //Life Circumstances
+  yPosition = addText("LIFE CIRCUMSTANCES", 20, yPosition, 12);
+  yPosition = addText(`Loss experience: ${data.lossExperience || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Problems: ${data.problems || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Relationship concerns: ${data.relationshipConcerns || 'N/A'}`, 25, yPosition);
+
+  //Save the PDF
+  const fileName = `InventoryForm_${data.fullName || 'Student'}_${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(fileName);
+};
 
   const renderBasicInfo = () => (
     <div className="form-sections-grid">
