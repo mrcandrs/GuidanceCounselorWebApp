@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
 import '../styles/EndorsementCustodyView.css';
 
 // Add this PDF handler function to your EndorsementCustodyView component
