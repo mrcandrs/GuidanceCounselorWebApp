@@ -161,7 +161,6 @@ const handleDownloadPDF = async () => {
                   cursor: 'pointer'
                 }}
               >
-                <Save size={16} />
                 Download PDF
               </button>
           </div>
