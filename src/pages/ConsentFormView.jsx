@@ -37,7 +37,7 @@ const ConsentFormView = ({ data, onBack }) => {
     doc.text(`Counselor Email: ${data.counselor.email || 'N/A'}`, 20, 100);
   }
 
-  doc.save(`ConsentForm_${data.fullName}.pdf`);
+  doc.save(`ConsentForm_${data.student?.fullName}.pdf`);
 };
 
   return (
@@ -88,7 +88,6 @@ const ConsentFormView = ({ data, onBack }) => {
                   cursor: 'pointer'
                 }}
               >
-                <Save size={16} />
                 Download PDF
               </button>
           </div>
