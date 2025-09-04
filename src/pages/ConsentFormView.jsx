@@ -37,7 +37,7 @@ const ConsentFormView = ({ data, onBack }) => {
     doc.text(`Counselor Email: ${data.counselor.email || 'N/A'}`, 20, 100);
   }
 
-  doc.save(`ConsentForm_${data.consentId}.pdf`);
+  doc.save(`ConsentForm_${data.fullName}.pdf`);
 };
 
   return (
