@@ -329,6 +329,19 @@ const CareerFormView = ({ data, onBack }) => {
               <CheckCircle className="status-icon-success" size={16} />
               <span className="status-text">Submitted</span>
             </div>
+              <button 
+                onClick={handleDownloadPDF}
+                className="download-pdf-button"
+                type="button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+              >
+                Download PDF
+              </button>
           </div>
         </div>
       </div>

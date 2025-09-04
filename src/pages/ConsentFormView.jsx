@@ -76,7 +76,6 @@ const ConsentFormView = ({ data, onBack }) => {
               <CheckCircle className="status-icon-success" size={16} />
               <span className="status-text">Submitted</span>
             </div>
-
               <button 
                 onClick={handleDownloadPDF}
                 className="download-pdf-button"
