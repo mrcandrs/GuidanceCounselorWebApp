@@ -3,6 +3,138 @@ import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'luci
 import axios from 'axios';
 import '../styles/EndorsementCustodyView.css';
 
+// Add this PDF handler function to your EndorsementCustodyView component
+const handleDownloadPDF = (formData) => {
+  const doc = new jsPDF();
+  let yPosition = 20;
+
+  // Helper function to add text with automatic page breaks
+  const addText = (text, x, y, fontSize = 10) => {
+    doc.setFontSize(fontSize);
+    if (y > 280) { // If near bottom of page
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(text, x, y);
+    return y + (fontSize === 16 ? 12 : fontSize === 12 ? 8 : 6);
+  };
+
+  // Helper function to add wrapped text for long content
+  const addWrappedText = (text, x, y, maxWidth = 170, fontSize = 10) => {
+    doc.setFontSize(fontSize);
+    const lines = doc.splitTextToSize(text || 'N/A', maxWidth);
+    lines.forEach((line) => {
+      if (y > 280) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, x, y);
+      y += fontSize === 12 ? 8 : 6;
+    });
+    return y;
+  };
+
+  // Helper function to add a line separator
+  const addLine = (y) => {
+    doc.setLineWidth(0.5);
+    doc.line(20, y, 190, y);
+    return y + 8;
+  };
+
+  // Header
+  yPosition = addText("ENDORSEMENT - CUSTODY FORM", 20, yPosition, 16);
+  yPosition = addText("Guidance and Counseling Services", 20, yPosition, 12);
+  yPosition = addText(`Generated on: ${new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })}`, 20, yPosition, 10);
+  
+  yPosition = addLine(yPosition + 5);
+
+  // Student Information
+  yPosition = addText("STUDENT INFORMATION", 20, yPosition, 12);
+  yPosition = addText(`Student Name: ${formData.student?.fullName || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Student Number: ${formData.student?.studentNumber || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Student ID: ${formData.studentId || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Grade/Year Level: ${formData.gradeYearLevel || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Section: ${formData.section || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  // Session Details
+  yPosition = addText("SESSION DETAILS", 20, yPosition, 12);
+  yPosition = addText(`Date: ${formatManilaDate(formData.date)}`, 25, yPosition);
+  yPosition = addText(`Time: ${formData.time ? formatTime(formData.time) : formatTime(new Date(formData.date).toTimeString().substring(0, 5))}`, 25, yPosition);
+  yPosition += 5;
+
+  // Counseling Information
+  yPosition = addText("COUNSELING INFORMATION", 20, yPosition, 12);
+  
+  yPosition = addText("Concern/s:", 25, yPosition, 11);
+  yPosition = addWrappedText(formData.concerns, 30, yPosition);
+  yPosition += 3;
+  
+  yPosition = addText("Intervention/s:", 25, yPosition, 11);
+  yPosition = addWrappedText(formData.interventions, 30, yPosition);
+  yPosition += 3;
+  
+  yPosition = addText("Recommendation/s:", 25, yPosition, 11);
+  yPosition = addWrappedText(formData.recommendations, 30, yPosition);
+  yPosition += 3;
+  
+  yPosition = addText("Referral/s:", 25, yPosition, 11);
+  yPosition = addWrappedText(formData.referrals, 30, yPosition);
+  yPosition += 5;
+
+  // Endorsement Information
+  yPosition = addText("ENDORSEMENT INFORMATION", 20, yPosition, 12);
+  yPosition = addText(`Endorsed By: ${formData.endorsedBy || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Endorsed To: ${formData.endorsedTo || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  // Form Metadata
+  yPosition = addText("FORM DETAILS", 20, yPosition, 12);
+  yPosition = addText(`Form ID: ${formData.custodyId || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Created: ${formData.createdAt ? formatManilaDateTime(formData.createdAt) : formatManilaDate(formData.date)}`, 25, yPosition);
+  if (formData.updatedAt) {
+    yPosition = addText(`Last Updated: ${formatManilaDateTime(formData.updatedAt)}`, 25, yPosition);
+  }
+  yPosition += 15;
+
+  // Signature section
+  yPosition = addLine(yPosition);
+  yPosition = addText("SIGNATURES", 20, yPosition, 12);
+  yPosition += 10;
+  
+  // Counselor signature
+  yPosition = addText("_________________________________", 25, yPosition);
+  yPosition = addText(`Guidance Counselor: ${formData.endorsedBy || 'N/A'}`, 25, yPosition, 9);
+  yPosition = addText(`Date: ${formatManilaDate(formData.date)}`, 25, yPosition + 10, 9);
+  
+  yPosition += 25;
+  
+  // Parent/Guardian signature
+  yPosition = addText("_________________________________", 25, yPosition);
+  yPosition = addText(`Parent/Guardian: ${formData.endorsedTo || 'N/A'}`, 25, yPosition, 9);
+  yPosition = addText("Date: _______________", 25, yPosition + 10, 9);
+
+  // Footer
+  if (yPosition < 250) {
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text("This document was generated electronically by the Student Information System.", 20, 280);
+    doc.text(`Page 1 of 1 | Generated: ${new Date().toISOString()}`, 20, 287);
+  }
+
+  // Save the PDF
+  const studentName = formData.student?.fullName || 'Student';
+  const formattedDate = new Date(formData.date).toISOString().split('T')[0];
+  const fileName = `EndorsementCustodyForm_${studentName.replace(/\s+/g, '_')}_${formattedDate}.pdf`;
+  doc.save(fileName);
+};
+
 // Utility function to format dates in Manila timezone
 const formatManilaDateTime = (dateString) => {
   const date = new Date(dateString);
@@ -560,6 +692,20 @@ const EndorsementCustodyView = () => {
           <h2 className="form-title">
             View Endorsement - Custody Form
           </h2>
+          <button 
+          onClick={() => handleDownloadPDF(viewingForm)}
+          className="download-pdf-button"
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer',
+            marginLeft: 'auto'
+          }}
+        >
+          Download PDF
+        </button>
         </div>
 
         <div className="endorsement-form-card">
