@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, User, Calendar, Mail, Phone, MapPin, FileText, TrendingUp, Heart, GraduationCap, Users, Clock, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, ALargeSmall, User, Calendar, Mail, Phone, MapPin, FileText, TrendingUp, Heart, GraduationCap, Users, Clock, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import '../styles/StudentDetails.css';
 import axios from 'axios';
 import ConsentFormView from './ConsentFormView';
@@ -294,6 +294,13 @@ const StudentDetailsView = ({ studentId, onBack }) => {
                         <p className="student-info-label">Program & Year</p>
                         <p className="student-info-value">{student.program}</p>
                         <p className="student-info-subvalue">{student.gradeYear}</p>
+                      </div>
+                    </div>
+                    <div className="student-info-item">
+                      <ALargeSmall className="student-info-icon" size={20} />
+                      <div className="student-info-content">
+                        <p className="student-info-label">Username</p>
+                        <p className="student-info-value">{student.username}</p>
                       </div>
                     </div>
                     <div className="student-info-item">
