@@ -19,99 +19,26 @@ const ConsentFormView = ({ data, onBack }) => {
     );
   }
 
-//Handling downloadable PDF
-// Fixed PDF download handler with better error handling and CORS support
-const handleDownloadPDF = async () => {
-  try {
-    // Show loading state (optional)
-    // setIsLoading(true);
-    
-    const response = await fetch(`/api/consentform/${data.consentId}/pdf`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/pdf',
-        'Content-Type': 'application/json',
-        // Add any authentication headers if needed
-        // 'Authorization': `Bearer ${authToken}`,
-      },
-    });
+  //Handling downloadable PDF
+  const handleDownloadPDF = () => {
+  const doc = new jsPDF();
 
-    if (!response.ok) {
-      // Handle different HTTP error codes
-      let errorMessage = 'Failed to download PDF';
-      
-      if (response.status === 404) {
-        const errorText = await response.text();
-        errorMessage = errorText || 'Consent form or template not found';
-      } else if (response.status === 500) {
-        const errorText = await response.text();
-        errorMessage = 'Server error occurred while generating PDF';
-      } else {
-        errorMessage = `HTTP Error: ${response.status} ${response.statusText}`;
-      }
-      
-      throw new Error(errorMessage);
-    }
+  doc.setFontSize(16);
+  doc.text("Client Consent Form", 20, 20);
 
-    // Check if response is actually a PDF
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/pdf')) {
-      throw new Error('Server did not return a valid PDF file');
-    }
+  doc.setFontSize(12);
+  doc.text(`Student Name: ${data.student?.fullName || 'N/A'}`, 20, 40);
+  doc.text(`Parent/Guardian Name: ${data.parentName || 'N/A'}`, 20, 50);
+  doc.text(`Date Signed: ${data.signedDate ? new Date(data.signedDate).toLocaleDateString() : 'N/A'}`, 20, 60);
+  doc.text(`Consent Status: ${data.isAgreed ? 'Agreed' : 'Not Agreed'}`, 20, 70);
 
-    const blob = await response.blob();
-    
-    // Verify blob is not empty
-    if (blob.size === 0) {
-      throw new Error('Received empty PDF file');
-    }
-
-    // Create download
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    
-    // Get filename from Content-Disposition header if available, otherwise use fallback
-    const contentDisposition = response.headers.get('content-disposition');
-    let filename = `ConsentForm_${data.consentId}.pdf`; // fallback
-    
-    if (contentDisposition) {
-      const matches = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-      if (matches && matches[1]) {
-        filename = matches[1].replace(/['"]/g, '');
-      }
-    }
-    
-    a.download = filename;
-    
-    // Ensure the link is added to DOM for some browsers
-    document.body.appendChild(a);
-    a.click();
-    
-    // Cleanup
-    setTimeout(() => {
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }, 100);
-
-    console.log('PDF downloaded successfully');
-    
-  } catch (error) {
-    console.error('PDF download error:', error);
-    
-    // Show user-friendly error message
-    const errorMessage = error.message || 'Unable to download the PDF. Please try again.';
-    alert(errorMessage);
-    
-    // Optional: Show toast notification instead of alert
-    // showErrorToast(errorMessage);
-    
-  } finally {
-    // Hide loading state (optional)
-    // setIsLoading(false);
+  if (data.counselor) {
+    doc.text(`Counselor Name: ${data.counselor.name || 'N/A'}`, 20, 90);
+    doc.text(`Counselor Email: ${data.counselor.email || 'N/A'}`, 20, 100);
   }
-};
 
+  doc.save(`ConsentForm_${data.consentId}.pdf`);
+};
 
   return (
     <div className="form-view-container">
@@ -161,6 +88,7 @@ const handleDownloadPDF = async () => {
                   cursor: 'pointer'
                 }}
               >
+                <Save size={16} />
                 Download PDF
               </button>
           </div>
