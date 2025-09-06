@@ -1,7 +1,145 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
+import jsPDF from 'jspdf';
 import axios from 'axios';
 import '../styles/ConsultationConferenceView.css';
+
+// Updated PDF handler function for Consultation/Conference Form
+const handleDownloadPDF = (formData) => {
+  // Import jsPDF - make sure this is available in your project
+  // You may need to add: import jsPDF from 'jspdf';
+  const doc = new jsPDF();
+  let yPosition = 20;
+
+  // Helper function to add text with automatic page breaks
+  const addText = (text, x, y, fontSize = 10) => {
+    doc.setFontSize(fontSize);
+    if (y > 280) { // If near bottom of page
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(text, x, y);
+    return y + (fontSize === 16 ? 12 : fontSize === 12 ? 8 : 6);
+  };
+
+  // Helper function to add wrapped text for long content
+  const addWrappedText = (text, x, y, maxWidth = 170, fontSize = 10) => {
+    doc.setFontSize(fontSize);
+    const lines = doc.splitTextToSize(text || 'N/A', maxWidth);
+    lines.forEach((line) => {
+      if (y > 280) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, x, y);
+      y += fontSize === 12 ? 8 : 6;
+    });
+    return y;
+  };
+
+  // Helper function to add a line separator
+  const addLine = (y) => {
+    doc.setLineWidth(0.5);
+    doc.line(20, y, 190, y);
+    return y + 8;
+  };
+
+  // Header
+  yPosition = addText("CONSULTATION/CONFERENCE FORM", 20, yPosition, 16);
+  yPosition = addText("Guidance and Counseling Services", 20, yPosition, 12);
+  yPosition = addText(`Generated on: ${new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })}`, 20, yPosition, 10);
+  
+  yPosition = addLine(yPosition + 5);
+
+  // Student Information Section
+  yPosition = addText("STUDENT INFORMATION", 20, yPosition, 12);
+  yPosition = addText(`Student Name: ${formData.student?.fullName || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Student Number: ${formData.student?.studentNumber || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Student ID: ${formData.studentId || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Grade/Year Level: ${formData.gradeYearLevel || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Section: ${formData.section || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  // Session Details Section
+  yPosition = addText("SESSION DETAILS", 20, yPosition, 12);
+  yPosition = addText(`Date: ${formatManilaDate(formData.date)}`, 25, yPosition);
+  yPosition = addText(`Time: ${formData.time ? formatTime(formData.time) : formatTime(new Date(formData.date).toTimeString().substring(0, 5))}`, 25, yPosition);
+  yPosition += 5;
+
+  // Consultation Information Section
+  yPosition = addText("CONSULTATION/CONFERENCE DETAILS", 20, yPosition, 12);
+  
+  yPosition = addText("Concern/s:", 25, yPosition, 11);
+  yPosition = addWrappedText(formData.concerns, 30, yPosition);
+  yPosition += 3;
+  
+  yPosition = addText("Remarks:", 25, yPosition, 11);
+  yPosition = addWrappedText(formData.remarks, 30, yPosition);
+  yPosition += 5;
+
+  // Personnel Information Section
+  yPosition = addText("PERSONNEL INFORMATION", 20, yPosition, 12);
+  yPosition = addText(`Guidance Counselor: ${formData.counselorName || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Parent/Guardian: ${formData.parentGuardian || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Parent/Guardian Contact: ${formData.parentContactNumber || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`School Personnel: ${formData.schoolPersonnel || 'N/A'}`, 25, yPosition);
+  yPosition += 5;
+
+  // Form Metadata Section
+  yPosition = addText("FORM DETAILS", 20, yPosition, 12);
+  yPosition = addText(`Form ID: ${formData.consultationId || 'N/A'}`, 25, yPosition);
+  yPosition = addText(`Created: ${formData.createdAt ? formatManilaDateTime(formData.createdAt) : formatManilaDate(formData.date)}`, 25, yPosition);
+  if (formData.updatedAt) {
+    yPosition = addText(`Last Updated: ${formatManilaDateTime(formData.updatedAt)}`, 25, yPosition);
+  }
+  yPosition += 15;
+
+  // Signature section
+  yPosition = addLine(yPosition);
+  yPosition = addText("SIGNATURES", 20, yPosition, 12);
+  yPosition += 10;
+  
+  // Counselor signature
+  yPosition = addText("_________________________________", 25, yPosition);
+  yPosition = addText(`Guidance Counselor: ${formData.counselorName || 'N/A'}`, 25, yPosition, 9);
+  yPosition = addText(`Date: ${formatManilaDate(formData.date)}`, 25, yPosition + 10, 9);
+  
+  yPosition += 25;
+  
+  // Parent/Guardian signature
+  yPosition = addText("_________________________________", 25, yPosition);
+  yPosition = addText(`Parent/Guardian: ${formData.parentGuardian || 'N/A'}`, 25, yPosition, 9);
+  yPosition = addText("Date: _______________", 25, yPosition + 10, 9);
+
+  yPosition += 25;
+
+  // School Personnel signature (if applicable)
+  if (formData.schoolPersonnel) {
+    yPosition = addText("_________________________________", 25, yPosition);
+    yPosition = addText(`School Personnel: ${formData.schoolPersonnel}`, 25, yPosition, 9);
+    yPosition = addText("Date: _______________", 25, yPosition + 10, 9);
+  }
+
+  // Footer
+  if (yPosition < 250) {
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text("This document was generated electronically by the Student Information System.", 20, 280);
+    doc.text(`Page 1 of 1 | Generated: ${new Date().toISOString()}`, 20, 287);
+  }
+
+  // Save the PDF with a descriptive filename
+  const studentName = formData.student?.fullName || 'Student';
+  const formattedDate = new Date(formData.date).toISOString().split('T')[0];
+  const fileName = `ConsultationConferenceForm_${studentName.replace(/\s+/g, '_')}_${formattedDate}.pdf`;
+  doc.save(fileName);
+};
 
 // Utility function to format dates in Manila timezone
 const formatManilaDateTime = (dateString) => {
@@ -560,6 +698,20 @@ const ConsultationConferenceView = () => {
           <h2 className="form-title">
             View Consultation/Conference Form
           </h2>
+        <button 
+          onClick={() => handleDownloadPDF(viewingForm)}
+          className="download-pdf-button"
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer',
+            marginLeft: 'auto'
+          }}
+        >
+          Download PDF
+        </button>
         </div>
 
         <div className="endorsement-form-card">
