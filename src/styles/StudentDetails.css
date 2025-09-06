@@ -277,6 +277,142 @@
   color: #374151;
 }
 
+/* Mood Filter Controls */
+.student-mood-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-mood-filter-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.student-mood-filter-button:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.student-mood-filter-button:focus {
+  outline: none;
+  ring: 2px solid #0477BF;
+  ring-offset: 2px;
+}
+
+.student-filter-active-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* Mood Filter Panel */
+.student-mood-filter-panel {
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.student-mood-filter-content {
+  padding: 24px;
+}
+
+.student-mood-filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.student-mood-filter-row:last-child {
+  margin-bottom: 16px;
+}
+
+.student-mood-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.student-mood-filter-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.student-mood-filter-select,
+.student-mood-filter-input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #374151;
+  background-color: white;
+  transition: border-color 0.2s;
+}
+
+.student-mood-filter-select:focus,
+.student-mood-filter-input:focus {
+  outline: none;
+  border-color: #0477BF;
+  ring: 2px solid rgba(4, 119, 191, 0.1);
+}
+
+.student-mood-filter-select:hover,
+.student-mood-filter-input:hover {
+  border-color: #9ca3af;
+}
+
+/* Filter Actions */
+.student-mood-filter-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.student-mood-filter-reset-button {
+  padding: 6px 12px;
+  background-color: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.student-mood-filter-reset-button:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.student-mood-filter-results-count {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
 /* Forms Grid */
 .student-forms-grid {
   display: grid;
@@ -428,6 +564,9 @@
 }
 
 .student-mood-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   padding: 24px;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -436,6 +575,7 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  flex: 1;
 }
 
 .student-mood-history-icon {
@@ -467,6 +607,14 @@
   padding: 16px;
   background-color: #f9fafb;
   border-radius: 8px;
+}
+
+/* Enhanced mood entry with notes */
+.student-mood-entry-notes {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+  line-height: 1.4;
 }
 
 .student-mood-entry-badge {
@@ -569,6 +717,35 @@
   .student-forms-grid {
     gap: 16px;
   }
+
+  .student-mood-filter-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .student-mood-filter-content {
+    padding: 16px;
+  }
+
+  .student-mood-history-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .student-mood-filter-controls {
+    align-self: flex-end;
+  }
+
+  .student-mood-filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .student-mood-filter-results-count {
+    text-align: center;
+  }
 }
 
 @media (max-width: 640px) {
@@ -580,5 +757,16 @@
   .student-tab-button {
     padding: 12px 0;
     justify-content: flex-start;
+  }
+
+  .student-mood-filter-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .student-mood-filter-select,
+  .student-mood-filter-input {
+    padding: 6px 10px;
+    font-size: 13px;
   }
 }

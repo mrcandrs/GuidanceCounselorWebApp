@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ALargeSmall, User, Calendar, Mail, Phone, MapPin, FileText, TrendingUp, Heart, GraduationCap, Users, Clock, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, ALargeSmall, User, Calendar, Mail, Phone, MapPin, FileText, TrendingUp, Heart, GraduationCap, Users, Clock, AlertCircle, CheckCircle, XCircle, Filter } from 'lucide-react';
 import '../styles/StudentDetails.css';
 import axios from 'axios';
 import ConsentFormView from './ConsentFormView';
@@ -14,9 +14,17 @@ const StudentDetailsView = ({ studentId, onBack }) => {
     inventoryForm: null,
     careerForm: null
   });
+  const [moodFilter, setMoodFilter] = useState({
+  moodLevel: 'all', // 'all', 'MILD', 'MODERATE', 'HIGH'
+  dateRange: 'all', // 'all', 'week', 'month', '3months'
+  customStartDate: '',
+  customEndDate: ''
+});
+  const [showMoodFilter, setShowMoodFilter] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [viewingForm, setViewingForm] = useState(null);
+
 
   const API_BASE = 'https://guidanceofficeapi-production.up.railway.app/api';
 
@@ -115,6 +123,62 @@ const StudentDetailsView = ({ studentId, onBack }) => {
       console.error('Error checking form submissions:', error);
     }
   };
+
+  // Add this filter function
+const filterMoodHistory = (moodHistory) => {
+  let filtered = [...moodHistory];
+
+  // Filter by mood level
+  if (moodFilter.moodLevel !== 'all') {
+    filtered = filtered.filter(entry => entry.moodLevel === moodFilter.moodLevel);
+  }
+
+  // Filter by date range
+  if (moodFilter.dateRange !== 'all') {
+    const now = new Date();
+    let startDate;
+
+    switch (moodFilter.dateRange) {
+      case 'week':
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case 'month':
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      case '3months':
+        startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+        break;
+      case 'custom':
+        if (moodFilter.customStartDate && moodFilter.customEndDate) {
+          startDate = new Date(moodFilter.customStartDate);
+          const endDate = new Date(moodFilter.customEndDate);
+          filtered = filtered.filter(entry => {
+            const entryDate = new Date(entry.entryDate);
+            return entryDate >= startDate && entryDate <= endDate;
+          });
+        }
+        return filtered;
+      default:
+        return filtered;
+    }
+
+    if (startDate) {
+      filtered = filtered.filter(entry => new Date(entry.entryDate) >= startDate);
+    }
+  }
+
+  return filtered;
+};
+
+// Add this reset filter function
+const resetMoodFilter = () => {
+  setMoodFilter({
+    moodLevel: 'all',
+    dateRange: 'all',
+    customStartDate: '',
+    customEndDate: ''
+  });
+};
 
   const getMoodBadgeClass = (mood) => {
     switch (mood?.toUpperCase()) {
@@ -502,49 +566,172 @@ const StudentDetailsView = ({ studentId, onBack }) => {
           </div>
         )}
 
-        {activeTab === 'mood' && (
-          <div className="student-card student-mood-history-card">
-            <div className="student-mood-history-header">
-              <div className="student-mood-history-title-section">
-                <Heart className="student-mood-history-icon" size={24} />
-                <div>
-                  <h2 className="student-card-title">Mood Tracking History</h2>
-                  <p className="student-mood-history-subtitle">Track student's emotional well-being over time</p>
-                </div>
-              </div>
+  {activeTab === 'mood' && (
+  <div className="student-card student-mood-history-card">
+    <div className="student-mood-history-header">
+      <div className="student-mood-history-title-section">
+        <Heart className="student-mood-history-icon" size={24} />
+        <div>
+          <h2 className="student-card-title">Mood Tracking History</h2>
+          <p className="student-mood-history-subtitle">Track student's emotional well-being over time</p>
+        </div>
+      </div>
+      
+      {/* Filter Button */}
+      <div className="student-mood-filter-controls">
+        <button 
+          onClick={() => setShowMoodFilter(!showMoodFilter)}
+          className="student-mood-filter-button"
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
+        >
+          <Filter size={16} />
+          Filter
+          {(moodFilter.moodLevel !== 'all' || moodFilter.dateRange !== 'all') && (
+            <span className="student-filter-active-badge"></span>
+          )}
+        </button>
+      </div>
+    </div>
+
+    {/* Filter Panel */}
+    {showMoodFilter && (
+      <div className="student-mood-filter-panel">
+        <div className="student-mood-filter-content">
+          <div className="student-mood-filter-row">
+            <div className="student-mood-filter-group">
+              <label className="student-mood-filter-label">Mood Level</label>
+              <select
+                value={moodFilter.moodLevel}
+                onChange={(e) => setMoodFilter(prev => ({ ...prev, moodLevel: e.target.value }))}
+                className="student-mood-filter-select"
+              >
+                <option value="all">All Levels</option>
+                <option value="MILD">Mild</option>
+                <option value="MODERATE">Moderate</option>
+                <option value="HIGH">High</option>
+              </select>
             </div>
 
-            <div className="student-mood-history-content">
-              {moodHistory.length > 0 ? (
-                <div className="student-mood-history-list">
-                  {moodHistory.map((entry, index) => (
-                    <div key={index} className="student-mood-entry">
-                      <div className="student-mood-entry-badge">
-                        <span className={getMoodBadgeClass(entry.moodLevel)}>{entry.moodLevel}</span>
-                      </div>
-                      <div className="student-mood-entry-content">
-                        <div className="student-mood-entry-date">
-                          {new Date(entry.entryDate).toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="student-empty-state">
-                  <AlertCircle className="student-empty-icon" size={48} />
-                  <h3 className="student-empty-title">No mood entries</h3>
-                  <p className="student-empty-description">This student hasn't submitted any mood entries yet.</p>
-                </div>
-              )}
+            <div className="student-mood-filter-group">
+              <label className="student-mood-filter-label">Date Range</label>
+              <select
+                value={moodFilter.dateRange}
+                onChange={(e) => setMoodFilter(prev => ({ 
+                  ...prev, 
+                  dateRange: e.target.value,
+                  customStartDate: e.target.value !== 'custom' ? '' : prev.customStartDate,
+                  customEndDate: e.target.value !== 'custom' ? '' : prev.customEndDate
+                }))}
+                className="student-mood-filter-select"
+              >
+                <option value="all">All Time</option>
+                <option value="week">Last Week</option>
+                <option value="month">Last Month</option>
+                <option value="3months">Last 3 Months</option>
+                <option value="custom">Custom Range</option>
+              </select>
             </div>
           </div>
-        )}
+
+          {/* Custom Date Range */}
+          {moodFilter.dateRange === 'custom' && (
+            <div className="student-mood-filter-row">
+              <div className="student-mood-filter-group">
+                <label className="student-mood-filter-label">Start Date</label>
+                <input
+                  type="date"
+                  value={moodFilter.customStartDate}
+                  onChange={(e) => setMoodFilter(prev => ({ ...prev, customStartDate: e.target.value }))}
+                  className="student-mood-filter-input"
+                />
+              </div>
+              <div className="student-mood-filter-group">
+                <label className="student-mood-filter-label">End Date</label>
+                <input
+                  type="date"
+                  value={moodFilter.customEndDate}
+                  onChange={(e) => setMoodFilter(prev => ({ ...prev, customEndDate: e.target.value }))}
+                  className="student-mood-filter-input"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Filter Actions */}
+          <div className="student-mood-filter-actions">
+            <button
+              onClick={resetMoodFilter}
+              className="student-mood-filter-reset-button"
+              type="button"
+            >
+              Reset
+            </button>
+            <span className="student-mood-filter-results-count">
+              {filterMoodHistory(moodHistory).length} of {moodHistory.length} entries
+            </span>
+          </div>
+        </div>
+      </div>
+    )}
+
+  <div className="student-mood-history-content">
+      {(() => {
+        const filteredMoodHistory = filterMoodHistory(moodHistory);
+        
+        if (moodHistory.length === 0) {
+          return (
+            <div className="student-empty-state">
+              <AlertCircle className="student-empty-icon" size={48} />
+              <h3 className="student-empty-title">No mood entries</h3>
+              <p className="student-empty-description">This student hasn't submitted any mood entries yet.</p>
+            </div>
+          );
+        }
+
+        if (filteredMoodHistory.length === 0) {
+          return (
+            <div className="student-empty-state">
+              <AlertCircle className="student-empty-icon" size={48} />
+              <h3 className="student-empty-title">No entries match your filters</h3>
+              <p className="student-empty-description">Try adjusting your filter criteria to see more results.</p>
+            </div>
+          );
+        }
+
+        return (
+          <div className="student-mood-history-list">
+            {filteredMoodHistory.map((entry, index) => (
+              <div key={index} className="student-mood-entry">
+                <div className="student-mood-entry-badge">
+                  <span className={getMoodBadgeClass(entry.moodLevel)}>{entry.moodLevel}</span>
+                </div>
+                <div className="student-mood-entry-content">
+                  <div className="student-mood-entry-date">
+                    {new Date(entry.entryDate).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                  {entry.notes && (
+                    <div className="student-mood-entry-notes">{entry.notes}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
