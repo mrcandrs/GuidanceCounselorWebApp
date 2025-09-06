@@ -599,7 +599,7 @@ const resetMoodFilter = () => {
       </div>
     </div>
 
-    {/* Filter Panel */}
+        {/* Filter Panel */}
     {showMoodFilter && (
       <div className="student-mood-filter-panel">
         <div className="student-mood-filter-content">
@@ -669,6 +669,12 @@ const resetMoodFilter = () => {
               onClick={resetMoodFilter}
               className="student-mood-filter-reset-button"
               type="button"
+              style={{
+                position: 'relative',
+                zIndex: 9999,
+                pointerEvents: 'auto',
+                cursor: 'pointer'
+              }}
             >
               Reset
             </button>
