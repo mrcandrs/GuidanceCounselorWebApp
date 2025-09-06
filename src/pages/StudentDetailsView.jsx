@@ -599,7 +599,7 @@ const resetMoodFilter = () => {
       </div>
     </div>
 
-        {/* Filter Panel */}
+    {/* Filter Panel */}
     {showMoodFilter && (
       <div className="student-mood-filter-panel">
         <div className="student-mood-filter-content">
@@ -607,10 +607,16 @@ const resetMoodFilter = () => {
             <div className="student-mood-filter-group">
               <label className="student-mood-filter-label">Mood Level</label>
               <select
-                value={moodFilter.moodLevel}
-                onChange={(e) => setMoodFilter(prev => ({ ...prev, moodLevel: e.target.value }))}
-                className="student-mood-filter-select"
-              >
+                  value={moodFilter.moodLevel}
+                  onChange={(e) => setMoodFilter(prev => ({ ...prev, moodLevel: e.target.value }))}
+                  className="student-mood-filter-select"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                >
                 <option value="all">All Levels</option>
                 <option value="MILD">Mild</option>
                 <option value="MODERATE">Moderate</option>
@@ -629,7 +635,13 @@ const resetMoodFilter = () => {
                   customEndDate: e.target.value !== 'custom' ? '' : prev.customEndDate
                 }))}
                 className="student-mood-filter-select"
-              >
+                style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                >
                 <option value="all">All Time</option>
                 <option value="week">Last Week</option>
                 <option value="month">Last Month</option>
@@ -649,6 +661,12 @@ const resetMoodFilter = () => {
                   value={moodFilter.customStartDate}
                   onChange={(e) => setMoodFilter(prev => ({ ...prev, customStartDate: e.target.value }))}
                   className="student-mood-filter-input"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
                 />
               </div>
               <div className="student-mood-filter-group">
@@ -658,6 +676,12 @@ const resetMoodFilter = () => {
                   value={moodFilter.customEndDate}
                   onChange={(e) => setMoodFilter(prev => ({ ...prev, customEndDate: e.target.value }))}
                   className="student-mood-filter-input"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
                 />
               </div>
             </div>
