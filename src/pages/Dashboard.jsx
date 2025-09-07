@@ -6,6 +6,7 @@ import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
 import EndorsementCustodyView from './EndorsementCustodyView';
 import ConsultationConferenceView from './ConsultationConferenceView';
+import GuidanceNotesView from './GuidanceNotesView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
@@ -206,7 +207,7 @@ const GuidanceDashboard = () => {
       case 'consultation':
         return <ConsultationConferenceView />;
       case 'notes':
-        return <GenericFormView title="Counseling Notes" description="Keep track of guidance and counseling session notes." />;
+        return <GuidanceNotesView />;
       case 'pass':
         return <GenericFormView title="Guidance Pass" description="Generate guidance passes for approved students." />;
       case 'referral':
