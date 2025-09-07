@@ -709,7 +709,7 @@ const EndorsementCustodyView = () => {
         </button>
         </div>
 
-        <div className="endorsement-form-card">
+        <div className="endorsement-form-card endorsement-scrollable-form">
           <div className="view-form">
             <div className="form-row">
               <div className="form-group">
