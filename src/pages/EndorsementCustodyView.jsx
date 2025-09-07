@@ -495,7 +495,7 @@ const EndorsementCustodyView = () => {
           </h2>
         </div>
 
-        <div className="endorsement-form-card">
+        <div className="endorsement-form-card endorsement-scrollable-form">
           <form onSubmit={handleSubmit} className="endorsement-form">
             <div className="form-row">
               <div className="form-group">
