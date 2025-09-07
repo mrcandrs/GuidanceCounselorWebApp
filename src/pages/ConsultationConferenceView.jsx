@@ -500,7 +500,7 @@ const ConsultationConferenceView = () => {
           </h2>
         </div>
 
-        <div className="endorsement-form-card">
+        <div className="endorsement-form-card consultation-scrollable-form">
           <form onSubmit={handleSubmit} className="endorsement-form">
             <div className="form-row">
               <div className="form-group">
@@ -714,7 +714,7 @@ const ConsultationConferenceView = () => {
         </button>
         </div>
 
-        <div className="endorsement-form-card">
+        <div className="endorsement-form-card consultation-scrollable-form">
           <div className="view-form">
             <div className="form-row">
               <div className="form-group">
