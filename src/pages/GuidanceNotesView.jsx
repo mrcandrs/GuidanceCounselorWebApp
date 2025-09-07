@@ -163,7 +163,7 @@ const GuidanceNotesView = () => {
            `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/student-details/${value}`,
            { headers: { Authorization: `Bearer ${token}` } }
          );
-         const studentDetails = response.data;
+         const selectedStudent = response.data;
         if (selectedStudent) {
           setFormData(prev => ({
             ...prev,
