@@ -886,3 +886,25 @@
 .create-button-override:hover {
   background-color: #0369a1 !important;
 }
+
+.guidance-scrollable-form {
+  max-height: 70vh;       /* keep the form height within the viewport */
+  overflow-y: auto;       /* enable vertical scrolling */
+  padding-right: 8px;     /* space for scrollbar */
+  scrollbar-width: thin;  /* Firefox */
+  scrollbar-color: #d1d5db transparent; /* Firefox scrollbar color */
+}
+
+/* Optional: nicer scrollbar for Webkit (Chrome, Edge, Safari) */
+.guidance-scrollable-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.guidance-scrollable-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.guidance-scrollable-form::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 4px;
+}
