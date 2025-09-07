@@ -891,6 +891,9 @@
   max-height: 70vh;       /* keep the form height within the viewport */
   overflow-y: auto;       /* enable vertical scrolling */
   padding-right: 8px;     /* space for scrollbar */
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
   scrollbar-width: thin;  /* Firefox */
   scrollbar-color: #d1d5db transparent; /* Firefox scrollbar color */
 }
