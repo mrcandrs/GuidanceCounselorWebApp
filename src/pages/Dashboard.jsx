@@ -158,7 +158,7 @@ const GuidanceDashboard = () => {
     { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
     { id: 'endorsement', icon: FileText, label: 'Endorsement and Custody' },
     { id: 'consultation', icon: ClipboardList, label: 'Consultation/Conference Forms' },
-    { id: 'notes', icon: Edit, label: 'Counseling Notes' },
+    { id: 'notes', icon: Edit, label: 'Guidance/Counseling Notes' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
     { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
     { id: 'referral', icon: AtSign, label: 'Referral' },

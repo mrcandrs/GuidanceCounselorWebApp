@@ -464,8 +464,13 @@ const GuidanceNotesView = () => {
         <div className="form-header">
           <button 
             type="button"
-            onClick={handleBack}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBack();
+            }}
             className="back-button"
+            style={{ pointerEvents: 'auto', zIndex: 999 }}
           >
             <ArrowLeft size={20} />
             Back to List
@@ -864,13 +869,6 @@ const GuidanceNotesView = () => {
             {/* Form Actions */}
             <div className="form-actions">
               <button
-                type="button"
-                onClick={handleBack}
-                className="cancel-button"
-              >
-                Cancel
-              </button>
-              <button
                 type="submit"
                 disabled={loading}
                 className="save-button"
@@ -903,7 +901,7 @@ const GuidanceNotesView = () => {
           </h2>
         </div>
 
-        <div className="endorsement-form-card">
+        <div className="endorsement-form-card guidance-scrollable-form">
           <div className="view-form">
             {/* Student Info */}
             <div className="form-group">
@@ -1076,7 +1074,7 @@ const GuidanceNotesView = () => {
     <div className="endorsement-custody-container">
       <h2 className="page-title">Guidance/Counseling Notes</h2>
       
-      <div className="endorsement-card">
+      <div className="endorsement-card guidance-scrollable-form">
         <p className="page-description">Create and manage guidance and counseling notes for student sessions.</p>
         
         <div className="card-header">
@@ -1168,24 +1166,39 @@ const GuidanceNotesView = () => {
                       <div className="action-buttons">
                         <button 
                           type="button"
-                          onClick={() => handleView(note)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleView(note);
+                          }}
                           className="action-button view-button"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="View"
                         >
                           <Eye size={16} />
                         </button>
                         <button 
                           type="button"
-                          onClick={() => handleEdit(note)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleEdit(note);
+                          }}
                           className="action-button edit-button"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="Edit"
                         >
                           <Edit size={16} />
                         </button>
                         <button 
                           type="button"
-                          onClick={() => handleDelete(note.noteId)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDelete(note.noteId);
+                          }}
                           className="action-button delete-button"
+                          style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="Delete"
                         >
                           <Trash2 size={16} />
