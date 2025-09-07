@@ -475,7 +475,7 @@ const GuidanceNotesView = () => {
           </h2>
         </div>
 
-        <div className="endorsement-form-card">
+        <div className="endorsement-form-card guidance-scrollable-form">
           <form onSubmit={handleSubmit} className="endorsement-form">
             {/* Student Selection */}
             <div className="form-group">
@@ -724,21 +724,32 @@ const GuidanceNotesView = () => {
                   />
                   Follow-up
                 </label>
+                <label className="guidance-checkbox-item">
+                  <input
+                    type="checkbox"
+                    name="isReferred"
+                    checked={formData.isReferred}
+                    onChange={handleInputChange}
+                  />
+                  Referred
+                </label>
               </div>
-            </div>
 
-            {/* Referred By */}
-            <div className="form-group">
-              <label htmlFor="referredBy" className="form-label">Referred By</label>
-              <input
-                type="text"
-                id="referredBy"
-                name="referredBy"
-                value={formData.referredBy}
-                onChange={handleInputChange}
-                placeholder="Name of person who referred the student"
-                className="form-input"
-              />
+              {/* Referred By conditional field */}
+              {formData.isReferred && (
+                <div className="guidance-conditional-field">
+                  <label htmlFor="referredBy" className="form-label">Referred By</label>
+                  <input
+                    type="text"
+                    id="referredBy"
+                    name="referredBy"
+                    value={formData.referredBy}
+                    onChange={handleInputChange}
+                    placeholder="Name of person who referred the student"
+                    className="form-input"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Counseling Notes Sections */}
