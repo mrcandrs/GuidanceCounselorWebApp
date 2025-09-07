@@ -167,7 +167,7 @@ const GuidanceNotesView = () => {
         if (selectedStudent) {
           setFormData(prev => ({
             ...prev,
-            gradeYearLevelSection: `${selectedStudent.gradeYear}-A`,
+            gradeYearLevelSection: `${selectedStudent.gradeYear} - ${selectedStudent.section}`,
             program: selectedStudent.program
           }));
         }
