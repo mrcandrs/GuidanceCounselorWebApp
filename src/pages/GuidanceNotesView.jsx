@@ -57,8 +57,8 @@ const formatTime = (timeString) => {
 };
 
 const GuidanceNotesView = () => {
-  const [notes, setNotes] = useState(mockNotes);
-  const [students, setStudents] = useState(mockStudents);
+  const [notes, setNotes] = useState([]);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
