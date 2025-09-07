@@ -1076,7 +1076,7 @@ const GuidanceNotesView = () => {
               className="create-button"
             >
               <Plus size={20} />
-              Create New Note
+              Create New
             </button>
             <button className="filter-button">
               <Filter size={20} />

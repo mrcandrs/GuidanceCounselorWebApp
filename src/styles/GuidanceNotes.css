@@ -553,6 +553,237 @@
   box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
 }
 
+/* Checkbox Grid Styles for Guidance Notes */
+.guidance-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.guidance-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.guidance-checkbox-item:hover {
+  background-color: #f9fafb;
+}
+
+.guidance-checkbox-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0477BF;
+  cursor: pointer;
+}
+
+/* Recommendation Section Styles for Guidance Notes */
+.guidance-recommendation-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.guidance-conditional-field {
+  margin-left: 24px;
+  padding: 12px;
+  background-color: #f8fafc;
+  border-left: 3px solid #0477BF;
+  border-radius: 4px;
+}
+
+.guidance-conditional-field .form-label {
+  margin-bottom: 6px;
+}
+
+/* Time Display in Table for Guidance Notes */
+.guidance-time-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.guidance-time-display svg {
+  flex-shrink: 0;
+}
+
+/* Nature and Situation Display in Table for Guidance Notes */
+.guidance-nature-display,
+.guidance-situation-display {
+  font-size: 12px;
+  color: #374151;
+  max-width: 120px;
+  line-height: 1.3;
+}
+
+/* Recommendation Display in View Mode for Guidance Notes */
+.guidance-recommendation-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guidance-recommendation-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.guidance-recommendation-detail {
+  margin-left: 24px;
+  font-size: 13px;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.guidance-checkbox-display {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.guidance-checkbox-display.checked {
+  background-color: #0477BF;
+  border-color: #0477BF;
+  color: white;
+}
+
+/* Enhanced Table Styles for Guidance Notes */
+.forms-table .guidance-time-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.forms-table .guidance-time-display span {
+  font-size: 11px;
+}
+
+/* Responsive adjustments for guidance notes checkboxes */
+@media (max-width: 768px) {
+  .guidance-checkbox-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .guidance-checkbox-item {
+    padding: 6px;
+  }
+  
+  .guidance-conditional-field {
+    margin-left: 16px;
+    padding: 8px;
+  }
+  
+  .guidance-recommendation-detail {
+    margin-left: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .guidance-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .guidance-nature-display,
+  .guidance-situation-display {
+    max-width: none;
+  }
+  
+  .forms-table .guidance-time-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+/* Print styles for guidance notes */
+@media print {
+  .guidance-checkbox-grid {
+    display: block;
+  }
+  
+  .guidance-checkbox-item {
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 8px;
+    background: none;
+  }
+  
+  .guidance-checkbox-item input[type="checkbox"] {
+    -webkit-appearance: checkbox;
+    appearance: checkbox;
+  }
+  
+  .guidance-recommendation-display {
+    page-break-inside: avoid;
+  }
+  
+  .guidance-conditional-field {
+    background-color: #f8f8f8;
+    border-left-color: #666;
+  }
+}
+
+/* Focus states for accessibility in guidance notes */
+.guidance-checkbox-item input[type="checkbox"]:focus {
+  outline: 2px solid #0477BF;
+  outline-offset: 2px;
+}
+
+/* Form validation enhancement for guidance checkboxes */
+.guidance-checkbox-grid.required {
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.guidance-checkbox-grid.valid {
+  border: 1px solid #10b981;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+/* Loading state for guidance checkboxes */
+.guidance-checkbox-grid.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.guidance-checkbox-grid.loading .guidance-checkbox-item {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
 /* Print styles */
 @media print {
   .form-actions,
