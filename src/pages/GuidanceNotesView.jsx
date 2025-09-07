@@ -188,6 +188,12 @@ const GuidanceNotesView = () => {
     e.preventDefault();
     setLoading(true);
 
+    // Clean up empty date fields
+  const cleanedFormData = {
+    ...formData,
+    followThroughDate: formData.followThroughDate === '' ? null : formData.followThroughDate
+  };
+
     try {
       //Actual API call
        const token = localStorage.getItem('authToken');
@@ -257,6 +263,7 @@ const GuidanceNotesView = () => {
       fetchNotes();
     } catch (error) {
       console.error('Error saving note:', error);
+      console.error('Full error response:', error.response?.data);
       alert(`Error saving guidance note: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
