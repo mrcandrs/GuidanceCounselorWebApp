@@ -3,52 +3,6 @@ import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock } fro
 import '../styles/GuidanceNotes.css';
 import axios from 'axios';
 
-// Mock data for development (replace with actual API calls)
-const mockStudents = [
-  { studentId: 1, fullName: "John Doe", studentNumber: "2021-001", gradeYear: "Grade 11", program: "STEM" },
-  { studentId: 2, fullName: "Jane Smith", studentNumber: "2021-002", gradeYear: "Grade 12", program: "ABM" },
-  { studentId: 3, fullName: "Bob Johnson", studentNumber: "2021-003", gradeYear: "1st Year", program: "BSIT" }
-];
-
-const mockNotes = [
-  {
-    noteId: 1,
-    studentId: 1,
-    counselorId: 1,
-    interviewDate: "2024-01-15",
-    timeStarted: "09:00",
-    timeEnded: "10:30",
-    schoolYear: "2023-2024",
-    tertiarySemester: "2nd",
-    seniorHighQuarter: "",
-    gradeYearLevelSection: "Grade 11-A",
-    program: "STEM",
-    isAcademic: true,
-    isBehavioral: false,
-    isPersonal: true,
-    isSocial: false,
-    isCareer: false,
-    isIndividual: true,
-    isGroup: false,
-    isClass: false,
-    isCounselorInitiated: false,
-    isWalkIn: true,
-    isFollowUp: false,
-    referredBy: "",
-    presentingProblem: "Student experiencing difficulty with mathematics subjects and test anxiety during examinations.",
-    assessment: "Student shows good motivation but lacks proper study techniques and time management skills. Exhibits signs of mild anxiety during discussions about upcoming tests.",
-    interventions: "Provided study planning techniques, time management strategies, and basic relaxation techniques for test anxiety management.",
-    planOfAction: "Follow-up session in 2 weeks to monitor progress on study techniques. Recommend practice tests in low-pressure environment.",
-    isFollowThroughSession: true,
-    followThroughDate: "2024-01-29",
-    isReferral: false,
-    referralAgencyName: "",
-    createdAt: "2024-01-15T09:00:00Z",
-    updatedAt: null,
-    student: mockStudents[0]
-  }
-];
-
 // Utility functions
 const formatManilaDateTime = (dateString) => {
   const date = new Date(dateString);
@@ -150,17 +104,13 @@ const GuidanceNotesView = () => {
   const fetchNotes = async () => {
     setLoading(true);
     try {
-      // Replace with actual API call
-      // const token = localStorage.getItem('authToken');
-      // const response = await axios.get(
-      //   'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes',
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // );
-      // setNotes(response.data);
-      
-      // For now, use mock data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setNotes(mockNotes);
+      //Actual API call
+       const token = localStorage.getItem('authToken');
+       const response = await axios.get(
+         'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes',
+         { headers: { Authorization: `Bearer ${token}` } }
+       );
+       setNotes(response.data);
     } catch (error) {
       console.error('Error fetching notes:', error);
     } finally {
@@ -171,16 +121,13 @@ const GuidanceNotesView = () => {
   // Fetch students for dropdown
   const fetchStudents = async () => {
     try {
-      // Replace with actual API call
-      // const token = localStorage.getItem('authToken');
-      // const response = await axios.get(
-      //   'https://guidanceofficeapi-production.up.railway.app/api/student',
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // );
-      // setStudents(response.data);
-      
-      // For now, use mock data
-      setStudents(mockStudents);
+      //Actual API call
+       const token = localStorage.getItem('authToken');
+       const response = await axios.get(
+         'https://guidanceofficeapi-production.up.railway.app/api/student',
+         { headers: { Authorization: `Bearer ${token}` } }
+       );
+       setStudents(response.data);
     } catch (error) {
       console.error('Error fetching students:', error);
     }
@@ -210,16 +157,13 @@ const GuidanceNotesView = () => {
 
     if (value) {
       try {
-        // Replace with actual API call to get student details
-        // const token = localStorage.getItem('authToken');
-        // const response = await axios.get(
-        //   `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/student-details/${value}`,
-        //   { headers: { Authorization: `Bearer ${token}` } }
-        // );
-        // const studentDetails = response.data;
-        
-        // For now, use mock data
-        const selectedStudent = students.find(s => s.studentId.toString() === value);
+        //Actual API call to get student details
+         const token = localStorage.getItem('authToken');
+         const response = await axios.get(
+           `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/student-details/${value}`,
+           { headers: { Authorization: `Bearer ${token}` } }
+         );
+         const studentDetails = response.data;
         if (selectedStudent) {
           setFormData(prev => ({
             ...prev,
@@ -245,18 +189,15 @@ const GuidanceNotesView = () => {
     setLoading(true);
 
     try {
-      // Replace with actual API call
-      // const token = localStorage.getItem('authToken');
-      // const url = editingNote 
-      //   ? `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${editingNote.noteId}`
-      //   : 'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes';
-      // const method = editingNote ? 'put' : 'post';
-      // const response = await axios[method](url, formData, {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // });
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      //Actual API call
+       const token = localStorage.getItem('authToken');
+       const url = editingNote 
+         ? `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${editingNote.noteId}`
+         : 'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes';
+       const method = editingNote ? 'put' : 'post';
+       const response = await axios[method](url, formData, {
+         headers: { Authorization: `Bearer ${token}` }
+       });
 
       if (editingNote) {
         // Update existing note
@@ -370,13 +311,13 @@ const GuidanceNotesView = () => {
     if (!window.confirm('Are you sure you want to delete this guidance note?')) return;
 
     try {
-      // Replace with actual API call
-      // const token = localStorage.getItem('authToken');
-      // await axios.delete(
-      //   `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${noteId}`,
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // );
-      
+      //Actual API call
+       const token = localStorage.getItem('authToken');
+       await axios.delete(
+         `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${noteId}`,
+         { headers: { Authorization: `Bearer ${token}` } }
+       );
+
       setNotes(prev => prev.filter(note => note.noteId !== noteId));
       alert('Guidance note deleted successfully!');
     } catch (error) {
