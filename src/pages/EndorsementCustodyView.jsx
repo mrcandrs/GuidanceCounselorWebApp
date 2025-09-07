@@ -835,7 +835,7 @@ const EndorsementCustodyView = () => {
     <div className="endorsement-custody-container">
       <h2 className="page-title">Endorsement and Custody Forms</h2>
       
-      <div className="endorsement-card">
+      <div className="endorsement-card endorsement-scrollable-form">
         <p className="page-description">Manage custody and endorsement forms for students.</p>
         
         <div className="card-header">
