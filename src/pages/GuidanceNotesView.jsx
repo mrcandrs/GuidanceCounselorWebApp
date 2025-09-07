@@ -890,8 +890,13 @@ const GuidanceNotesView = () => {
         <div className="form-header">
           <button 
             type="button"
-            onClick={handleBackFromView}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBackFromView();
+            }}
             className="back-button"
+            style={{ pointerEvents: 'auto', zIndex: 999 }}
           >
             <ArrowLeft size={20} />
             Back to List
