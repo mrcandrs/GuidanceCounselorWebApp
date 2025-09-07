@@ -840,7 +840,7 @@ const ConsultationConferenceView = () => {
     <div className="endorsement-custody-container">
       <h2 className="page-title">Consultation/Conference Forms</h2>
       
-      <div className="endorsement-card">
+      <div className="endorsement-card consultation-scrollable-form">
         <p className="page-description">Create and manage consultation and conference forms.</p>
         
         <div className="card-header">
