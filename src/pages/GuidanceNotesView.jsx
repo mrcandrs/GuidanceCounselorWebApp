@@ -105,73 +105,93 @@ const GuidanceNotesView = () => {
   });
 
   // Validation function
-  const validateForm = () => {
-    const errors = {};
+const validateForm = () => {
+  const errors = {};
 
-    // Required fields
-    if (!formData.studentId) {
-      errors.studentId = 'Student selection is required';
+  // Required fields
+  if (!formData.studentId) {
+    errors.studentId = 'Student selection is required';
+  }
+
+  if (!formData.interviewDate) {
+    errors.interviewDate = 'Interview date is required';
+  }
+
+  // Time validations
+  if (!formData.timeEnded) {
+    errors.timeEnded = 'End time is required';
+  } else if (formData.timeStarted && formData.timeEnded) {
+    const startTime = new Date(`1970-01-01T${formData.timeStarted}:00`);
+    const endTime = new Date(`1970-01-01T${formData.timeEnded}:00`);
+    if (endTime <= startTime) {
+      errors.timeEnded = 'End time must be after start time';
     }
+  }
 
-    if (!formData.interviewDate) {
-      errors.interviewDate = 'Interview date is required';
-    }
+  // Semester/Quarter (require at least one)
+  if (!formData.tertiarySemester && !formData.seniorHighQuarter) {
+    errors.semesterQuarter = 'Select either Semester or Quarter';
+  }
 
-    // Check if at least one nature of counseling is selected
-    const natureSelected = formData.isAcademic || formData.isBehavioral || 
-                          formData.isPersonal || formData.isSocial || formData.isCareer;
-    if (!natureSelected) {
-      errors.natureOfCounseling = 'At least one nature of counseling must be selected';
-    }
+  // Nature of Counseling (at least one)
+  const natureSelected =
+    formData.isAcademic ||
+    formData.isBehavioral ||
+    formData.isPersonal ||
+    formData.isSocial ||
+    formData.isCareer;
+  if (!natureSelected) {
+    errors.natureOfCounseling = 'At least one nature of counseling must be selected';
+  }
 
-    // Check if at least one counseling situation is selected
-    const situationSelected = formData.isIndividual || formData.isGroup || 
-                             formData.isClass || formData.isCounselorInitiated || 
-                             formData.isWalkIn || formData.isFollowUp || formData.isReferred;
-    if (!situationSelected) {
-      errors.counselingSituation = 'At least one counseling situation must be selected';
-    }
+  // Counseling Situation (at least one)
+  const situationSelected =
+    formData.isIndividual ||
+    formData.isGroup ||
+    formData.isClass ||
+    formData.isCounselorInitiated ||
+    formData.isWalkIn ||
+    formData.isFollowUp ||
+    formData.isReferred;
+  if (!situationSelected) {
+    errors.counselingSituation = 'At least one counseling situation must be selected';
+  }
 
-    // If referred is checked, referredBy should be filled
-    if (formData.isReferred && !formData.referredBy.trim()) {
-      errors.referredBy = 'Referred by field is required when "Referred" is selected';
-    }
+  // If referred is checked, referredBy should be filled
+  if (formData.isReferred && !formData.referredBy.trim()) {
+    errors.referredBy = 'Referred by field is required when "Referred" is selected';
+  }
 
-    // Time validation
-    if (formData.timeStarted && formData.timeEnded) {
-      const startTime = new Date(`1970-01-01T${formData.timeStarted}:00`);
-      const endTime = new Date(`1970-01-01T${formData.timeEnded}:00`);
-      
-      if (endTime <= startTime) {
-        errors.timeEnded = 'End time must be after start time';
-      }
-    }
+  // Recommendations: require at least one
+  if (!formData.isFollowThroughSession && !formData.isReferral) {
+    errors.recommendations = 'Select at least one recommendation';
+  }
 
-    // Follow-through validation
-    if (formData.isFollowThroughSession && !formData.followThroughDate) {
-      errors.followThroughDate = 'Follow-through date is required when follow-through session is selected';
-    }
+  // Follow-through validation
+  if (formData.isFollowThroughSession && !formData.followThroughDate) {
+    errors.followThroughDate = 'Follow-through date is required when follow-through session is selected';
+  }
 
-    // Referral validation
-    if (formData.isReferral && !formData.referralAgencyName.trim()) {
-      errors.referralAgencyName = 'Referral agency name is required when referral is selected';
-    }
+  // Referral validation
+  if (formData.isReferral && !formData.referralAgencyName.trim()) {
+    errors.referralAgencyName = 'Referral agency name is required when referral is selected';
+  }
 
-    // Interview date validation (shouldn't be future date)
-    const today = new Date();
-    const interviewDate = new Date(formData.interviewDate);
-    if (interviewDate > today) {
-      errors.interviewDate = 'Interview date cannot be in the future';
-    }
+  // Interview date validation (shouldn't be future date)
+  const today = new Date();
+  const interviewDate = new Date(formData.interviewDate);
+  if (interviewDate > today) {
+    errors.interviewDate = 'Interview date cannot be in the future';
+  }
 
-    // Basic content validation
-    if (!formData.presentingProblem.trim()) {
-      errors.presentingProblem = 'Presenting problem is required';
-    }
+  // Basic content validation
+  if (!formData.presentingProblem.trim()) {
+    errors.presentingProblem = 'Presenting problem is required';
+  }
 
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+  setValidationErrors(errors);
+  return Object.keys(errors).length === 0;
+};
 
   // Fetch current counselor details
   const fetchCurrentCounselor = async () => {
