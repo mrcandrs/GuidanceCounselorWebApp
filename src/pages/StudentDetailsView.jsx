@@ -24,6 +24,7 @@ const StudentDetailsView = ({ studentId, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [viewingForm, setViewingForm] = useState(null);
+  const [imageError, setImageError] = useState(false);
 
 
   const API_BASE = 'https://guidanceofficeapi-production.up.railway.app/api';
@@ -272,6 +273,22 @@ const resetMoodFilter = () => {
         </button>
             <div className="student-header-divider"></div>
             <div className="student-title-section">
+              <div className="student-avatar">
+              {!imageError ? (
+                <img
+                  src={`${API_BASE}/student/${studentId}/photo`}
+                  alt={student.fullName || student.name}
+                  onError={() => setImageError(true)}
+                  crossOrigin="anonymous"
+                />
+              ) : (
+                <div className="student-avatar-fallback">
+                  {(student.fullName || student.name || 'S').charAt(0)}
+                </div>
+              )}
+            </div>
+            <div>
+            </div>
               <h1 className="student-details-title">{student.fullName || student.name}</h1>
               <p className="student-details-subtitle">
                 {student.studentNumber || student.studentno} • {student.program}
