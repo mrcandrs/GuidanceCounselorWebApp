@@ -723,7 +723,6 @@ const GuidanceNotesView = () => {
                     name="isAcademic"
                     checked={formData.isAcademic}
                     onChange={handleInputChange}
-                    required
                   />
                   Academic
                 </label>
@@ -782,7 +781,6 @@ const GuidanceNotesView = () => {
                     name="isIndividual"
                     checked={formData.isIndividual}
                     onChange={handleInputChange}
-                    required
                   />
                   Individual
                 </label>
