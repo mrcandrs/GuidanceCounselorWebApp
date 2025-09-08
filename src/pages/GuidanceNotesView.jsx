@@ -1010,6 +1010,27 @@ const GuidanceNotesView = () => {
               </div>
             </div>
 
+            {/* Counselor Name (Auto-populated and at bottom) */}
+            <div className="form-group">
+              <label htmlFor="counselorName" className="form-label">Counselor *</label>
+              <input
+                type="text"
+                id="counselorName"
+                name="counselorName"
+                value={formData.counselorName}
+                onChange={handleInputChange}
+                className={`form-input form-input--readonly ${validationErrors.counselorName ? 'error' : ''}`}
+                readOnly
+                placeholder="Counselor name will be auto-populated"
+              />
+              {validationErrors.counselorName && (
+                <div className="error-message">
+                  <AlertCircle size={16} />
+                  {validationErrors.counselorName}
+                </div>
+              )}
+            </div>
+
             {/* Form Actions */}
             <div className="form-actions">
               <button
