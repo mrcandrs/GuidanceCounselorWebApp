@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock } from 'lucide-react';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle } from 'lucide-react';
 import '../styles/GuidanceNotes.css';
 import axios from 'axios';
 
@@ -64,6 +64,7 @@ const GuidanceNotesView = () => {
   const [editingNote, setEditingNote] = useState(null);
   const [viewingNote, setViewingNote] = useState(null);
   const [showView, setShowView] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const [formData, setFormData] = useState({
     studentId: '',
     interviewDate: getCurrentManilaDate(),
@@ -87,6 +88,7 @@ const GuidanceNotesView = () => {
     isCounselorInitiated: false,
     isWalkIn: false,
     isFollowUp: false,
+    isReferred: false,
     referredBy: '',
     // Notes sections
     presentingProblem: '',
@@ -97,20 +99,107 @@ const GuidanceNotesView = () => {
     isFollowThroughSession: false,
     followThroughDate: '',
     isReferral: false,
-    referralAgencyName: ''
+    referralAgencyName: '',
+    // Counselor info (auto-populated)
+    counselorName: ''
   });
+
+  // Validation function
+  const validateForm = () => {
+    const errors = {};
+
+    // Required fields
+    if (!formData.studentId) {
+      errors.studentId = 'Student selection is required';
+    }
+
+    if (!formData.interviewDate) {
+      errors.interviewDate = 'Interview date is required';
+    }
+
+    // Check if at least one nature of counseling is selected
+    const natureSelected = formData.isAcademic || formData.isBehavioral || 
+                          formData.isPersonal || formData.isSocial || formData.isCareer;
+    if (!natureSelected) {
+      errors.natureOfCounseling = 'At least one nature of counseling must be selected';
+    }
+
+    // Check if at least one counseling situation is selected
+    const situationSelected = formData.isIndividual || formData.isGroup || 
+                             formData.isClass || formData.isCounselorInitiated || 
+                             formData.isWalkIn || formData.isFollowUp || formData.isReferred;
+    if (!situationSelected) {
+      errors.counselingSituation = 'At least one counseling situation must be selected';
+    }
+
+    // If referred is checked, referredBy should be filled
+    if (formData.isReferred && !formData.referredBy.trim()) {
+      errors.referredBy = 'Referred by field is required when "Referred" is selected';
+    }
+
+    // Time validation
+    if (formData.timeStarted && formData.timeEnded) {
+      const startTime = new Date(`1970-01-01T${formData.timeStarted}:00`);
+      const endTime = new Date(`1970-01-01T${formData.timeEnded}:00`);
+      
+      if (endTime <= startTime) {
+        errors.timeEnded = 'End time must be after start time';
+      }
+    }
+
+    // Follow-through validation
+    if (formData.isFollowThroughSession && !formData.followThroughDate) {
+      errors.followThroughDate = 'Follow-through date is required when follow-through session is selected';
+    }
+
+    // Referral validation
+    if (formData.isReferral && !formData.referralAgencyName.trim()) {
+      errors.referralAgencyName = 'Referral agency name is required when referral is selected';
+    }
+
+    // Interview date validation (shouldn't be future date)
+    const today = new Date();
+    const interviewDate = new Date(formData.interviewDate);
+    if (interviewDate > today) {
+      errors.interviewDate = 'Interview date cannot be in the future';
+    }
+
+    // Basic content validation
+    if (!formData.presentingProblem.trim()) {
+      errors.presentingProblem = 'Presenting problem is required';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Fetch current counselor details
+  const fetchCurrentCounselor = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/current-counselor',
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching counselor details:', error);
+      return null;
+    }
+  };
 
   // Fetch all notes
   const fetchNotes = async () => {
     setLoading(true);
     try {
-      //Actual API call
-       const token = localStorage.getItem('authToken');
-       const response = await axios.get(
-         'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes',
-         { headers: { Authorization: `Bearer ${token}` } }
-       );
-       setNotes(response.data);
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNotes(response.data);
     } catch (error) {
       console.error('Error fetching notes:', error);
     } finally {
@@ -121,13 +210,12 @@ const GuidanceNotesView = () => {
   // Fetch students for dropdown
   const fetchStudents = async () => {
     try {
-      //Actual API call
-       const token = localStorage.getItem('authToken');
-       const response = await axios.get(
-         'https://guidanceofficeapi-production.up.railway.app/api/student',
-         { headers: { Authorization: `Bearer ${token}` } }
-       );
-       setStudents(response.data);
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/student',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setStudents(response.data);
     } catch (error) {
       console.error('Error fetching students:', error);
     }
@@ -141,15 +229,63 @@ const GuidanceNotesView = () => {
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
+    
+    // Clear validation error for this field
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+
+    let newFormData = {
+      ...formData,
       [name]: type === 'checkbox' ? checked : value
-    }));
+    };
+
+    // Handle semester/quarter mutual exclusion
+    if (name === 'tertiarySemester' && value) {
+      newFormData.seniorHighQuarter = '';
+    } else if (name === 'seniorHighQuarter' && value) {
+      newFormData.tertiarySemester = '';
+    }
+
+    // Handle referred checkbox
+    if (name === 'isReferred') {
+      if (!checked) {
+        newFormData.referredBy = '';
+      }
+    }
+
+    // Handle follow-through checkbox
+    if (name === 'isFollowThroughSession') {
+      if (!checked) {
+        newFormData.followThroughDate = '';
+      }
+    }
+
+    // Handle referral checkbox
+    if (name === 'isReferral') {
+      if (!checked) {
+        newFormData.referralAgencyName = '';
+      }
+    }
+
+    setFormData(newFormData);
   };
 
   // Handle student selection and auto-populate data
   const handleStudentChange = async (e) => {
     const { name, value } = e.target;
+    
+    // Clear validation error
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -157,13 +293,12 @@ const GuidanceNotesView = () => {
 
     if (value) {
       try {
-        //Actual API call to get student details
-         const token = localStorage.getItem('authToken');
-         const response = await axios.get(
-           `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/student-details/${value}`,
-           { headers: { Authorization: `Bearer ${token}` } }
-         );
-         const selectedStudent = response.data;
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(
+          `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/student-details/${value}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const selectedStudent = response.data;
         if (selectedStudent) {
           setFormData(prev => ({
             ...prev,
@@ -186,78 +321,52 @@ const GuidanceNotesView = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!validateForm()) {
+      alert('Please correct the errors in the form before submitting.');
+      return;
+    }
+
     setLoading(true);
 
     // Clean up empty date fields
-  const cleanedFormData = {
-    ...formData,
-    followThroughDate: formData.followThroughDate === '' ? null : formData.followThroughDate
-  };
+    const cleanedFormData = {
+      ...formData,
+      followThroughDate: formData.followThroughDate === '' ? null : formData.followThroughDate
+    };
 
     try {
-      //Actual API call
-       const token = localStorage.getItem('authToken');
-       const url = editingNote 
-         ? `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${editingNote.noteId}`
-         : 'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes';
-       const method = editingNote ? 'put' : 'post';
-       const response = await axios[method](url, formData, {
-         headers: { Authorization: `Bearer ${token}` }
-       });
+      const token = localStorage.getItem('authToken');
+      const url = editingNote 
+        ? `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${editingNote.noteId}`
+        : 'https://guidanceofficeapi-production.up.railway.app/api/guidance-notes';
+      const method = editingNote ? 'put' : 'post';
+      const response = await axios[method](url, cleanedFormData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       if (editingNote) {
-        // Update existing note
         setNotes(prev => prev.map(note => 
           note.noteId === editingNote.noteId 
-            ? { ...note, ...formData, updatedAt: new Date().toISOString() }
+            ? { ...note, ...cleanedFormData, updatedAt: new Date().toISOString() }
             : note
         ));
         alert('Guidance note updated successfully!');
       } else {
-        // Create new note
         const newNote = {
           noteId: Date.now(),
-          ...formData,
+          ...cleanedFormData,
           counselorId: 1,
           createdAt: new Date().toISOString(),
-          student: students.find(s => s.studentId.toString() === formData.studentId)
+          student: students.find(s => s.studentId.toString() === cleanedFormData.studentId)
         };
         setNotes(prev => [newNote, ...prev]);
         alert('Guidance note created successfully!');
       }
 
       // Reset form
-      setFormData({
-        studentId: '',
-        interviewDate: getCurrentManilaDate(),
-        timeStarted: getCurrentManilaTime(),
-        timeEnded: '',
-        schoolYear: '',
-        tertiarySemester: '',
-        seniorHighQuarter: '',
-        gradeYearLevelSection: '',
-        program: '',
-        isAcademic: false,
-        isBehavioral: false,
-        isPersonal: false,
-        isSocial: false,
-        isCareer: false,
-        isIndividual: false,
-        isGroup: false,
-        isClass: false,
-        isCounselorInitiated: false,
-        isWalkIn: false,
-        isFollowUp: false,
-        referredBy: '',
-        presentingProblem: '',
-        assessment: '',
-        interventions: '',
-        planOfAction: '',
-        isFollowThroughSession: false,
-        followThroughDate: '',
-        isReferral: false,
-        referralAgencyName: ''
-      });
+      await handleCreateNew();
       setShowForm(false);
       setEditingNote(null);
       fetchNotes();
@@ -279,6 +388,7 @@ const GuidanceNotesView = () => {
   // Handle edit
   const handleEdit = (note) => {
     setEditingNote(note);
+    setValidationErrors({});
     setFormData({
       studentId: note.studentId.toString(),
       interviewDate: note.interviewDate,
@@ -300,6 +410,7 @@ const GuidanceNotesView = () => {
       isCounselorInitiated: note.isCounselorInitiated,
       isWalkIn: note.isWalkIn,
       isFollowUp: note.isFollowUp,
+      isReferred: note.isReferred || false,
       referredBy: note.referredBy,
       presentingProblem: note.presentingProblem,
       assessment: note.assessment,
@@ -308,7 +419,8 @@ const GuidanceNotesView = () => {
       isFollowThroughSession: note.isFollowThroughSession,
       followThroughDate: note.followThroughDate || '',
       isReferral: note.isReferral,
-      referralAgencyName: note.referralAgencyName
+      referralAgencyName: note.referralAgencyName,
+      counselorName: note.counselor?.name || ''
     });
     setShowForm(true);
   };
@@ -318,12 +430,11 @@ const GuidanceNotesView = () => {
     if (!window.confirm('Are you sure you want to delete this guidance note?')) return;
 
     try {
-      //Actual API call
-       const token = localStorage.getItem('authToken');
-       await axios.delete(
-         `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${noteId}`,
-         { headers: { Authorization: `Bearer ${token}` } }
-       );
+      const token = localStorage.getItem('authToken');
+      await axios.delete(
+        `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/${noteId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       setNotes(prev => prev.filter(note => note.noteId !== noteId));
       alert('Guidance note deleted successfully!');
@@ -334,8 +445,13 @@ const GuidanceNotesView = () => {
   };
 
   // Handle create new
-  const handleCreateNew = () => {
+  const handleCreateNew = async () => {
     setEditingNote(null);
+    setValidationErrors({});
+    
+    // Fetch counselor details and auto-populate
+    const counselorDetails = await fetchCurrentCounselor();
+    
     setFormData({
       studentId: '',
       interviewDate: getCurrentManilaDate(),
@@ -357,6 +473,7 @@ const GuidanceNotesView = () => {
       isCounselorInitiated: false,
       isWalkIn: false,
       isFollowUp: false,
+      isReferred: false,
       referredBy: '',
       presentingProblem: '',
       assessment: '',
@@ -365,7 +482,8 @@ const GuidanceNotesView = () => {
       isFollowThroughSession: false,
       followThroughDate: '',
       isReferral: false,
-      referralAgencyName: ''
+      referralAgencyName: '',
+      counselorName: counselorDetails ? counselorDetails.name : ''
     });
     setShowForm(true);
   };
@@ -374,6 +492,7 @@ const GuidanceNotesView = () => {
   const handleBack = () => {
     setShowForm(false);
     setEditingNote(null);
+    setValidationErrors({});
   };
 
   // Handle back from view
@@ -402,6 +521,7 @@ const GuidanceNotesView = () => {
     if (note.isCounselorInitiated) situations.push('Counselor Initiated');
     if (note.isWalkIn) situations.push('Walk-in');
     if (note.isFollowUp) situations.push('Follow-up');
+    if (note.isReferred) situations.push('Referred');
     return situations.join(', ') || 'None specified';
   };
 
@@ -412,11 +532,7 @@ const GuidanceNotesView = () => {
         <div className="form-header">
           <button 
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleBack();
-            }}
+            onClick={handleBack}
             className="back-button"
             style={{ pointerEvents: 'auto', zIndex: 999 }}
           >
@@ -439,7 +555,7 @@ const GuidanceNotesView = () => {
                 value={formData.studentId}
                 onChange={handleStudentChange}
                 required
-                className="form-select"
+                className={`form-select ${validationErrors.studentId ? 'error' : ''}`}
               >
                 <option value="">Select Student</option>
                 {students.map(student => (
@@ -448,6 +564,26 @@ const GuidanceNotesView = () => {
                   </option>
                 ))}
               </select>
+              {validationErrors.studentId && (
+                <div className="error-message">
+                  <AlertCircle size={16} />
+                  {validationErrors.studentId}
+                </div>
+              )}
+            </div>
+
+            {/* Counselor Name (Auto-populated and read-only) */}
+            <div className="form-group">
+              <label htmlFor="counselorName" className="form-label">Counselor</label>
+              <input
+                type="text"
+                id="counselorName"
+                name="counselorName"
+                value={formData.counselorName}
+                className="form-input form-input--readonly"
+                readOnly
+                placeholder="Counselor name will be auto-populated"
+              />
             </div>
 
             {/* Interview Date and Time */}
@@ -461,8 +597,14 @@ const GuidanceNotesView = () => {
                   value={formData.interviewDate}
                   onChange={handleInputChange}
                   required
-                  className="form-input"
+                  className={`form-input ${validationErrors.interviewDate ? 'error' : ''}`}
                 />
+                {validationErrors.interviewDate && (
+                  <div className="error-message">
+                    <AlertCircle size={16} />
+                    {validationErrors.interviewDate}
+                  </div>
+                )}
               </div>
               <div className="form-group">
                 <label htmlFor="timeStarted" className="form-label">Time Started</label>
@@ -486,8 +628,14 @@ const GuidanceNotesView = () => {
                   name="timeEnded"
                   value={formData.timeEnded}
                   onChange={handleInputChange}
-                  className="form-input"
+                  className={`form-input ${validationErrors.timeEnded ? 'error' : ''}`}
                 />
+                {validationErrors.timeEnded && (
+                  <div className="error-message">
+                    <AlertCircle size={16} />
+                    {validationErrors.timeEnded}
+                  </div>
+                )}
               </div>
               <div className="form-group">
                 <label htmlFor="schoolYear" className="form-label">School Year</label>
@@ -503,7 +651,7 @@ const GuidanceNotesView = () => {
               </div>
             </div>
 
-            {/* School Year Info */}
+            {/* School Year Info - Mutually Exclusive */}
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="tertiarySemester" className="form-label">Semester (Tertiary)</label>
@@ -512,6 +660,7 @@ const GuidanceNotesView = () => {
                   name="tertiarySemester"
                   value={formData.tertiarySemester}
                   onChange={handleInputChange}
+                  disabled={!!formData.seniorHighQuarter}
                   className="form-select"
                 >
                   <option value="">Select Semester</option>
@@ -519,6 +668,11 @@ const GuidanceNotesView = () => {
                   <option value="2nd">2nd Semester</option>
                   <option value="Summer">Summer</option>
                 </select>
+                {formData.seniorHighQuarter && (
+                  <div className="field-note">
+                    Disabled because Quarter is selected
+                  </div>
+                )}
               </div>
               <div className="form-group">
                 <label htmlFor="seniorHighQuarter" className="form-label">Quarter (Senior High)</label>
@@ -527,6 +681,7 @@ const GuidanceNotesView = () => {
                   name="seniorHighQuarter"
                   value={formData.seniorHighQuarter}
                   onChange={handleInputChange}
+                  disabled={!!formData.tertiarySemester}
                   className="form-select"
                 >
                   <option value="">Select Quarter</option>
@@ -536,6 +691,11 @@ const GuidanceNotesView = () => {
                   <option value="4th">4th Quarter</option>
                   <option value="Summer">Summer</option>
                 </select>
+                {formData.tertiarySemester && (
+                  <div className="field-note">
+                    Disabled because Semester is selected
+                  </div>
+                )}
               </div>
             </div>
 
@@ -569,8 +729,8 @@ const GuidanceNotesView = () => {
 
             {/* Nature of Counseling */}
             <div className="form-group">
-              <label className="form-label">Nature of Counseling (Select all that apply)</label>
-              <div className="guidance-checkbox-grid">
+              <label className="form-label">Nature of Counseling * (Select at least one)</label>
+              <div className={`guidance-checkbox-grid ${validationErrors.natureOfCounseling ? 'error-border' : ''}`}>
                 <label className="guidance-checkbox-item">
                   <input
                     type="checkbox"
@@ -617,12 +777,18 @@ const GuidanceNotesView = () => {
                   Career
                 </label>
               </div>
+              {validationErrors.natureOfCounseling && (
+                <div className="error-message">
+                  <AlertCircle size={16} />
+                  {validationErrors.natureOfCounseling}
+                </div>
+              )}
             </div>
 
             {/* Counseling Situation */}
             <div className="form-group">
-              <label className="form-label">Counseling Situation (Select all that apply)</label>
-              <div className="guidance-checkbox-grid">
+              <label className="form-label">Counseling Situation * (Select at least one)</label>
+              <div className={`guidance-checkbox-grid ${validationErrors.counselingSituation ? 'error-border' : ''}`}>
                 <label className="guidance-checkbox-item">
                   <input
                     type="checkbox"
@@ -687,11 +853,17 @@ const GuidanceNotesView = () => {
                   Referred
                 </label>
               </div>
+              {validationErrors.counselingSituation && (
+                <div className="error-message">
+                  <AlertCircle size={16} />
+                  {validationErrors.counselingSituation}
+                </div>
+              )}
 
               {/* Referred By conditional field */}
               {formData.isReferred && (
                 <div className="guidance-conditional-field">
-                  <label htmlFor="referredBy" className="form-label">Referred By</label>
+                  <label htmlFor="referredBy" className="form-label">Referred By *</label>
                   <input
                     type="text"
                     id="referredBy"
@@ -699,24 +871,36 @@ const GuidanceNotesView = () => {
                     value={formData.referredBy}
                     onChange={handleInputChange}
                     placeholder="Name of person who referred the student"
-                    className="form-input"
+                    className={`form-input ${validationErrors.referredBy ? 'error' : ''}`}
                   />
+                  {validationErrors.referredBy && (
+                    <div className="error-message">
+                      <AlertCircle size={16} />
+                      {validationErrors.referredBy}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
             {/* Counseling Notes Sections */}
             <div className="form-group">
-              <label htmlFor="presentingProblem" className="form-label">Presenting Problem</label>
+              <label htmlFor="presentingProblem" className="form-label">Presenting Problem *</label>
               <textarea
                 id="presentingProblem"
                 name="presentingProblem"
                 value={formData.presentingProblem}
                 onChange={handleInputChange}
                 placeholder="Describe the presenting problem..."
-                className="form-textarea"
+                className={`form-textarea ${validationErrors.presentingProblem ? 'error' : ''}`}
                 rows="4"
               />
+              {validationErrors.presentingProblem && (
+                <div className="error-message">
+                  <AlertCircle size={16} />
+                  {validationErrors.presentingProblem}
+                </div>
+              )}
             </div>
 
             <div className="form-group">
@@ -775,15 +959,21 @@ const GuidanceNotesView = () => {
 
                 {formData.isFollowThroughSession && (
                   <div className="guidance-conditional-field">
-                    <label htmlFor="followThroughDate" className="form-label">Follow-through Date</label>
+                    <label htmlFor="followThroughDate" className="form-label">Follow-through Date *</label>
                     <input
                       type="date"
                       id="followThroughDate"
                       name="followThroughDate"
                       value={formData.followThroughDate}
                       onChange={handleInputChange}
-                      className="form-input"
+                      className={`form-input ${validationErrors.followThroughDate ? 'error' : ''}`}
                     />
+                    {validationErrors.followThroughDate && (
+                      <div className="error-message">
+                        <AlertCircle size={16} />
+                        {validationErrors.followThroughDate}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -799,7 +989,7 @@ const GuidanceNotesView = () => {
 
                 {formData.isReferral && (
                   <div className="guidance-conditional-field">
-                    <label htmlFor="referralAgencyName" className="form-label">Referral Agency Name</label>
+                    <label htmlFor="referralAgencyName" className="form-label">Referral Agency Name *</label>
                     <input
                       type="text"
                       id="referralAgencyName"
@@ -807,8 +997,14 @@ const GuidanceNotesView = () => {
                       value={formData.referralAgencyName}
                       onChange={handleInputChange}
                       placeholder="Name of agency or professional"
-                      className="form-input"
+                      className={`form-input ${validationErrors.referralAgencyName ? 'error' : ''}`}
                     />
+                    {validationErrors.referralAgencyName && (
+                      <div className="error-message">
+                        <AlertCircle size={16} />
+                        {validationErrors.referralAgencyName}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -838,11 +1034,7 @@ const GuidanceNotesView = () => {
         <div className="form-header">
           <button 
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleBackFromView();
-            }}
+            onClick={handleBackFromView}
             className="back-button"
             style={{ pointerEvents: 'auto', zIndex: 999 }}
           >
@@ -873,6 +1065,14 @@ const GuidanceNotesView = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Counselor Info */}
+            <div className="form-group">
+              <label className="form-label">Counselor</label>
+              <div className="view-field">
+                {viewingNote.counselor?.name || '-'}
               </div>
             </div>
 
@@ -1119,11 +1319,7 @@ const GuidanceNotesView = () => {
                       <div className="action-buttons">
                         <button 
                           type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleView(note);
-                          }}
+                          onClick={() => handleView(note)}
                           className="action-button view-button"
                           style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="View"
@@ -1132,11 +1328,7 @@ const GuidanceNotesView = () => {
                         </button>
                         <button 
                           type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleEdit(note);
-                          }}
+                          onClick={() => handleEdit(note)}
                           className="action-button edit-button"
                           style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="Edit"
@@ -1145,11 +1337,7 @@ const GuidanceNotesView = () => {
                         </button>
                         <button 
                           type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleDelete(note.noteId);
-                          }}
+                          onClick={() => handleDelete(note.noteId)}
                           className="action-button delete-button"
                           style={{ pointerEvents: 'auto', zIndex: 999 }}
                           title="Delete"

@@ -911,3 +911,354 @@
   background-color: #d1d5db;
   border-radius: 4px;
 }
+
+/* Additional CSS for Enhanced Guidance Notes - Add this to your existing CSS file */
+
+/* Error Styling */
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.error-border {
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 0;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+}
+
+/* Field Notes for Disabled Fields */
+.field-note {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 4px;
+  padding: 2px 4px;
+  background-color: #f9fafb;
+  border-radius: 3px;
+  border-left: 2px solid #d1d5db;
+}
+
+/* Disabled Field Styling */
+.form-select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+}
+
+.form-select:disabled:hover {
+  border-color: #d1d5db;
+}
+
+/* Enhanced Checkbox Grid Error State */
+.guidance-checkbox-grid.error-border {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* Enhanced Conditional Field Styling */
+.guidance-conditional-field {
+  margin-left: 24px;
+  padding: 12px;
+  background-color: #f8fafc;
+  border-left: 3px solid #0477BF;
+  border-radius: 0 4px 4px 0;
+  margin-top: 8px;
+}
+
+.guidance-conditional-field .form-label {
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.guidance-conditional-field .form-input,
+.guidance-conditional-field .form-textarea {
+  font-size: 13px;
+}
+
+/* Enhanced Form Validation States */
+.form-input:invalid:not(:focus):not(.form-input--readonly) {
+  border-color: #ef4444;
+}
+
+.form-input:valid:not(:focus):not(.form-input--readonly):not([value=""]) {
+  border-color: #10b981;
+}
+
+.form-select:invalid:not(:focus) {
+  border-color: #ef4444;
+}
+
+.form-select:valid:not(:focus):not([value=""]) {
+  border-color: #10b981;
+}
+
+.form-textarea:invalid:not(:focus) {
+  border-color: #ef4444;
+}
+
+.form-textarea:valid:not(:focus):not([value=""]) {
+  border-color: #10b981;
+}
+
+/* Required Field Indicators */
+.form-label::after {
+  content: "";
+}
+
+.form-label:has(+ .form-input[required])::after,
+.form-label:has(+ .form-select[required])::after,
+.form-label:has(+ .form-textarea[required])::after {
+  content: " *";
+  color: #ef4444;
+  font-weight: bold;
+}
+
+/* Enhanced Focus States */
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #0477BF;
+  box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
+}
+
+.form-input.error:focus,
+.form-select.error:focus,
+.form-textarea.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Loading State for Form */
+.endorsement-form.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.endorsement-form.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+  cursor: not-allowed;
+}
+
+/* Enhanced Save Button States */
+.save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.save-button:disabled:hover {
+  background-color: #0477BF;
+  transform: none;
+}
+
+/* Success State Styling */
+.form-input.success,
+.form-select.success,
+.form-textarea.success {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #10b981;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 0;
+}
+
+/* Enhanced Checkbox Item Styling */
+.guidance-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.guidance-checkbox-item:hover {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+.guidance-checkbox-item:has(input:checked) {
+  background-color: rgba(4, 119, 191, 0.05);
+  border-color: rgba(4, 119, 191, 0.2);
+}
+
+.guidance-checkbox-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0477BF;
+  cursor: pointer;
+}
+
+.guidance-checkbox-item input[type="checkbox"]:focus {
+  outline: 2px solid #0477BF;
+  outline-offset: 2px;
+}
+
+/* Form Progress Indicator (Optional) */
+.form-progress {
+  position: sticky;
+  top: 0;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 0;
+  margin-bottom: 16px;
+  z-index: 5;
+}
+
+.form-progress-bar {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.form-progress-fill {
+  height: 100%;
+  background: #0477BF;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+  .guidance-conditional-field {
+    margin-left: 16px;
+    padding: 8px;
+  }
+  
+  .error-message {
+    font-size: 11px;
+  }
+  
+  .field-note {
+    font-size: 10px;
+  }
+  
+  .guidance-checkbox-item {
+    padding: 6px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .guidance-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .guidance-conditional-field {
+    margin-left: 8px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .error-message,
+  .field-note {
+    display: none;
+  }
+  
+  .form-input.error,
+  .form-select.error,
+  .form-textarea.error {
+    border-color: #d1d5db;
+    box-shadow: none;
+  }
+  
+  .guidance-checkbox-grid.error-border {
+    border-color: #d1d5db;
+    background-color: transparent;
+  }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .guidance-checkbox-item,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    transition: none;
+  }
+  
+  .form-progress-fill {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .error-message {
+    color: #dc2626;
+    font-weight: 600;
+  }
+  
+  .form-input.error,
+  .form-select.error,
+  .form-textarea.error {
+    border-color: #dc2626;
+    border-width: 2px;
+  }
+  
+  .guidance-checkbox-item:has(input:checked) {
+    background-color: rgba(4, 119, 191, 0.15);
+    border-color: #0477BF;
+    border-width: 2px;
+  }
+}
+
+/* Dark Mode Support (if needed) */
+@media (prefers-color-scheme: dark) {
+  .field-note {
+    background-color: #374151;
+    color: #d1d5db;
+    border-left-color: #6b7280;
+  }
+  
+  .guidance-conditional-field {
+    background-color: #374151;
+    border-left-color: #0477BF;
+  }
+  
+  .error-message {
+    color: #f87171;
+  }
+  
+  .success-message {
+    color: #34d399;
+  }
+}
