@@ -501,7 +501,7 @@ html, body {
   align-items: center;
 }
 
-.student-avatar {
+.table .student-avatar {
   width: 40px;
   height: 40px;
   background-color: #0477BF;
@@ -512,6 +512,23 @@ html, body {
   color: white;
   font-weight: bold;
   margin-right: 16px;
+}
+
+.table .student-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.table .student-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  font-weight: 700;
+  font-size: 18px;
 }
 
 .student-name {

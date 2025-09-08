@@ -78,7 +78,9 @@ const StudentsTableView = ({
   displayedStudents,
   getMoodBadgeClass,
   handleDelete,
-  handleView
+  handleView,
+  erroredAvatars,
+  setErroredAvatars
 }) => (
   <div className="page-container">
     <div className="page-header">
@@ -167,17 +169,17 @@ const StudentsTableView = ({
                   <td className="table-cell">
                     <div className="student-info">
                       <div className="student-avatar">
-                        {!imageError ? (
-                          <img
-                            src={`https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}/photo`}
-                            alt={student.fullName || student.name}
-                            onError={() => setImageError(true)}
-                            crossOrigin="anonymous"
-                          />
-                        ) : (
-                          <div className="student-avatar-fallback">
-                            {(student.fullName || student.name || 'S').charAt(0)}
-                          </div>
+                        {!erroredAvatars[student.id] ? (
+                            <img
+                              src={`https://guidanceofficeapi-production.up.railway.app/api/student/${student.id}/photo`}
+                              alt={student.name || 'Student photo'}
+                              onError={() => setErroredAvatars(prev => ({ ...prev, [student.id]: true }))}
+                              crossOrigin="anonymous"
+                            />
+                          ) : (
+                            <div className="student-avatar-fallback">
+                              {(student.name || 'S').charAt(0)}
+                            </div>
                         )}
                       </div>
                       <div>
@@ -276,6 +278,7 @@ const StudentsListView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
   const [viewingStudentId, setViewingStudentId] = useState(null);
+  const [erroredAvatars, setErroredAvatars] = useState({});
 
 const handleView = (studentId) => {
   setViewingStudentId(studentId);
@@ -528,6 +531,8 @@ const handleDelete = async (studentId) => {
       getMoodBadgeClass={getMoodBadgeClass}
       handleDelete={handleDelete}
       handleView={handleView}
+      erroredAvatars={erroredAvatars}
+      setErroredAvatars={setErroredAvatars}
     />
   ) : (
     <CourseSelectionView 
