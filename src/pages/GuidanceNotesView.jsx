@@ -548,7 +548,7 @@ const GuidanceNotesView = () => {
           <form onSubmit={handleSubmit} className="endorsement-form">
             {/* Student Selection */}
             <div className="form-group">
-              <label htmlFor="studentId" className="form-label">Student *</label>
+              <label htmlFor="studentId" className="form-label">Student</label>
               <select
                 id="studentId"
                 name="studentId"
@@ -572,24 +572,10 @@ const GuidanceNotesView = () => {
               )}
             </div>
 
-            {/* Counselor Name (Auto-populated and read-only) */}
-            <div className="form-group">
-              <label htmlFor="counselorName" className="form-label">Counselor</label>
-              <input
-                type="text"
-                id="counselorName"
-                name="counselorName"
-                value={formData.counselorName}
-                className="form-input form-input--readonly"
-                readOnly
-                placeholder="Counselor name will be auto-populated"
-              />
-            </div>
-
             {/* Interview Date and Time */}
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="interviewDate" className="form-label">Interview Date *</label>
+                <label htmlFor="interviewDate" className="form-label">Interview Date</label>
                 <input
                   type="date"
                   id="interviewDate"
@@ -1012,7 +998,7 @@ const GuidanceNotesView = () => {
 
             {/* Counselor Name (Auto-populated and at bottom) */}
             <div className="form-group">
-              <label htmlFor="counselorName" className="form-label">Counselor *</label>
+              <label htmlFor="counselorName" className="form-label">Name of Guidance Counselor</label>
               <input
                 type="text"
                 id="counselorName"
