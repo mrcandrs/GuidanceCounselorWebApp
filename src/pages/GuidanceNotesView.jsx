@@ -667,7 +667,7 @@ const validateForm = () => {
                   value={formData.tertiarySemester}
                   onChange={handleInputChange}
                   disabled={!!formData.seniorHighQuarter}
-                  className="form-select"
+                  className={`form-select ${validationErrors.semesterQuarter ? 'error' : ''}`}
                 >
                   <option value="">Select Semester</option>
                   <option value="1st">1st Semester</option>
@@ -688,7 +688,7 @@ const validateForm = () => {
                   value={formData.seniorHighQuarter}
                   onChange={handleInputChange}
                   disabled={!!formData.tertiarySemester}
-                  className="form-select"
+                  className={`form-select ${validationErrors.semesterQuarter ? 'error' : ''}`}
                 >
                   <option value="">Select Quarter</option>
                   <option value="1st">1st Quarter</option>
@@ -700,6 +700,12 @@ const validateForm = () => {
                 {formData.tertiarySemester && (
                   <div className="field-note">
                     Disabled because Semester is selected
+                  </div>
+                )}
+                {validationErrors.semesterQuarter && (
+                  <div className="error-message">
+                    <AlertCircle size={16} />
+                    {validationErrors.semesterQuarter}
                   </div>
                 )}
               </div>
@@ -952,7 +958,12 @@ const validateForm = () => {
             {/* Recommendations */}
             <div className="form-group">
               <label className="form-label">Recommendations</label>
-              
+              {validationErrors.recommendations && (
+                <div className="error-message">
+                  <AlertCircle size={16} />
+                  {validationErrors.recommendations}
+                </div>
+              )}
               <div className="guidance-recommendation-section">
                 <label className="guidance-checkbox-item">
                   <input
