@@ -114,7 +114,7 @@ const StudentsTableView = ({
       </div>
     </div>
 
-    <div className="card">
+    <div className="card student-scrollable-form">
       <div className="search-container">
         <div className="search-input-container">
           <Search className="search-icon" size={20} />
