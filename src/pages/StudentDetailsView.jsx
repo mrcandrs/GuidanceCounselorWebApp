@@ -273,7 +273,7 @@ const resetMoodFilter = () => {
         </button>
             <div className="student-header-divider"></div>
             <div className="student-title-section">
-              <div className="student-avatar">
+              <div className="student-header-avatar">
               {!imageError ? (
                 <img
                   src={`${API_BASE}/student/${studentId}/photo`}
@@ -282,7 +282,7 @@ const resetMoodFilter = () => {
                   crossOrigin="anonymous"
                 />
               ) : (
-                <div className="student-avatar-fallback">
+                <div className="student-header-avatar-fallback">
                   {(student.fullName || student.name || 'S').charAt(0)}
                 </div>
               )}
