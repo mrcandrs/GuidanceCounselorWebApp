@@ -167,7 +167,18 @@ const StudentsTableView = ({
                   <td className="table-cell">
                     <div className="student-info">
                       <div className="student-avatar">
-                        {student.name ? student.name.charAt(0).toUpperCase() : 'S'}
+                        {!imageError ? (
+                          <img
+                            src={`https://guidanceofficeapi-production.up.railway.app/api/student/${studentId}/photo`}
+                            alt={student.fullName || student.name}
+                            onError={() => setImageError(true)}
+                            crossOrigin="anonymous"
+                          />
+                        ) : (
+                          <div className="student-avatar-fallback">
+                            {(student.fullName || student.name || 'S').charAt(0)}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <div className="student-name">{student.name || 'N/A'}</div>
