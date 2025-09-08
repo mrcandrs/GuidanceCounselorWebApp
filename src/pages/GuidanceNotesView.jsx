@@ -715,7 +715,7 @@ const GuidanceNotesView = () => {
 
             {/* Nature of Counseling */}
             <div className="form-group">
-              <label className="form-label">Nature of Counseling * (Select at least one)</label>
+              <label className="form-label">Nature of Counseling (Select at least one)</label>
               <div className={`guidance-checkbox-grid ${validationErrors.natureOfCounseling ? 'error-border' : ''}`}>
                 <label className="guidance-checkbox-item">
                   <input
@@ -723,6 +723,7 @@ const GuidanceNotesView = () => {
                     name="isAcademic"
                     checked={formData.isAcademic}
                     onChange={handleInputChange}
+                    required
                   />
                   Academic
                 </label>
@@ -773,7 +774,7 @@ const GuidanceNotesView = () => {
 
             {/* Counseling Situation */}
             <div className="form-group">
-              <label className="form-label">Counseling Situation * (Select at least one)</label>
+              <label className="form-label">Counseling Situation (Select at least one)</label>
               <div className={`guidance-checkbox-grid ${validationErrors.counselingSituation ? 'error-border' : ''}`}>
                 <label className="guidance-checkbox-item">
                   <input
@@ -781,6 +782,7 @@ const GuidanceNotesView = () => {
                     name="isIndividual"
                     checked={formData.isIndividual}
                     onChange={handleInputChange}
+                    required
                   />
                   Individual
                 </label>
@@ -871,7 +873,7 @@ const GuidanceNotesView = () => {
 
             {/* Counseling Notes Sections */}
             <div className="form-group">
-              <label htmlFor="presentingProblem" className="form-label">Presenting Problem *</label>
+              <label htmlFor="presentingProblem" className="form-label">Presenting Problem</label>
               <textarea
                 id="presentingProblem"
                 name="presentingProblem"
@@ -879,6 +881,7 @@ const GuidanceNotesView = () => {
                 onChange={handleInputChange}
                 placeholder="Describe the presenting problem..."
                 className={`form-textarea ${validationErrors.presentingProblem ? 'error' : ''}`}
+                required
                 rows="4"
               />
               {validationErrors.presentingProblem && (
