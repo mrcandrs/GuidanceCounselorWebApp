@@ -2,15 +2,84 @@ import React from 'react';
 import { Calendar, Check, X, Clock, FileText } from 'lucide-react';
 import '../styles/Dashboard.css';
 
-const AppointmentApprovalView = ({ pendingAppointments }) => {
-  const handleApprove = (appointmentId) => {
-    console.log('Approved appointment:', appointmentId);
-    //Approval logic
+const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) => {
+  const [loading, setLoading] = useState({});
+  const [error, setError] = useState(null);
+
+  //Approval
+  const handleApprove = async (appointmentId) => {
+    setLoading(prev => ({ ...prev, [appointmentId]: 'approving' }));
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/guidanceappointment/${appointmentId}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to approve appointment');
+      }
+
+      const result = await response.json();
+      console.log('Approved appointment:', result);
+      
+      // Call the parent callback to refresh the appointments list
+      if (onAppointmentUpdate) {
+        onAppointmentUpdate();
+      }
+
+      // Show success message
+      alert(`Appointment approved successfully for ${result.appointment.studentName}`);
+      
+    } catch (error) {
+      console.error('Error approving appointment:', error);
+      setError(error.message);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(prev => ({ ...prev, [appointmentId]: null }));
+    }
   };
 
-  const handleReject = (appointmentId) => {
-    console.log('Rejected appointment:', appointmentId);
-    //Rejection logic
+  //Rejection
+  const handleReject = async (appointmentId) => {
+    setLoading(prev => ({ ...prev, [appointmentId]: 'rejecting' }));
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/guidanceappointment/${appointmentId}/reject`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to reject appointment');
+      }
+
+      const result = await response.json();
+      console.log('Rejected appointment:', result);
+      
+      // Call the parent callback to refresh the appointments list
+      if (onAppointmentUpdate) {
+        onAppointmentUpdate();
+      }
+
+      // Show success message
+      alert(`Appointment rejected for ${result.appointment.studentName}`);
+      
+    } catch (error) {
+      console.error('Error rejecting appointment:', error);
+      setError(error.message);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(prev => ({ ...prev, [appointmentId]: null }));
+    }
   };
 
   // Helper function to format the createdAt date

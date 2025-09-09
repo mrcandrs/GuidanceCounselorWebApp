@@ -75,21 +75,22 @@ const GuidanceDashboard = () => {
     setActiveTab(tabId);
   };
 
-  //Use effect for pending appointments
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const res = await axios.get(
-          "https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"
-        );
-        setPendingAppointments(res.data);
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
-      }
-    };
+// Function to fetch pending appointments
+const fetchPendingAppointments = async () => {
+  try {
+    const res = await axios.get(
+      "https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"
+    );
+    setPendingAppointments(res.data);
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+  }
+};
 
-    fetchAppointments();
-  }, []);
+//Use effect for pending appointments
+useEffect(() => {
+  fetchPendingAppointments();
+}, []);
 
   // Fetch alerts for notifications
   const fetchAlerts = async () => {
@@ -201,7 +202,9 @@ const GuidanceDashboard = () => {
       case 'mood':
         return <MoodInsightsView />;
       case 'appointments':
-        return <AppointmentApprovalView pendingAppointments={pendingAppointments} />;
+        return <AppointmentApprovalView 
+          pendingAppointments={pendingAppointments}
+          onAppointmentUpdate={fetchPendingAppointments} />;
       case 'endorsement':
         return <EndorsementCustodyView />;
       case 'consultation':
