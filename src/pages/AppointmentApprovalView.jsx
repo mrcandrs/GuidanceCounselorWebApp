@@ -234,7 +234,17 @@ const handleReject = async (appointmentId) => {
     <div className="page-container">
       <div className="page-header">
         <h2 className="page-title">Appointment Approval</h2>
-        <button className="primary-button" onClick={handleSetAvailableTimes}>
+        <button
+          onClick={handleSetAvailableTimes}
+          className="primary-button"
+          type="button"
+          style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
+          >
           <Calendar size={20} />
           Set Available Times
         </button>
