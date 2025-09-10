@@ -155,8 +155,13 @@ const handleApprove = async (appointmentId) => {
     
   } catch (error) {
     console.error('Error approving appointment:', error);
-    setError(error.response?.data?.message || error.message);
-    alert(`Error: ${error.response?.data?.message || error.message}`);
+    
+    // Show detailed error message
+    const errorMessage = error.response?.data?.message || error.message;
+    console.log('Detailed error:', error.response?.data);
+    
+    setError(errorMessage);
+    alert(`Error: ${errorMessage}`);
   } finally {
     setLoading(prev => ({ ...prev, [appointmentId]: null }));
   }
