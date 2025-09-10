@@ -361,6 +361,11 @@ const handleReject = async (appointmentId) => {
                           <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '8px' }}>
                             ({slot.currentAppointmentCount}/{slot.maxAppointments})
                           </span>
+                          {slot.currentAppointmentCount < slot.maxAppointments && (
+                          <span style={{ fontSize: '12px', color: '#10b981', marginLeft: '8px' }}>
+                          ({slot.maxAppointments - slot.currentAppointmentCount} available)
+                          </span>
+                        )}
                         </div>
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <button
