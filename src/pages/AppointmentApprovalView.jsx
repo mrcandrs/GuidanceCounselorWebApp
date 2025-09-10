@@ -148,6 +148,9 @@ const handleApprove = async (appointmentId) => {
       onAppointmentUpdate();
     }
 
+    // Refresh available slots to update counts
+    fetchAvailableSlots();
+
     alert(`Appointment approved successfully for ${response.data.appointment.studentName}`);
     
   } catch (error) {
@@ -181,6 +184,9 @@ const handleReject = async (appointmentId) => {
     if (onAppointmentUpdate) {
       onAppointmentUpdate();
     }
+
+    // Refresh available slots to update counts
+    fetchAvailableSlots();
 
     alert(`Appointment rejected successfully for ${response.data.appointment.studentName}`);
     
