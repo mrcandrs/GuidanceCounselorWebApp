@@ -1,13 +1,131 @@
-import React, { useState } from 'react';
-import { Calendar, Check, X, Clock, FileText } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, Check, X, Clock, FileText, Plus, Trash2, Edit } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
 const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) => {
   const [loading, setLoading] = useState({});
   const [error, setError] = useState(null);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTimes, setSelectedTimes] = useState([]);
+  const [maxAppointments, setMaxAppointments] = useState(3);
+  const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
 
-  //Approval
+  // Fetch available time slots
+  useEffect(() => {
+    fetchAvailableSlots();
+  }, []);
+
+  const fetchAvailableSlots = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot',
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+      setAvailableSlots(response.data);
+    } catch (error) {
+      console.error('Error fetching available slots:', error);
+    }
+  };
+
+  const handleSetAvailableTimes = () => {
+    setShowTimeSlotModal(true);
+    setSelectedDate('');
+    setSelectedTimes([]);
+    setMaxAppointments(3);
+  };
+
+  const handleSaveTimeSlots = async () => {
+    if (!selectedDate || selectedTimes.length === 0) {
+      alert('Please select a date and at least one time slot');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.post(
+        'https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/bulk',
+        {
+          date: selectedDate,
+          times: selectedTimes,
+          maxAppointments: maxAppointments
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert(`Successfully created ${response.data.createdSlots.length} time slots`);
+      setShowTimeSlotModal(false);
+      fetchAvailableSlots();
+    } catch (error) {
+      console.error('Error creating time slots:', error);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  const handleDeleteTimeSlot = async (slotId) => {
+    if (!confirm('Are you sure you want to delete this time slot?')) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(
+        `https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/${slotId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert('Time slot deleted successfully');
+      fetchAvailableSlots();
+    } catch (error) {
+      console.error('Error deleting time slot:', error);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  const handleToggleTimeSlot = async (slotId, isActive) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.put(
+        `https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/${slotId}/toggle`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert(`Time slot ${isActive ? 'deactivated' : 'activated'} successfully`);
+      fetchAvailableSlots();
+    } catch (error) {
+      console.error('Error toggling time slot:', error);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  // Group slots by date
+  const groupedSlots = availableSlots.reduce((acc, slot) => {
+    const dateKey = new Date(slot.date).toLocaleDateString();
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
+    }
+    acc[dateKey].push(slot);
+    return acc;
+  }, {});
+
+  //Approval method
 const handleApprove = async (appointmentId) => {
   setLoading(prev => ({ ...prev, [appointmentId]: 'approving' }));
   setError(null);
@@ -41,7 +159,7 @@ const handleApprove = async (appointmentId) => {
   }
 };
 
-  //Rejection
+  //Rejection method
 const handleReject = async (appointmentId) => {
   setLoading(prev => ({ ...prev, [appointmentId]: 'rejecting' }));
   setError(null);
@@ -116,7 +234,7 @@ const handleReject = async (appointmentId) => {
     <div className="page-container">
       <div className="page-header">
         <h2 className="page-title">Appointment Approval</h2>
-        <button className="primary-button">
+        <button className="primary-button" onClick={handleSetAvailableTimes}>
           <Calendar size={20} />
           Set Available Times
         </button>
@@ -198,27 +316,148 @@ const handleReject = async (appointmentId) => {
         {/* Available Time Slots */}
         <div className="card">
           <h3 className="card-title">Available Time Slots</h3>
-          <div>
+          <div className="time-slots-container" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            {Object.keys(groupedSlots).length > 0 ? (
+              Object.entries(groupedSlots).map(([date, slots]) => (
+                <div key={date} style={{ marginBottom: '16px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#374151', margin: '0 0 8px 0' }}>
+                    {date}
+                  </h4>
+                  <div className="time-slot-grid">
+                    {slots.map((slot) => (
+                      <div key={slot.slotId} className="time-slot-item" style={{
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        padding: '8px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: slot.isActive ? 'white' : '#f9fafb',
+                        opacity: slot.isActive ? 1 : 0.6
+                      }}>
+                        <div>
+                          <span style={{ fontWeight: '500' }}>{slot.time}</span>
+                          <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '8px' }}>
+                            ({slot.currentAppointmentCount}/{slot.maxAppointments})
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button
+                            onClick={() => handleToggleTimeSlot(slot.slotId, slot.isActive)}
+                            style={{
+                              padding: '4px',
+                              border: 'none',
+                              background: slot.isActive ? '#fbbf24' : '#10b981',
+                              color: 'white',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                            title={slot.isActive ? 'Deactivate' : 'Activate'}
+                          >
+                            {slot.isActive ? '⏸️' : '▶️'}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTimeSlot(slot.slotId)}
+                            style={{
+                              padding: '4px',
+                              border: 'none',
+                              background: '#ef4444',
+                              color: 'white',
+                              borderRadius: '4px',
+                              cursor: 'pointer'
+                            }}
+                            title="Delete"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state">
+                <Clock size={48} className="empty-icon" />
+                <p>No available time slots set</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Time Slot Modal */}
+      {showTimeSlotModal && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ width: '400px' }}>
+            <h3>Set Available Time Slots</h3>
+            
             <div className="form-group">
               <label className="label">Date</label>
-              <input type="date" className="input" />
+              <input 
+                type="date" 
+                className="input" 
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+              />
             </div>
+
+            <div className="form-group">
+              <label className="label">Max Appointments per Slot</label>
+              <select 
+                className="input"
+                value={maxAppointments}
+                onChange={(e) => setMaxAppointments(parseInt(e.target.value))}
+              >
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+                <option value={3}>3</option>
+              </select>
+            </div>
+
             <div className="form-group">
               <label className="label">Time Slots</label>
               <div className="time-slot-grid">
-                {['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'].map((time) => (
-                  <button key={time} className="time-slot-button">
+                {['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'].map((time) => (
+                  <button 
+                    key={time} 
+                    className={`time-slot-button ${selectedTimes.includes(time) ? 'selected' : ''}`}
+                    onClick={() => {
+                      if (selectedTimes.includes(time)) {
+                        setSelectedTimes(selectedTimes.filter(t => t !== time));
+                      } else {
+                        setSelectedTimes([...selectedTimes, time]);
+                      }
+                    }}
+                    style={{
+                      backgroundColor: selectedTimes.includes(time) ? '#0477BF' : 'white',
+                      color: selectedTimes.includes(time) ? 'white' : '#374151'
+                    }}
+                  >
                     {time}
                   </button>
                 ))}
               </div>
             </div>
-            <button className="primary-button full-width">
-              Update Available Times
-            </button>
+
+            <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+              <button 
+                className="primary-button full-width"
+                onClick={handleSaveTimeSlots}
+              >
+                Save Time Slots
+              </button>
+              <button 
+                className="filter-button full-width"
+                onClick={() => setShowTimeSlotModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
