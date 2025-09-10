@@ -73,7 +73,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   };
 
   const handleDeleteTimeSlot = async (slotId) => {
-    if (!confirm('Are you sure you want to delete this time slot?')) return;
+    if (!window.confirm('Are you sure you want to delete this time slot?')) return;
 
     try {
       const token = localStorage.getItem('authToken');
