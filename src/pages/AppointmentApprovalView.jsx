@@ -360,6 +360,9 @@ const handleReject = async (appointmentId) => {
                               background: slot.isActive ? '#fbbf24' : '#10b981',
                               color: 'white',
                               borderRadius: '4px',
+                              position: 'relative',
+                              zIndex: 9999,
+                              pointerEvents: 'auto',
                               cursor: 'pointer'
                             }}
                             title={slot.isActive ? 'Deactivate' : 'Activate'}
@@ -374,6 +377,9 @@ const handleReject = async (appointmentId) => {
                               background: '#ef4444',
                               color: 'white',
                               borderRadius: '4px',
+                              position: 'relative',
+                              zIndex: 9999,
+                              pointerEvents: 'auto',
                               cursor: 'pointer'
                             }}
                             title="Delete"
