@@ -20,6 +20,18 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     fetchAvailableSlots();
   }, []);
 
+  // Add this useEffect after your existing fetchAvailableSlots useEffect
+useEffect(() => {
+  // Auto-refresh pending appointments every 30 seconds
+  const interval = setInterval(() => {
+    if (onAppointmentUpdate) {
+      onAppointmentUpdate();
+    }
+  }, 30000); // 30 seconds
+
+  return () => clearInterval(interval);
+}, [onAppointmentUpdate]);
+
   const fetchAvailableSlots = async () => {
     try {
       const token = localStorage.getItem('authToken');
