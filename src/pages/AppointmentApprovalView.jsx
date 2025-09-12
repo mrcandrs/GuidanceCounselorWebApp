@@ -27,7 +27,7 @@ useEffect(() => {
     if (onAppointmentUpdate) {
       onAppointmentUpdate();
     }
-  }, 30000); // 30 seconds
+  }, 2000); // 2 seconds
 
   return () => clearInterval(interval);
 }, [onAppointmentUpdate]);
