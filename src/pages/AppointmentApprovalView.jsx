@@ -284,7 +284,6 @@ const handleReject = async (appointmentId) => {
       <div className="page-header">
         <h2 className="page-title">
           Appointment Approval
-          {isRefreshing && <span style={{ fontSize: '12px', color: '#6b7280' }}> (refreshing...)</span>}
           </h2>
         <button
           onClick={handleSetAvailableTimes}
