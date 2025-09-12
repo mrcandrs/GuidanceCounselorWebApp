@@ -11,6 +11,9 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [selectedTimes, setSelectedTimes] = useState([]);
   const [maxAppointments, setMaxAppointments] = useState(3);
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
+  const [approvedForSlot, setApprovedForSlot] = useState([]);
+  const [showApprovedModal, setShowApprovedModal] = useState(false);
+  const [activeSlot, setActiveSlot] = useState(null);
 
   // Fetch available time slots
   useEffect(() => {
@@ -94,6 +97,8 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     }
   };
 
+
+  
   const handleToggleTimeSlot = async (slotId, isActive) => {
     try {
       const token = localStorage.getItem('authToken');
@@ -114,6 +119,22 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
       alert(`Error: ${error.response?.data?.message || error.message}`);
     }
   };
+
+  const fetchApprovedForSlot = async (slot) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const res = await axios.get(
+      `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/approved-by-slot/${slot.slotId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setApprovedForSlot(res.data || []);
+    setActiveSlot(slot);
+    setShowApprovedModal(true);
+  } catch (err) {
+    console.error('Error fetching approved for slot:', err);
+    alert(`Error: ${err.response?.data?.message || err.message}`);
+  }
+};
 
   // Group slots by date
   const groupedSlots = availableSlots.reduce((acc, slot) => {
@@ -369,6 +390,23 @@ const handleReject = async (appointmentId) => {
                         </div>
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <button
+                            onClick={() => fetchApprovedForSlot(slot)}
+                            style={{
+                              padding: '4px',
+                              border: 'none',
+                              background: '#0477BF',
+                              color: 'white',
+                              borderRadius: '4px',
+                              position: 'relative',
+                              zIndex: 9999,
+                              pointerEvents: 'auto',
+                              cursor: 'pointer'
+                            }}
+                            title="View approved students"
+                          >
+                            View
+                          </button>
+                          <button
                             onClick={() => handleToggleTimeSlot(slot.slotId, slot.isActive)}
                             style={{
                               padding: '4px',
@@ -417,6 +455,39 @@ const handleReject = async (appointmentId) => {
           </div>
         </div>
       </div>
+
+      {showApprovedModal && (
+  <div className="modal-overlay">
+    <div className="modal" style={{ width: '420px', textAlign: 'left' }}>
+      <h3 style={{ marginTop: 0 }}>
+        Approved Students — {activeSlot ? new Date(activeSlot.date).toLocaleDateString() : ''} {activeSlot?.time}
+      </h3>
+
+      {approvedForSlot.length === 0 ? (
+        <p style={{ color: '#6b7280' }}>No approved students for this slot.</p>
+      ) : (
+        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+          {approvedForSlot.map(s => (
+            <div key={s.appointmentId} style={{ borderBottom: '1px solid #e5e7eb', padding: '8px 0' }}>
+              <div style={{ fontWeight: 600, color: '#1f2937' }}>{s.studentName}</div>
+              <div style={{ fontSize: '13px', color: '#6b7280' }}>{s.programSection}</div>
+              <div style={{ fontSize: '13px', color: '#374151', marginTop: '4px' }}>Reason: {s.reason}</div>
+              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                Approved at: {s.updatedAt ? new Date(s.updatedAt).toLocaleString() : '—'}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+        <button className="primary-button full-width" onClick={() => setShowApprovedModal(false)}>
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Time Slot Modal */}
       {showTimeSlotModal && (
