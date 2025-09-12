@@ -160,8 +160,8 @@ useEffect(() => {
     { id: 'endorsement', icon: FileText, label: 'Endorsement and Custody' },
     { id: 'consultation', icon: ClipboardList, label: 'Consultation/Conference Forms' },
     { id: 'notes', icon: Edit, label: 'Guidance/Counseling Notes' },
+        { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
-    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
     { id: 'referral', icon: AtSign, label: 'Referral' },
     { id: 'filemaintenance', icon: FileArchive, label: 'File Maintenance' },
     { id: 'reports', icon: History, label: 'History and Reports' }
