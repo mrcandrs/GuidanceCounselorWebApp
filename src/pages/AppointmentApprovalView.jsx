@@ -14,6 +14,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [approvedForSlot, setApprovedForSlot] = useState([]);
   const [showApprovedModal, setShowApprovedModal] = useState(false);
   const [activeSlot, setActiveSlot] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch available time slots
   useEffect(() => {
@@ -22,12 +23,16 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
 
   // Add this useEffect after your existing fetchAvailableSlots useEffect
 useEffect(() => {
-  // Auto-refresh pending appointments every 30 seconds
-  const interval = setInterval(() => {
+  const interval = setInterval(async () => {
+    setIsRefreshing(true);
+    
     if (onAppointmentUpdate) {
       onAppointmentUpdate();
     }
-  }, 2000); // 2 seconds
+    await fetchAvailableSlots();
+    
+    setIsRefreshing(false);
+  }, 2000); //2 seconds
 
   return () => clearInterval(interval);
 }, [onAppointmentUpdate]);
@@ -277,7 +282,10 @@ const handleReject = async (appointmentId) => {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h2 className="page-title">Appointment Approval</h2>
+        <h2 className="page-title">
+          Appointment Approval
+          {isRefreshing && <span style={{ fontSize: '12px', color: '#6b7280' }}> (refreshing...)</span>}
+          </h2>
         <button
           onClick={handleSetAvailableTimes}
           className="primary-button"
