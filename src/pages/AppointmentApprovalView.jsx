@@ -215,9 +215,15 @@ const handleApprove = async (appointmentId) => {
   }
 };
 
-  //Rejection method
+//Rejection method
 const handleReject = async () => {
   if (!selectedAppointmentId) return;
+
+  // Validate rejection reason
+  if (!rejectionReason || rejectionReason.trim() === '') {
+    alert('Please provide a reason for rejection');
+    return;
+  }
 
   setLoading(prev => ({ ...prev, [selectedAppointmentId]: 'rejecting' }));
   setError(null);
@@ -226,7 +232,7 @@ const handleReject = async () => {
     const token = localStorage.getItem('authToken');
     const response = await axios.put(
       `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/${selectedAppointmentId}/reject`,
-      { rejectionReason: rejectionReason },
+      { rejectionReason: rejectionReason.trim() },
       {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -596,44 +602,47 @@ const handleReject = async () => {
       )}
 
       {/* ADD THE REJECTION MODAL HERE - right after the time slot modal */}
-    {showRejectModal && (
-      <div className="modal-overlay">
-        <div className="modal" style={{ width: '400px' }}>
-          <h3>Reject Appointment</h3>
-          
-          <div className="form-group">
-            <label className="label">Rejection Reason (Optional)</label>
-            <textarea 
-              className="input" 
-              value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Enter reason for rejection..."
-              rows={4}
-              style={{ resize: 'vertical' }}
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-            <button 
-              className="primary-button full-width"
-              onClick={handleReject}
-            >
-              Reject Appointment
-            </button>
-            <button 
-              className="filter-button full-width"
-              onClick={() => {
-                setShowRejectModal(false);
-                setSelectedAppointmentId(null);
-                setRejectionReason('');
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+{/* Update the rejection modal section */}
+{showRejectModal && (
+  <div className="modal-overlay">
+    <div className="modal" style={{ width: '400px' }}>
+      <h3>Reject Appointment</h3>
+      
+      <div className="form-group">
+        <label className="label">Rejection Reason *</label>
+        <textarea 
+          className="input" 
+          value={rejectionReason}
+          onChange={(e) => setRejectionReason(e.target.value)}
+          placeholder="Enter reason for rejection..."
+          rows={4}
+          style={{ resize: 'vertical' }}
+          required
+        />
       </div>
-    )}
+
+      <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+        <button 
+          className="primary-button full-width"
+          onClick={handleReject}
+          disabled={!rejectionReason.trim()}
+        >
+          Reject Appointment
+        </button>
+        <button 
+          className="filter-button full-width"
+          onClick={() => {
+            setShowRejectModal(false);
+            setSelectedAppointmentId(null);
+            setRejectionReason('');
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
