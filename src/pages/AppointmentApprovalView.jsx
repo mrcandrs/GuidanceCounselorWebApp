@@ -15,6 +15,9 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [showApprovedModal, setShowApprovedModal] = useState(false);
   const [activeSlot, setActiveSlot] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   // Fetch available time slots
   useEffect(() => {
@@ -163,6 +166,13 @@ useEffect(() => {
     return acc;
   }, {});
 
+  // Update the reject button click handler
+const handleRejectClick = (appointmentId) => {
+  setSelectedAppointmentId(appointmentId);
+  setRejectionReason('');
+  setShowRejectModal(true);
+};
+
   //Approval method
 const handleApprove = async (appointmentId) => {
   setLoading(prev => ({ ...prev, [appointmentId]: 'approving' }));
@@ -206,15 +216,17 @@ const handleApprove = async (appointmentId) => {
 };
 
   //Rejection method
-const handleReject = async (appointmentId) => {
-  setLoading(prev => ({ ...prev, [appointmentId]: 'rejecting' }));
+const handleReject = async () => {
+  if (!selectedAppointmentId) return;
+
+  setLoading(prev => ({ ...prev, [selectedAppointmentId]: 'rejecting' }));
   setError(null);
 
   try {
     const token = localStorage.getItem('authToken');
     const response = await axios.put(
-      `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/${appointmentId}/reject`,
-      {},
+      `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/${selectedAppointmentId}/reject`,
+      { rejectionReason: rejectionReason },
       {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -228,8 +240,10 @@ const handleReject = async (appointmentId) => {
       onAppointmentUpdate();
     }
 
-    // Refresh available slots to update counts
     fetchAvailableSlots();
+    setShowRejectModal(false);
+    setSelectedAppointmentId(null);
+    setRejectionReason('');
 
     alert(`Appointment rejected successfully for ${response.data.appointment.studentName}`);
     
@@ -238,7 +252,7 @@ const handleReject = async (appointmentId) => {
     setError(error.response?.data?.message || error.message);
     alert(`Error: ${error.response?.data?.message || error.message}`);
   } finally {
-    setLoading(prev => ({ ...prev, [appointmentId]: null }));
+    setLoading(prev => ({ ...prev, [selectedAppointmentId]: null }));
   }
 };
 
@@ -328,7 +342,7 @@ const handleReject = async (appointmentId) => {
                       </button>
                       <button 
                         className="reject-button"
-                        onClick={() => handleReject(appointment.appointmentId)}
+                        onClick={() => handleRejectClick(appointment.appointmentId)}
                       >
                         <X size={16} />
                       </button>
@@ -580,6 +594,46 @@ const handleReject = async (appointmentId) => {
           </div>
         </div>
       )}
+
+      {/* ADD THE REJECTION MODAL HERE - right after the time slot modal */}
+    {showRejectModal && (
+      <div className="modal-overlay">
+        <div className="modal" style={{ width: '400px' }}>
+          <h3>Reject Appointment</h3>
+          
+          <div className="form-group">
+            <label className="label">Rejection Reason (Optional)</label>
+            <textarea 
+              className="input" 
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              placeholder="Enter reason for rejection..."
+              rows={4}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+            <button 
+              className="primary-button full-width"
+              onClick={handleReject}
+            >
+              Reject Appointment
+            </button>
+            <button 
+              className="filter-button full-width"
+              onClick={() => {
+                setShowRejectModal(false);
+                setSelectedAppointmentId(null);
+                setRejectionReason('');
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };
