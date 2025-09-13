@@ -368,6 +368,16 @@ html, body {
   background-color: #dc2626;
 }
 
+/* Rejected appointment card styling */
+.rejected-card {
+  border-left: 4px solid #ef4444;
+  background-color: #fefefe;
+}
+
+.rejected-card:hover {
+  background-color: #fef2f2;
+}
+
 .action-button {
   border: none;
   background-color: transparent;
