@@ -527,6 +527,9 @@ const handleReject = async () => {
                               color: 'white',
                               borderRadius: '4px',
                               fontSize: '12px',
+                              position: 'relative',
+                              zIndex: 9999,
+                              pointerEvents: 'auto',
                               cursor: 'pointer'
                             }}
                             title="View approved students"
@@ -544,6 +547,9 @@ const handleReject = async () => {
                               color: 'white',
                               borderRadius: '4px',
                               fontSize: '12px',
+                              position: 'relative',
+                              zIndex: 9999,
+                              pointerEvents: 'auto',
                               cursor: loading[`toggle-${slot.slotId}`] ? 'not-allowed' : 'pointer',
                               opacity: loading[`toggle-${slot.slotId}`] ? 0.6 : 1
                             }}
@@ -562,6 +568,9 @@ const handleReject = async () => {
                                     color: 'white',
                                     borderRadius: '4px',
                                     fontSize: '12px',
+                                    position: 'relative',
+                                    zIndex: 9999,
+                                    pointerEvents: 'auto',
                                     cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
                                     opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
                                   }}
