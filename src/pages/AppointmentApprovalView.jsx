@@ -468,7 +468,7 @@ const handleReject = async () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Pending Appointments with Scroll */}
         <div className="card">
           <h3 className="card-title">Pending Appointments ({pendingAppointments?.length || 0})</h3>
@@ -642,30 +642,49 @@ const handleReject = async () => {
         </div>
         
         {/* Available Time Slots */}
-        <div className="card">
+        <div className="card lg:col-span-1">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3 className="card-title">Available Time Slots</h3>
-          <div className="time-slots-container" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+          <button
+          onClick={handleSetAvailableTimes}
+          className="primary-button"
+          style={{ padding: '6px 12px', fontSize: '12px' }}
+          >
+          <Plus size={14} />
+          Add Slots
+          </button>
+          </div>
+
+          <div className="time-slots-container" style={{ maxHeight: '600px', overflowY: 'auto' }}>
             {Object.keys(groupedSlots).length > 0 ? (
               Object.entries(groupedSlots).map(([date, slots]) => (
-                <div key={date} style={{ marginBottom: '16px' }}>
-                  <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#374151', margin: '0 0 8px 0' }}>
+                <div key={date} style={{ marginBottom: '20px' }}>
+                  <h4 style={{ 
+                    fontSize: '14px', 
+                    fontWeight: '600', 
+                    color: '#374151', 
+                    margin: '0 0 12px 0',
+                    padding: '8px 12px',
+                    background: '#f9fafb',
+                    borderRadius: '6px',
+                    border: '1px solid #e5e7eb'
+                  }}>
                     {date}
                   </h4>
-                  <div className="time-slot-grid">
+
+                  {/* Single column layout for time slots */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {slots.map((slot) => (
                       <div key={slot.slotId} className="time-slot-item" style={{
                         border: `2px solid ${slot.isActive ? '#d1d5db' : '#e5e7eb'}`,
                         borderRadius: '8px',
                         padding: '12px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
                         backgroundColor: slot.isActive ? 'white' : '#f9fafb',
                         opacity: slot.isActive ? 1 : 0.7,
                         transition: 'all 0.2s ease'
                       }}>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ 
                               fontWeight: '600', 
                               fontSize: '14px',
@@ -697,33 +716,41 @@ const handleReject = async () => {
                               </span>
                             )}
                           </div>
+
                           <div style={{ 
                             fontSize: '12px', 
-                            color: slot.isActive ? '#6b7280' : '#9ca3af'
+                            color: slot.isActive ? '#6b7280' : '#9ca3af',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                           }}>
+                            <span>
                             ({slot.currentAppointmentCount}/{slot.maxAppointments} booked)
+                            </span>
                             {slot.currentAppointmentCount < slot.maxAppointments && slot.isActive && (
-                              <span style={{ color: '#10b981', marginLeft: '8px' }}>
+                              <span style={{ color: '#10b981', fontWeight: '500' }}>
                                 ({slot.maxAppointments - slot.currentAppointmentCount} available)
                               </span>
                             )}
                             {!slot.isActive && (
-                              <span style={{ color: '#6b7280', marginLeft: '8px' }}>
+                              <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
                                 (Hidden from students)
                               </span>
                             )}
                           </div>
                         </div>
+
+                        {/* Compact action buttons */}
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <button
                             onClick={() => fetchApprovedForSlot(slot)}
                             style={{
-                              padding: '4px 8px',
+                              padding: '4px 6px',
                               border: 'none',
                               background: '#0477BF',
                               color: 'white',
                               borderRadius: '4px',
-                              fontSize: '12px',
+                              fontSize: '10px',
                               position: 'relative',
                               zIndex: 9999,
                               pointerEvents: 'auto',
@@ -738,12 +765,12 @@ const handleReject = async () => {
                             onClick={() => handleDeactivateClick(slot)}
                             disabled={loading[`toggle-${slot.slotId}`]}
                             style={{
-                              padding: '4px 8px',
+                              padding: '4px 6px',
                               border: 'none',
                               background: slot.isActive ? '#f59e0b' : '#10b981',
                               color: 'white',
                               borderRadius: '4px',
-                              fontSize: '12px',
+                              fontSize: '10px',
                               position: 'relative',
                               zIndex: 9999,
                               pointerEvents: 'auto',
@@ -759,12 +786,12 @@ const handleReject = async () => {
                                   onClick={() => handleDeleteClick(slot)}
                                   disabled={loading[`delete-${slot.slotId}`]}
                                   style={{
-                                    padding: '4px 8px',
+                                    padding: '4px 6px',
                                     border: 'none',
                                     background: '#ef4444',
                                     color: 'white',
                                     borderRadius: '4px',
-                                    fontSize: '12px',
+                                    fontSize: '10px',
                                     position: 'relative',
                                     zIndex: 9999,
                                     pointerEvents: 'auto',
@@ -777,6 +804,7 @@ const handleReject = async () => {
                           </button>
                         </div>
                       </div>
+
                     ))}
                   </div>
                 </div>
