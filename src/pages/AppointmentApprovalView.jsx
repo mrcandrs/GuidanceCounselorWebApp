@@ -431,7 +431,7 @@ const handleReject = async () => {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container dashboard-scrollable-form">
       <div className="page-header">
         <h2 className="page-title">
           Appointment Approval
