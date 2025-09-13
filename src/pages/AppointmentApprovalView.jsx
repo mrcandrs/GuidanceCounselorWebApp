@@ -27,6 +27,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [recentActivity, setRecentActivity] = useState([]);
   const [showRejectedModal, setShowRejectedModal] = useState(false);
   const [showActivityModal, setShowActivityModal] = useState(false);
+  const [rejectedExpanded, setRejectedExpanded] = useState(false);
 
   // Fetch available time slots
   useEffect(() => {
@@ -451,7 +452,7 @@ const handleReject = async () => {
             <History size={20} />
             Recent Activity
           </button>
-          <button
+          {/*<button
             onClick={handleSetAvailableTimes}
             className="primary-button"
             type="button"
@@ -464,87 +465,275 @@ const handleReject = async () => {
           >
             <Calendar size={20} />
             Set Available Times
-          </button>
+          </button>*/}
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Pending Appointments with Scroll */}
-        <div className="card">
-          <h3 className="card-title">Pending Appointments ({pendingAppointments?.length || 0})</h3>
-          
-          <div className="appointments-scroll-container">
-            {pendingAppointments && pendingAppointments.length > 0 ? (
-              pendingAppointments.map((appointment) => (
-                <div key={appointment.appointmentId} className="appointment-card">
-                  <div className="appointment-header">
-                    <div>
-                      <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
-                        {appointment.studentName}
-                      </h4>
-                      <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                        {appointment.programSection}
-                      </p>
-                    </div>
-                    <div className="appointment-actions">
-                      <button 
-                        className="approve-button"
-                        onClick={() => handleApprove(appointment.appointmentId)}
-                      >
-                        <Check size={16} />
-                      </button>
-                      <button 
-                        className="reject-button"
-                        onClick={() => handleRejectClick(appointment.appointmentId)}
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Left Column - Pending Appointments */}
+      <div className="card">
+        <h3 className="card-title">Pending Appointments ({pendingAppointments?.length || 0})</h3>
+              
+        <div className="appointments-scroll-container">
+          {pendingAppointments && pendingAppointments.length > 0 ? (
+            pendingAppointments.map((appointment) => (
+              <div key={appointment.appointmentId} className="appointment-card">
+                <div className="appointment-header">
+                  <div>
+                    <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
+                      {appointment.studentName}
+                    </h4>
+                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
+                      {appointment.programSection}
+                    </p>
                   </div>
-                  
-                  <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 8px 0', textTransform: 'capitalize' }}>
-                    {appointment.reason}
-                  </p>
-                  
-                  {/* Submission Date */}
-                  <div style={{ 
-                    fontSize: '13px', 
-                    color: '#9ca3af', 
-                    margin: '0 0 8px 0',
-                    fontStyle: 'italic',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}>
-                    <FileText size={12} />
-                    Submitted: {formatSubmissionDate(appointment.createdAt)}
-                  </div>
-                  
-                  <div className="appointment-meta">
-                    <span className="appointment-meta-item">
-                      <Calendar size={14} />
-                      {appointment.date}
-                    </span>
-                    <span className="appointment-meta-item">
-                      <Clock size={14} />
-                      {appointment.time}
-                    </span>
+                  <div className="appointment-actions">
+                    <button 
+                      className="approve-button"
+                      onClick={() => handleApprove(appointment.appointmentId)}
+                    >
+                      <Check size={16} />
+                    </button>
+                    <button 
+                      className="reject-button"
+                      onClick={() => handleRejectClick(appointment.appointmentId)}
+                    >
+                      <X size={16} />
+                    </button>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="empty-state">
-                <Calendar size={48} className="empty-icon" />
-                <p>No pending appointments</p>
+                
+                <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 8px 0', textTransform: 'capitalize' }}>
+                  {appointment.reason}
+                </p>
+                
+                {/* Submission Date */}
+                <div style={{ 
+                  fontSize: '13px', 
+                  color: '#9ca3af', 
+                  margin: '0 0 8px 0',
+                  fontStyle: 'italic',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}>
+                  <FileText size={12} />
+                  Submitted: {formatSubmissionDate(appointment.createdAt)}
+                </div>
+                
+                <div className="appointment-meta">
+                  <span className="appointment-meta-item">
+                    <Calendar size={14} />
+                    {appointment.date}
+                  </span>
+                  <span className="appointment-meta-item">
+                    <Clock size={14} />
+                    {appointment.time}
+                  </span>
+                </div>
               </div>
-            )}
-          </div>
+            ))
+          ) : (
+            <div className="empty-state">
+              <Calendar size={48} className="empty-icon" />
+              <p>No pending appointments</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right Column - Available Time Slots */}
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h3 className="card-title">Available Time Slots</h3>
+          <button
+            onClick={handleSetAvailableTimes}
+            className="primary-button"
+            style={{ padding: '6px 12px', fontSize: '12px' }}
+          >
+            <Plus size={14} />
+            Add Slots
+          </button>
         </div>
 
-        {/* NEW: Rejected Appointments Section */}
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 className="card-title">Rejected Appointments ({rejectedAppointments?.length || 0})</h3>
+        <div className="time-slots-container" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+          {Object.keys(groupedSlots).length > 0 ? (
+            Object.entries(groupedSlots).map(([date, slots]) => (
+              <div key={date} style={{ marginBottom: '20px' }}>
+                <h4 style={{ 
+                  fontSize: '14px', 
+                  fontWeight: '600', 
+                  color: '#374151', 
+                  margin: '0 0 12px 0',
+                  padding: '8px 12px',
+                  background: '#f9fafb',
+                  borderRadius: '6px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  {date}
+                </h4>
+              
+                {/* Single column layout for time slots */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {slots.map((slot) => (
+                    <div key={slot.slotId} className="time-slot-item" style={{
+                      border: `2px solid ${slot.isActive ? '#d1d5db' : '#e5e7eb'}`,
+                      borderRadius: '8px',
+                      padding: '12px',
+                      backgroundColor: slot.isActive ? 'white' : '#f9fafb',
+                      opacity: slot.isActive ? 1 : 0.7,
+                      transition: 'all 0.2s ease'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ 
+                            fontWeight: '600', 
+                            fontSize: '14px',
+                            color: slot.isActive ? '#1f2937' : '#6b7280'
+                          }}>
+                            {slot.time}
+                          </span>
+                          {slot.isActive ? (
+                            <span style={{ 
+                              fontSize: '10px', 
+                              background: '#10b981', 
+                              color: 'white', 
+                              padding: '2px 6px', 
+                              borderRadius: '10px',
+                              fontWeight: '500'
+                            }}>
+                              ACTIVE
+                            </span>
+                          ) : (
+                            <span style={{ 
+                              fontSize: '10px', 
+                              background: '#6b7280', 
+                              color: 'white', 
+                              padding: '2px 6px', 
+                              borderRadius: '10px',
+                              fontWeight: '500'
+                            }}>
+                              INACTIVE
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Compact action buttons */}
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button
+                            onClick={() => fetchApprovedForSlot(slot)}
+                            style={{
+                              padding: '4px 6px',
+                              border: 'none',
+                              background: '#0477BF',
+                              color: 'white',
+                              borderRadius: '4px',
+                              fontSize: '10px',
+                              cursor: 'pointer'
+                            }}
+                            title="View approved students"
+                          >
+                            View
+                          </button>
+                          
+                          <button
+                            onClick={() => handleDeactivateClick(slot)}
+                            disabled={loading[`toggle-${slot.slotId}`]}
+                            style={{
+                              padding: '4px 6px',
+                              border: 'none',
+                              background: slot.isActive ? '#f59e0b' : '#10b981',
+                              color: 'white',
+                              borderRadius: '4px',
+                              fontSize: '10px',
+                              cursor: loading[`toggle-${slot.slotId}`] ? 'not-allowed' : 'pointer',
+                              opacity: loading[`toggle-${slot.slotId}`] ? 0.6 : 1
+                            }}
+                            title={slot.isActive ? 'Deactivate slot' : 'Activate slot'}
+                          >
+                            {loading[`toggle-${slot.slotId}`] ? '⏳' : (slot.isActive ? '⏸️' : '▶️')}
+                          </button>
+                          
+                          <button
+                            onClick={() => handleDeleteClick(slot)}
+                            disabled={loading[`delete-${slot.slotId}`]}
+                            style={{
+                              padding: '4px 6px',
+                              border: 'none',
+                              background: '#ef4444',
+                              color: 'white',
+                              borderRadius: '4px',
+                              fontSize: '10px',
+                              cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
+                              opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
+                            }}
+                            title="Delete slot"
+                          >
+                            {loading[`delete-${slot.slotId}`] ? '⏳' : <Trash2 size={10} />}
+                          </button>
+                        </div>
+                      </div>
+                          
+                      <div style={{ 
+                        fontSize: '12px', 
+                        color: slot.isActive ? '#6b7280' : '#9ca3af',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <span>
+                          ({slot.currentAppointmentCount}/{slot.maxAppointments} booked)
+                        </span>
+                        {slot.currentAppointmentCount < slot.maxAppointments && slot.isActive && (
+                          <span style={{ color: '#10b981', fontWeight: '500' }}>
+                            {slot.maxAppointments - slot.currentAppointmentCount} available
+                          </span>
+                        )}
+                        {!slot.isActive && (
+                          <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                            Hidden from students
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="empty-state">
+              <Clock size={48} className="empty-icon" />
+              <p>No available time slots set</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+
+      {/* Rejected Appointments Section - Full Width at Bottom */}
+      <div className="card" style={{ marginTop: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <h3 className="card-title" style={{ margin: 0 }}>
+              Rejected Appointments ({rejectedAppointments?.length || 0})
+            </h3>
+            <button
+              onClick={() => setRejectedExpanded(!rejectedExpanded)}
+              className="filter-button"
+              style={{ 
+                padding: '4px 8px', 
+                fontSize: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              {rejectedExpanded ? 'Collapse' : 'Expand'}
+              {rejectedExpanded ? '▲' : '▼'}
+            </button>
+          </div>
+            
+          {rejectedAppointments && rejectedAppointments.length > 0 && (
             <button
               onClick={() => setShowRejectedModal(true)}
               className="filter-button"
@@ -560,11 +749,13 @@ const handleReject = async () => {
               <Eye size={14} />
               View All
             </button>
-          </div>
-
+          )}
+        </div>
+        
+        {rejectedExpanded && (
           <div className="appointments-scroll-container">
             {rejectedAppointments && rejectedAppointments.length > 0 ? (
-              rejectedAppointments.slice(0, 3).map((appointment) => (
+              rejectedAppointments.map((appointment) => (
                 <div key={appointment.appointmentId} className="appointment-card rejected-card">
                   <div className="appointment-header">
                     <div>
@@ -619,7 +810,7 @@ const handleReject = async () => {
                     <FileText size={12} />
                     Rejected: {formatSubmissionDate(appointment.updatedAt)}
                   </div>
-
+                
                   <div className="appointment-meta">
                     <span className="appointment-meta-item">
                       <Calendar size={14} />
@@ -639,218 +830,41 @@ const handleReject = async () => {
               </div>
             )}
           </div>
-        </div>
-        
-        {/* Available Time Slots */}
-        <div className="card lg:col-span-1">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 className="card-title">Available Time Slots</h3>
-          <button
-          onClick={handleSetAvailableTimes}
-          className="primary-button"
-          style={{ padding: '6px 12px', fontSize: '12px' }}
-          >
-          <Plus size={14} />
-          Add Slots
-          </button>
-          </div>
-
-          <div className="time-slots-container" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-            {Object.keys(groupedSlots).length > 0 ? (
-              Object.entries(groupedSlots).map(([date, slots]) => (
-                <div key={date} style={{ marginBottom: '20px' }}>
-                  <h4 style={{ 
-                    fontSize: '14px', 
-                    fontWeight: '600', 
-                    color: '#374151', 
-                    margin: '0 0 12px 0',
-                    padding: '8px 12px',
-                    background: '#f9fafb',
-                    borderRadius: '6px',
-                    border: '1px solid #e5e7eb'
-                  }}>
-                    {date}
-                  </h4>
-
-                  {/* Single column layout for time slots */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {slots.map((slot) => (
-                      <div key={slot.slotId} className="time-slot-item" style={{
-                        border: `2px solid ${slot.isActive ? '#d1d5db' : '#e5e7eb'}`,
-                        borderRadius: '8px',
-                        padding: '12px',
-                        backgroundColor: slot.isActive ? 'white' : '#f9fafb',
-                        opacity: slot.isActive ? 1 : 0.7,
-                        transition: 'all 0.2s ease'
-                      }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ 
-                              fontWeight: '600', 
-                              fontSize: '14px',
-                              color: slot.isActive ? '#1f2937' : '#6b7280'
-                            }}>
-                              {slot.time}
-                            </span>
-                            {slot.isActive ? (
-                              <span style={{ 
-                                fontSize: '10px', 
-                                background: '#10b981', 
-                                color: 'white', 
-                                padding: '2px 6px', 
-                                borderRadius: '10px',
-                                fontWeight: '500'
-                              }}>
-                                ACTIVE
-                              </span>
-                            ) : (
-                              <span style={{ 
-                                fontSize: '10px', 
-                                background: '#6b7280', 
-                                color: 'white', 
-                                padding: '2px 6px', 
-                                borderRadius: '10px',
-                                fontWeight: '500'
-                              }}>
-                                INACTIVE
-                              </span>
-                            )}
-                          </div>
-
-                          <div style={{ 
-                            fontSize: '12px', 
-                            color: slot.isActive ? '#6b7280' : '#9ca3af',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                          }}>
-                            <span>
-                            ({slot.currentAppointmentCount}/{slot.maxAppointments} booked)
-                            </span>
-                            {slot.currentAppointmentCount < slot.maxAppointments && slot.isActive && (
-                              <span style={{ color: '#10b981', fontWeight: '500' }}>
-                                ({slot.maxAppointments - slot.currentAppointmentCount} available)
-                              </span>
-                            )}
-                            {!slot.isActive && (
-                              <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                                (Hidden from students)
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Compact action buttons */}
-                        <div style={{ display: 'flex', gap: '4px' }}>
-                          <button
-                            onClick={() => fetchApprovedForSlot(slot)}
-                            style={{
-                              padding: '4px 6px',
-                              border: 'none',
-                              background: '#0477BF',
-                              color: 'white',
-                              borderRadius: '4px',
-                              fontSize: '10px',
-                              position: 'relative',
-                              zIndex: 9999,
-                              pointerEvents: 'auto',
-                              cursor: 'pointer'
-                            }}
-                            title="View approved students"
-                          >
-                            View
-                          </button>
-
-                          <button
-                            onClick={() => handleDeactivateClick(slot)}
-                            disabled={loading[`toggle-${slot.slotId}`]}
-                            style={{
-                              padding: '4px 6px',
-                              border: 'none',
-                              background: slot.isActive ? '#f59e0b' : '#10b981',
-                              color: 'white',
-                              borderRadius: '4px',
-                              fontSize: '10px',
-                              position: 'relative',
-                              zIndex: 9999,
-                              pointerEvents: 'auto',
-                              cursor: loading[`toggle-${slot.slotId}`] ? 'not-allowed' : 'pointer',
-                              opacity: loading[`toggle-${slot.slotId}`] ? 0.6 : 1
-                            }}
-                            title={slot.isActive ? 'Deactivate slot (temporary)' : 'Activate slot'}
-                          >
-                            {loading[`toggle-${slot.slotId}`] ? '⏳' : (slot.isActive ? '⏸️' : '▶️')}
-                          </button>
-                          
-                          <button
-                                  onClick={() => handleDeleteClick(slot)}
-                                  disabled={loading[`delete-${slot.slotId}`]}
-                                  style={{
-                                    padding: '4px 6px',
-                                    border: 'none',
-                                    background: '#ef4444',
-                                    color: 'white',
-                                    borderRadius: '4px',
-                                    fontSize: '10px',
-                                    position: 'relative',
-                                    zIndex: 9999,
-                                    pointerEvents: 'auto',
-                                    cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
-                                    opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
-                                  }}
-                                  title="Delete slot (permanent)"
-                                >
-                                  {loading[`delete-${slot.slotId}`] ? '⏳' : <Trash2 size={12} />}
-                          </button>
-                        </div>
-                      </div>
-
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="empty-state">
-                <Clock size={48} className="empty-icon" />
-                <p>No available time slots set</p>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
 
       {showApprovedModal && (
-  <div className="modal-overlay">
-    <div className="modal" style={{ width: '420px', textAlign: 'left' }}>
-      <h3 style={{ marginTop: 0 }}>
-        Approved Students — {activeSlot ? new Date(activeSlot.date).toLocaleDateString() : ''} {activeSlot?.time}
-      </h3>
-
-      {approvedForSlot.length === 0 ? (
-        <p style={{ color: '#6b7280' }}>No approved students for this slot.</p>
-      ) : (
-        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-          {approvedForSlot.map(s => (
-            <div key={s.appointmentId} style={{ borderBottom: '1px solid #e5e7eb', padding: '8px 0' }}>
-              <div style={{ fontWeight: 600, color: '#1f2937' }}>{s.studentName}</div>
-              <div style={{ fontSize: '13px', color: '#6b7280' }}>{s.programSection}</div>
-              <div style={{ fontSize: '13px', color: '#374151', marginTop: '4px' }}>Reason: {s.reason}</div>
-              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
-                Approved at: {s.updatedAt ? new Date(s.updatedAt).toLocaleString() : '—'}
+        <div className="modal-overlay">
+          <div className="modal" style={{ width: '420px', textAlign: 'left' }}>
+            <h3 style={{ marginTop: 0 }}>
+              Approved Students — {activeSlot ? new Date(activeSlot.date).toLocaleDateString() : ''} {activeSlot?.time}
+            </h3>
+            
+            {approvedForSlot.length === 0 ? (
+              <p style={{ color: '#6b7280' }}>No approved students for this slot.</p>
+            ) : (
+              <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                {approvedForSlot.map(s => (
+                  <div key={s.appointmentId} style={{ borderBottom: '1px solid #e5e7eb', padding: '8px 0' }}>
+                    <div style={{ fontWeight: 600, color: '#1f2937' }}>{s.studentName}</div>
+                    <div style={{ fontSize: '13px', color: '#6b7280' }}>{s.programSection}</div>
+                    <div style={{ fontSize: '13px', color: '#374151', marginTop: '4px' }}>Reason: {s.reason}</div>
+                    <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                      Approved at: {s.updatedAt ? new Date(s.updatedAt).toLocaleString() : '—'}
+                    </div>
+                  </div>
+                ))}
               </div>
+            )}
+      
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button className="primary-button full-width" onClick={() => setShowApprovedModal(false)}>
+                Close
+              </button>
             </div>
-          ))}
+          </div>
         </div>
       )}
-
-      <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-        <button className="primary-button full-width" onClick={() => setShowApprovedModal(false)}>
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
       {/* Time Slot Modal */}
       {showTimeSlotModal && (
@@ -1265,6 +1279,80 @@ const handleReject = async () => {
           </div>
         </div>
       )}
+
+      {/* Rejected Appointments Modal */}
+{showRejectedModal && (
+  <div className="modal-overlay">
+    <div className="modal" style={{ width: '600px', textAlign: 'left' }}>
+      <h3 style={{ marginTop: 0 }}>
+        All Rejected Appointments ({rejectedAppointments.length})
+      </h3>
+
+      {rejectedAppointments.length === 0 ? (
+        <p style={{ color: '#6b7280' }}>No rejected appointments found.</p>
+      ) : (
+        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          {rejectedAppointments.map(appointment => (
+            <div key={appointment.appointmentId} style={{ 
+              borderBottom: '1px solid #e5e7eb', 
+              padding: '16px 0' 
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                <div>
+                  <div style={{ fontWeight: 600, color: '#1f2937', fontSize: '16px' }}>
+                    {appointment.studentName}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                    {appointment.programSection}
+                  </div>
+                </div>
+                <div style={{ 
+                  background: '#fef2f2', 
+                  color: '#dc2626', 
+                  padding: '4px 8px', 
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  fontWeight: '500'
+                }}>
+                  REJECTED
+                </div>
+              </div>
+              
+              <div style={{ fontSize: '14px', color: '#374151', marginBottom: '8px' }}>
+                <strong>Reason:</strong> {appointment.reason}
+              </div>
+              
+              {appointment.rejectionReason && (
+                <div style={{ 
+                  fontSize: '13px', 
+                  color: '#dc2626', 
+                  marginBottom: '8px',
+                  background: '#fef2f2',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #fecaca'
+                }}>
+                  <strong>Rejection Reason:</strong> {appointment.rejectionReason}
+                </div>
+              )}
+              
+              <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                <div>Appointment: {appointment.date} at {appointment.time}</div>
+                <div>Rejected: {formatSubmissionDate(appointment.updatedAt)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+        <button className="primary-button full-width" onClick={() => setShowRejectedModal(false)}>
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );
