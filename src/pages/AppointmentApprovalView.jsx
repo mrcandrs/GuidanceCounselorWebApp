@@ -28,6 +28,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [showRejectedModal, setShowRejectedModal] = useState(false);
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [rejectedExpanded, setRejectedExpanded] = useState(false);
+  const [expandedDates, setExpandedDates] = useState({});
 
   // Fetch available time slots
   useEffect(() => {
@@ -560,144 +561,159 @@ const handleReject = async () => {
           {Object.keys(groupedSlots).length > 0 ? (
             Object.entries(groupedSlots).map(([date, slots]) => (
               <div key={date} style={{ marginBottom: '20px' }}>
-                <h4 style={{ 
-                  fontSize: '14px', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  margin: '0 0 12px 0',
-                  padding: '8px 12px',
-                  background: '#f9fafb',
-                  borderRadius: '6px',
-                  border: '1px solid #e5e7eb'
-                }}>
-                  {date}
-                </h4>
-              
-                {/* Single column layout for time slots */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {slots.map((slot) => (
-                    <div key={slot.slotId} className="time-slot-item" style={{
-                      border: `2px solid ${slot.isActive ? '#d1d5db' : '#e5e7eb'}`,
-                      borderRadius: '8px',
-                      padding: '12px',
-                      backgroundColor: slot.isActive ? 'white' : '#f9fafb',
-                      opacity: slot.isActive ? 1 : 0.7,
-                      transition: 'all 0.2s ease'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ 
-                            fontWeight: '600', 
-                            fontSize: '14px',
-                            color: slot.isActive ? '#1f2937' : '#6b7280'
-                          }}>
-                            {slot.time}
-                          </span>
-                          {slot.isActive ? (
+                <div 
+                  style={{ 
+                    fontSize: '14px', 
+                    fontWeight: '600', 
+                    color: '#374151', 
+                    margin: '0 0 12px 0',
+                    padding: '8px 12px',
+                    background: '#f9fafb',
+                    borderRadius: '6px',
+                    border: '1px solid #e5e7eb',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    userSelect: 'none'
+                  }}
+                  onClick={() => setExpandedDates(prev => ({
+                    ...prev,
+                    [date]: !prev[date]
+                  }))}
+                >
+                  <span>{date}</span>
+                  <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                    {expandedDates[date] ? '▼' : '▶'} {slots.length} slots
+                  </span>
+                </div>
+                
+                {expandedDates[date] && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '12px' }}>
+                    {slots.map((slot) => (
+                      <div key={slot.slotId} className="time-slot-item" style={{
+                        border: `2px solid ${slot.isActive ? '#d1d5db' : '#e5e7eb'}`,
+                        borderRadius: '8px',
+                        padding: '12px',
+                        backgroundColor: slot.isActive ? 'white' : '#f9fafb',
+                        opacity: slot.isActive ? 1 : 0.7,
+                        transition: 'all 0.2s ease'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ 
-                              fontSize: '10px', 
-                              background: '#10b981', 
-                              color: 'white', 
-                              padding: '2px 6px', 
-                              borderRadius: '10px',
-                              fontWeight: '500'
+                              fontWeight: '600', 
+                              fontSize: '14px',
+                              color: slot.isActive ? '#1f2937' : '#6b7280'
                             }}>
-                              ACTIVE
+                              {slot.time}
                             </span>
-                          ) : (
-                            <span style={{ 
-                              fontSize: '10px', 
-                              background: '#6b7280', 
-                              color: 'white', 
-                              padding: '2px 6px', 
-                              borderRadius: '10px',
-                              fontWeight: '500'
-                            }}>
-                              INACTIVE
+                            {slot.isActive ? (
+                              <span style={{ 
+                                fontSize: '10px', 
+                                background: '#10b981', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '10px',
+                                fontWeight: '500'
+                              }}>
+                                ACTIVE
+                              </span>
+                            ) : (
+                              <span style={{ 
+                                fontSize: '10px', 
+                                background: '#6b7280', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '10px',
+                                fontWeight: '500'
+                              }}>
+                                INACTIVE
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Compact action buttons */}
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <button
+                              onClick={() => fetchApprovedForSlot(slot)}
+                              style={{
+                                padding: '4px 6px',
+                                border: 'none',
+                                background: '#0477BF',
+                                color: 'white',
+                                borderRadius: '4px',
+                                fontSize: '10px',
+                                cursor: 'pointer'
+                              }}
+                              title="View approved students"
+                            >
+                              View
+                            </button>
+                            
+                            <button
+                              onClick={() => handleDeactivateClick(slot)}
+                              disabled={loading[`toggle-${slot.slotId}`]}
+                              style={{
+                                padding: '4px 6px',
+                                border: 'none',
+                                background: slot.isActive ? '#f59e0b' : '#10b981',
+                                color: 'white',
+                                borderRadius: '4px',
+                                fontSize: '10px',
+                                cursor: loading[`toggle-${slot.slotId}`] ? 'not-allowed' : 'pointer',
+                                opacity: loading[`toggle-${slot.slotId}`] ? 0.6 : 1
+                              }}
+                              title={slot.isActive ? 'Deactivate slot' : 'Activate slot'}
+                            >
+                              {loading[`toggle-${slot.slotId}`] ? '⏳' : (slot.isActive ? '⏸️' : '▶️')}
+                            </button>
+                            
+                            <button
+                              onClick={() => handleDeleteClick(slot)}
+                              disabled={loading[`delete-${slot.slotId}`]}
+                              style={{
+                                padding: '4px 6px',
+                                border: 'none',
+                                background: '#ef4444',
+                                color: 'white',
+                                borderRadius: '4px',
+                                fontSize: '10px',
+                                cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
+                                opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
+                              }}
+                              title="Delete slot"
+                            >
+                              {loading[`delete-${slot.slotId}`] ? '⏳' : <Trash2 size={10} />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: slot.isActive ? '#6b7280' : '#9ca3af',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <span>
+                            ({slot.currentAppointmentCount}/{slot.maxAppointments} booked)
+                          </span>
+                          {slot.currentAppointmentCount < slot.maxAppointments && slot.isActive && (
+                            <span style={{ color: '#10b981', fontWeight: '500' }}>
+                              {slot.maxAppointments - slot.currentAppointmentCount} available
+                            </span>
+                          )}
+                          {!slot.isActive && (
+                            <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                              Hidden from students
                             </span>
                           )}
                         </div>
-                        
-                        {/* Compact action buttons */}
-                        <div style={{ display: 'flex', gap: '4px' }}>
-                          <button
-                            onClick={() => fetchApprovedForSlot(slot)}
-                            style={{
-                              padding: '4px 6px',
-                              border: 'none',
-                              background: '#0477BF',
-                              color: 'white',
-                              borderRadius: '4px',
-                              fontSize: '10px',
-                              cursor: 'pointer'
-                            }}
-                            title="View approved students"
-                          >
-                            View
-                          </button>
-                          
-                          <button
-                            onClick={() => handleDeactivateClick(slot)}
-                            disabled={loading[`toggle-${slot.slotId}`]}
-                            style={{
-                              padding: '4px 6px',
-                              border: 'none',
-                              background: slot.isActive ? '#f59e0b' : '#10b981',
-                              color: 'white',
-                              borderRadius: '4px',
-                              fontSize: '10px',
-                              cursor: loading[`toggle-${slot.slotId}`] ? 'not-allowed' : 'pointer',
-                              opacity: loading[`toggle-${slot.slotId}`] ? 0.6 : 1
-                            }}
-                            title={slot.isActive ? 'Deactivate slot' : 'Activate slot'}
-                          >
-                            {loading[`toggle-${slot.slotId}`] ? '⏳' : (slot.isActive ? '⏸️' : '▶️')}
-                          </button>
-                          
-                          <button
-                            onClick={() => handleDeleteClick(slot)}
-                            disabled={loading[`delete-${slot.slotId}`]}
-                            style={{
-                              padding: '4px 6px',
-                              border: 'none',
-                              background: '#ef4444',
-                              color: 'white',
-                              borderRadius: '4px',
-                              fontSize: '10px',
-                              cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
-                              opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
-                            }}
-                            title="Delete slot"
-                          >
-                            {loading[`delete-${slot.slotId}`] ? '⏳' : <Trash2 size={10} />}
-                          </button>
-                        </div>
                       </div>
-                          
-                      <div style={{ 
-                        fontSize: '12px', 
-                        color: slot.isActive ? '#6b7280' : '#9ca3af',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                      }}>
-                        <span>
-                          ({slot.currentAppointmentCount}/{slot.maxAppointments} booked)
-                        </span>
-                        {slot.currentAppointmentCount < slot.maxAppointments && slot.isActive && (
-                          <span style={{ color: '#10b981', fontWeight: '500' }}>
-                            {slot.maxAppointments - slot.currentAppointmentCount} available
-                          </span>
-                        )}
-                        {!slot.isActive && (
-                          <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                            Hidden from students
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))
           ) : (
@@ -839,7 +855,7 @@ const handleReject = async () => {
             <h3 style={{ marginTop: 0 }}>
               Approved Students — {activeSlot ? new Date(activeSlot.date).toLocaleDateString() : ''} {activeSlot?.time}
             </h3>
-            
+
             {approvedForSlot.length === 0 ? (
               <p style={{ color: '#6b7280' }}>No approved students for this slot.</p>
             ) : (
@@ -856,7 +872,7 @@ const handleReject = async () => {
                 ))}
               </div>
             )}
-      
+
             <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
               <button className="primary-button full-width" onClick={() => setShowApprovedModal(false)}>
                 Close
