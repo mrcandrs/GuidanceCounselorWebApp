@@ -548,7 +548,14 @@ const handleReject = async () => {
             <button
               onClick={() => setShowRejectedModal(true)}
               className="filter-button"
-              style={{ padding: '4px 8px', fontSize: '12px' }}
+              style={{ 
+                padding: '4px 8px', 
+                fontSize: '12px',
+                position: 'relative',
+                zIndex: 9999,
+                pointerEvents: 'auto',
+                cursor: 'pointer'
+              }}
             >
               <Eye size={14} />
               View All
