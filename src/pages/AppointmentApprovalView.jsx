@@ -18,6 +18,11 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [slotToDelete, setSlotToDelete] = useState(null);
+  const [slotToDeactivate, setSlotToDeactivate] = useState(null);
+  const [slotDetails, setSlotDetails] = useState(null);
 
   // Fetch available time slots
   useEffect(() => {
@@ -95,50 +100,95 @@ useEffect(() => {
     }
   };
 
-  const handleDeleteTimeSlot = async (slotId) => {
-    if (!window.confirm('Are you sure you want to delete this time slot?')) return;
+  // Add these functions to your component
+const fetchSlotDetails = async (slotId) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/${slotId}/details`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setSlotDetails(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching slot details:', error);
+    alert(`Error: ${error.response?.data?.message || error.message}`);
+    return null;
+  }
+};
 
-    try {
-      const token = localStorage.getItem('authToken');
-      await axios.delete(
-        `https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/${slotId}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
+const handleDeleteClick = async (slot) => {
+  const details = await fetchSlotDetails(slot.slotId);
+  if (details) {
+    setSlotToDelete(slot);
+    setShowDeleteModal(true);
+  }
+};
 
-      alert('Time slot deleted successfully');
-      fetchAvailableSlots();
-    } catch (error) {
-      console.error('Error deleting time slot:', error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
-    }
-  };
+const handleDeactivateClick = async (slot) => {
+  const details = await fetchSlotDetails(slot.slotId);
+  if (details) {
+    setSlotToDeactivate(slot);
+    setShowDeactivateModal(true);
+  }
+};
 
+  // Replace your existing handleDeleteTimeSlot function
+const handleDeleteTimeSlot = async () => {
+  if (!slotToDelete) return;
 
-  
-  const handleToggleTimeSlot = async (slotId, isActive) => {
-    try {
-      const token = localStorage.getItem('authToken');
-      await axios.put(
-        `https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/${slotId}/toggle`,
-        {},
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
+  try {
+    setLoading(prev => ({ ...prev, [`delete-${slotToDelete.slotId}`]: true }));
+    
+    const token = localStorage.getItem('authToken');
+    const response = await axios.delete(
+      `https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/${slotToDelete.slotId}/safe-delete`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-      alert(`Time slot ${isActive ? 'deactivated' : 'activated'} successfully`);
-      fetchAvailableSlots();
-    } catch (error) {
-      console.error('Error toggling time slot:', error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
-    }
-  };
+    alert('Time slot deleted successfully');
+    setShowDeleteModal(false);
+    setSlotToDelete(null);
+    setSlotDetails(null);
+    fetchAvailableSlots();
+  } catch (error) {
+    console.error('Error deleting time slot:', error);
+    const errorMessage = error.response?.data?.message || error.message;
+    alert(`Error: ${errorMessage}`);
+  } finally {
+    setLoading(prev => ({ ...prev, [`delete-${slotToDelete.slotId}`]: false }));
+  }
+};
+
+  // Replace your existing handleToggleTimeSlot function
+const handleToggleTimeSlot = async () => {
+  if (!slotToDeactivate) return;
+
+  try {
+    setLoading(prev => ({ ...prev, [`toggle-${slotToDeactivate.slotId}`]: true }));
+    
+    const token = localStorage.getItem('authToken');
+    const response = await axios.put(
+      `https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/${slotToDeactivate.slotId}/toggle`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const action = slotToDeactivate.isActive ? 'deactivated' : 'activated';
+    alert(`Time slot ${action} successfully`);
+    
+    setShowDeactivateModal(false);
+    setSlotToDeactivate(null);
+    setSlotDetails(null);
+    fetchAvailableSlots();
+  } catch (error) {
+    console.error('Error toggling time slot:', error);
+    const errorMessage = error.response?.data?.message || error.message;
+    alert(`Error: ${errorMessage}`);
+  } finally {
+    setLoading(prev => ({ ...prev, [`toggle-${slotToDeactivate.slotId}`]: false }));
+  }
+};
 
   const fetchApprovedForSlot = async (slot) => {
   try {
@@ -431,7 +481,7 @@ const handleReject = async () => {
                           <button
                             onClick={() => fetchApprovedForSlot(slot)}
                             style={{
-                              padding: '4px',
+                              padding: '4px 8px',
                               border: 'none',
                               background: '#0477BF',
                               color: 'white',
@@ -439,45 +489,54 @@ const handleReject = async () => {
                               position: 'relative',
                               zIndex: 9999,
                               pointerEvents: 'auto',
+                              fontSize: '12px',
                               cursor: 'pointer'
                             }}
                             title="View approved students"
                           >
                             View
                           </button>
+
                           <button
-                            onClick={() => handleToggleTimeSlot(slot.slotId, slot.isActive)}
+                            onClick={() => handleDeactivateClick(slot)}
+                            disabled={loading[`toggle-${slot.slotId}`]}
                             style={{
-                              padding: '4px',
+                              padding: '4px 8px',
                               border: 'none',
-                              background: slot.isActive ? '#fbbf24' : '#10b981',
+                              background: slot.isActive ? '#f59e0b' : '#10b981',
                               color: 'white',
                               borderRadius: '4px',
+                              fontSize: '12px',
                               position: 'relative',
                               zIndex: 9999,
                               pointerEvents: 'auto',
-                              cursor: 'pointer'
+                              cursor: loading[`toggle-${slot.slotId}`] ? 'not-allowed' : 'pointer',
+                              opacity: loading[`toggle-${slot.slotId}`] ? 0.6 : 1
                             }}
-                            title={slot.isActive ? 'Deactivate' : 'Activate'}
+                            title={slot.isActive ? 'Deactivate slot (temporary)' : 'Activate slot'}
                           >
-                            {slot.isActive ? '⏸️' : '▶️'}
+                            {loading[`toggle-${slot.slotId}`] ? '⏳' : (slot.isActive ? '⏸️' : '▶️')}
                           </button>
+                          
                           <button
-                            onClick={() => handleDeleteTimeSlot(slot.slotId)}
+                            onClick={() => handleDeleteClick(slot)}
+                            disabled={loading[`delete-${slot.slotId}`]}
                             style={{
-                              padding: '4px',
+                              padding: '4px 8px',
                               border: 'none',
                               background: '#ef4444',
                               color: 'white',
                               borderRadius: '4px',
+                              fontSize: '12px',
                               position: 'relative',
                               zIndex: 9999,
                               pointerEvents: 'auto',
-                              cursor: 'pointer'
+                              cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
+                              opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
                             }}
-                            title="Delete"
+                            title="Delete slot (permanent)"
                           >
-                            <Trash2 size={12} />
+                            {loading[`delete-${slot.slotId}`] ? '⏳' : <Trash2 size={12} />}
                           </button>
                         </div>
                       </div>
@@ -602,47 +661,221 @@ const handleReject = async () => {
       )}
 
       {/* ADD THE REJECTION MODAL HERE - right after the time slot modal */}
-{/* Update the rejection modal section */}
-{showRejectModal && (
-  <div className="modal-overlay">
-    <div className="modal" style={{ width: '400px' }}>
-      <h3>Reject Appointment</h3>
-      
-      <div className="form-group">
-        <label className="label">Rejection Reason *</label>
-        <textarea 
-          className="input" 
-          value={rejectionReason}
-          onChange={(e) => setRejectionReason(e.target.value)}
-          placeholder="Enter reason for rejection..."
-          rows={4}
-          style={{ resize: 'vertical' }}
-          required
-        />
-      </div>
+        {showRejectModal && (
+          <div className="modal-overlay">
+            <div className="modal" style={{ width: '400px' }}>
+              <h3>Reject Appointment</h3>
 
-      <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-        <button 
-          className="primary-button full-width"
-          onClick={handleReject}
-          disabled={!rejectionReason.trim()}
-        >
-          Reject Appointment
-        </button>
-        <button 
-          className="filter-button full-width"
-          onClick={() => {
-            setShowRejectModal(false);
-            setSelectedAppointmentId(null);
-            setRejectionReason('');
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              <div className="form-group">
+                <label className="label">Rejection Reason *</label>
+                <textarea 
+                  className="input" 
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Enter reason for rejection..."
+                  rows={4}
+                  style={{ resize: 'vertical' }}
+                  required
+                />
+              </div>
+        
+              <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                <button 
+                  className="primary-button full-width"
+                  onClick={handleReject}
+                  disabled={!rejectionReason.trim()}
+                >
+                  Reject Appointment
+                </button>
+                <button 
+                  className="filter-button full-width"
+                  onClick={() => {
+                    setShowRejectModal(false);
+                    setSelectedAppointmentId(null);
+                    setRejectionReason('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ADD THE DELETE CONFIRMATION MODAL HERE - right after the rejection modal */}
+      {showDeleteModal && slotToDelete && slotDetails && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ width: '450px' }}>
+            <h3 style={{ color: '#ef4444', marginTop: 0 }}>
+              ��️ Delete Time Slot
+            </h3>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{ marginBottom: '12px' }}>
+                Are you sure you want to <strong>permanently delete</strong> this time slot?
+              </p>
+              
+              <div style={{ 
+                background: '#f9fafb', 
+                padding: '12px', 
+                borderRadius: '6px',
+                fontSize: '14px',
+                color: '#374151',
+                marginBottom: '12px'
+              }}>
+                <strong>Date:</strong> {new Date(slotToDelete.date).toLocaleDateString()}<br/>
+                <strong>Time:</strong> {slotToDelete.time}<br/>
+                <strong>Max Appointments:</strong> {slotToDelete.maxAppointments}
+              </div>
+
+              {slotDetails.appointmentCount > 0 ? (
+                <div style={{ 
+                  background: '#fef2f2', 
+                  border: '1px solid #f87171',
+                  padding: '12px', 
+                  borderRadius: '6px',
+                  marginBottom: '16px'
+                }}>
+                  <p style={{ margin: 0, fontSize: '14px', color: '#991b1b' }}>
+                    ❌ <strong>Cannot Delete:</strong> This slot has {slotDetails.appointmentCount} existing appointment(s).
+                  </p>
+                  <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                    <strong>Existing Appointments:</strong>
+                    {slotDetails.appointments.map(app => (
+                      <div key={app.appointmentId} style={{ marginLeft: '8px' }}>
+                        • {app.studentName} ({app.status})
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ 
+                  background: '#fef3c7', 
+                  border: '1px solid #f59e0b',
+                  padding: '12px', 
+                  borderRadius: '6px',
+                  marginBottom: '16px'
+                }}>
+                  <p style={{ margin: 0, fontSize: '14px', color: '#92400e' }}>
+                    ⚠️ <strong>Warning:</strong> This action cannot be undone. The time slot will be permanently removed.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                className="primary-button full-width"
+                onClick={handleDeleteTimeSlot}
+                disabled={!slotDetails.canDelete || loading[`delete-${slotToDelete.slotId}`]}
+                style={{ 
+                  backgroundColor: slotDetails.canDelete ? '#ef4444' : '#9ca3af',
+                  cursor: slotDetails.canDelete ? 'pointer' : 'not-allowed'
+                }}
+              >
+                {loading[`delete-${slotToDelete.slotId}`] ? 'Deleting...' : 'Delete Permanently'}
+              </button>
+              <button 
+                className="filter-button full-width"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setSlotToDelete(null);
+                  setSlotDetails(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADD THE DEACTIVATE CONFIRMATION MODAL HERE - right after the delete modal */}
+      {showDeactivateModal && slotToDeactivate && slotDetails && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ width: '450px' }}>
+            <h3 style={{ color: slotToDeactivate.isActive ? '#f59e0b' : '#10b981', marginTop: 0 }}>
+              {slotToDeactivate.isActive ? '⏸️ Deactivate' : '▶️ Activate'} Time Slot
+            </h3>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{ marginBottom: '12px' }}>
+                {slotToDeactivate.isActive 
+                  ? 'Are you sure you want to deactivate this time slot?' 
+                  : 'Are you sure you want to activate this time slot?'
+                }
+              </p>
+              
+              <div style={{ 
+                background: '#f9fafb', 
+                padding: '12px', 
+                borderRadius: '6px',
+                fontSize: '14px',
+                color: '#374151',
+                marginBottom: '12px'
+              }}>
+                <strong>Date:</strong> {new Date(slotToDeactivate.date).toLocaleDateString()}<br/>
+                <strong>Time:</strong> {slotToDeactivate.time}<br/>
+                <strong>Current Status:</strong> {slotToDeactivate.isActive ? 'Active' : 'Inactive'}<br/>
+                <strong>Existing Appointments:</strong> {slotDetails.appointmentCount}
+              </div>
+
+              {slotToDeactivate.isActive ? (
+                <div style={{ 
+                  background: '#fef3c7', 
+                  border: '1px solid #f59e0b',
+                  padding: '12px', 
+                  borderRadius: '6px',
+                  marginBottom: '16px'
+                }}>
+                  <p style={{ margin: 0, fontSize: '14px', color: '#92400e' }}>
+                    ℹ️ <strong>Note:</strong> Deactivating will hide this slot from students, 
+                    but existing appointments will remain unchanged. You can reactivate it later.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ 
+                  background: '#ecfdf5', 
+                  border: '1px solid #10b981',
+                  padding: '12px', 
+                  borderRadius: '6px',
+                  marginBottom: '16px'
+                }}>
+                  <p style={{ margin: 0, fontSize: '14px', color: '#065f46' }}>
+                    ✅ <strong>Note:</strong> Activating will make this slot available for new student bookings.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                className="primary-button full-width"
+                onClick={handleToggleTimeSlot}
+                disabled={loading[`toggle-${slotToDeactivate.slotId}`]}
+                style={{ 
+                  backgroundColor: slotToDeactivate.isActive ? '#f59e0b' : '#10b981'
+                }}
+              >
+                {loading[`toggle-${slotToDeactivate.slotId}`] 
+                  ? 'Processing...' 
+                  : (slotToDeactivate.isActive ? 'Deactivate Slot' : 'Activate Slot')
+                }
+              </button>
+              <button 
+                className="filter-button full-width"
+                onClick={() => {
+                  setShowDeactivateModal(false);
+                  setSlotToDeactivate(null);
+                  setSlotDetails(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
