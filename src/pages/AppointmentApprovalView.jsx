@@ -49,7 +49,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot',
+        'https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/admin/all-slots',
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -457,25 +457,65 @@ const handleReject = async () => {
                   <div className="time-slot-grid">
                     {slots.map((slot) => (
                       <div key={slot.slotId} className="time-slot-item" style={{
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        padding: '8px',
+                        border: `2px solid ${slot.isActive ? '#d1d5db' : '#e5e7eb'}`,
+                        borderRadius: '8px',
+                        padding: '12px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         backgroundColor: slot.isActive ? 'white' : '#f9fafb',
-                        opacity: slot.isActive ? 1 : 0.6
+                        opacity: slot.isActive ? 1 : 0.7,
+                        transition: 'all 0.2s ease'
                       }}>
-                        <div>
-                          <span style={{ fontWeight: '500' }}>{slot.time}</span>
-                          <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '8px' }}>
-                            ({slot.currentAppointmentCount}/{slot.maxAppointments})
-                          </span>
-                          {slot.currentAppointmentCount < slot.maxAppointments && (
-                          <span style={{ fontSize: '12px', color: '#10b981', marginLeft: '8px' }}>
-                          ({slot.maxAppointments - slot.currentAppointmentCount} available)
-                          </span>
-                        )}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                            <span style={{ 
+                              fontWeight: '600', 
+                              fontSize: '14px',
+                              color: slot.isActive ? '#1f2937' : '#6b7280'
+                            }}>
+                              {slot.time}
+                            </span>
+                            {slot.isActive ? (
+                              <span style={{ 
+                                fontSize: '10px', 
+                                background: '#10b981', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '10px',
+                                fontWeight: '500'
+                              }}>
+                                ACTIVE
+                              </span>
+                            ) : (
+                              <span style={{ 
+                                fontSize: '10px', 
+                                background: '#6b7280', 
+                                color: 'white', 
+                                padding: '2px 6px', 
+                                borderRadius: '10px',
+                                fontWeight: '500'
+                              }}>
+                                INACTIVE
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ 
+                            fontSize: '12px', 
+                            color: slot.isActive ? '#6b7280' : '#9ca3af'
+                          }}>
+                            ({slot.currentAppointmentCount}/{slot.maxAppointments} booked)
+                            {slot.currentAppointmentCount < slot.maxAppointments && slot.isActive && (
+                              <span style={{ color: '#10b981', marginLeft: '8px' }}>
+                                ({slot.maxAppointments - slot.currentAppointmentCount} available)
+                              </span>
+                            )}
+                            {!slot.isActive && (
+                              <span style={{ color: '#6b7280', marginLeft: '8px' }}>
+                                (Hidden from students)
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <button
@@ -486,9 +526,6 @@ const handleReject = async () => {
                               background: '#0477BF',
                               color: 'white',
                               borderRadius: '4px',
-                              position: 'relative',
-                              zIndex: 9999,
-                              pointerEvents: 'auto',
                               fontSize: '12px',
                               cursor: 'pointer'
                             }}
@@ -507,9 +544,6 @@ const handleReject = async () => {
                               color: 'white',
                               borderRadius: '4px',
                               fontSize: '12px',
-                              position: 'relative',
-                              zIndex: 9999,
-                              pointerEvents: 'auto',
                               cursor: loading[`toggle-${slot.slotId}`] ? 'not-allowed' : 'pointer',
                               opacity: loading[`toggle-${slot.slotId}`] ? 0.6 : 1
                             }}
@@ -519,24 +553,21 @@ const handleReject = async () => {
                           </button>
                           
                           <button
-                            onClick={() => handleDeleteClick(slot)}
-                            disabled={loading[`delete-${slot.slotId}`]}
-                            style={{
-                              padding: '4px 8px',
-                              border: 'none',
-                              background: '#ef4444',
-                              color: 'white',
-                              borderRadius: '4px',
-                              fontSize: '12px',
-                              position: 'relative',
-                              zIndex: 9999,
-                              pointerEvents: 'auto',
-                              cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
-                              opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
-                            }}
-                            title="Delete slot (permanent)"
-                          >
-                            {loading[`delete-${slot.slotId}`] ? '⏳' : <Trash2 size={12} />}
+                                  onClick={() => handleDeleteClick(slot)}
+                                  disabled={loading[`delete-${slot.slotId}`]}
+                                  style={{
+                                    padding: '4px 8px',
+                                    border: 'none',
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    borderRadius: '4px',
+                                    fontSize: '12px',
+                                    cursor: loading[`delete-${slot.slotId}`] ? 'not-allowed' : 'pointer',
+                                    opacity: loading[`delete-${slot.slotId}`] ? 0.6 : 1
+                                  }}
+                                  title="Delete slot (permanent)"
+                                >
+                                  {loading[`delete-${slot.slotId}`] ? '⏳' : <Trash2 size={12} />}
                           </button>
                         </div>
                       </div>
@@ -707,7 +738,7 @@ const handleReject = async () => {
         <div className="modal-overlay">
           <div className="modal" style={{ width: '450px' }}>
             <h3 style={{ color: '#ef4444', marginTop: 0 }}>
-              ��️ Delete Time Slot
+              Delete Time Slot
             </h3>
             
             <div style={{ marginBottom: '16px' }}>
