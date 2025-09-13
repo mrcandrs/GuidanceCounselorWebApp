@@ -69,36 +69,73 @@ useEffect(() => {
     setMaxAppointments(3);
   };
 
-  const handleSaveTimeSlots = async () => {
-    if (!selectedDate || selectedTimes.length === 0) {
-      alert('Please select a date and at least one time slot');
+const handleSaveTimeSlots = async () => {
+  if (!selectedDate || selectedTimes.length === 0) {
+    alert('Please select a date and at least one time slot');
+    return;
+  }
+
+  // Check if selected date is today
+  const today = new Date().toISOString().split('T')[0];
+  const isToday = selectedDate === today;
+  
+  let validTimes = selectedTimes;
+  
+  if (isToday) {
+    const currentTime = new Date();
+    const currentHour = currentTime.getHours();
+    const currentMinute = currentTime.getMinutes();
+    
+    // Filter out past times
+    validTimes = selectedTimes.filter(time => {
+      const [timeStr, period] = time.split(' ');
+      const [hour, minute] = timeStr.split(':').map(Number);
+      
+      let hour24 = hour;
+      if (period === 'PM' && hour !== 12) hour24 += 12;
+      if (period === 'AM' && hour === 12) hour24 = 0;
+      
+      const timeInMinutes = hour24 * 60 + minute;
+      const currentTimeInMinutes = currentHour * 60 + currentMinute;
+      
+      return timeInMinutes > currentTimeInMinutes;
+    });
+    
+    if (validTimes.length === 0) {
+      alert('All selected times have already passed for today. Please select future times.');
       return;
     }
-
-    try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.post(
-        'https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/bulk',
-        {
-          date: selectedDate,
-          times: selectedTimes,
-          maxAppointments: maxAppointments
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert(`Successfully created ${response.data.createdSlots.length} time slots`);
-      setShowTimeSlotModal(false);
-      fetchAvailableSlots();
-    } catch (error) {
-      console.error('Error creating time slots:', error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+    
+    if (validTimes.length < selectedTimes.length) {
+      const skippedTimes = selectedTimes.filter(time => !validTimes.includes(time));
+      alert(`Skipped past times: ${skippedTimes.join(', ')}. Creating slots for remaining times.`);
     }
-  };
+  }
+
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await axios.post(
+      'https://guidanceofficeapi-production.up.railway.app/api/availabletimeslot/bulk',
+      {
+        date: selectedDate,
+        times: validTimes, // Use filtered times
+        maxAppointments: maxAppointments
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+
+    alert(`Successfully created ${response.data.createdSlots.length} time slots`);
+    setShowTimeSlotModal(false);
+    fetchAvailableSlots();
+  } catch (error) {
+    console.error('Error creating time slots:', error);
+    alert(`Error: ${error.response?.data?.message || error.message}`);
+  }
+};
 
   // Add these functions to your component
 const fetchSlotDetails = async (slotId) => {
@@ -660,25 +697,55 @@ const handleReject = async () => {
             <div className="form-group">
               <label className="label">Time Slots</label>
               <div className="time-slot-grid">
-                {['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'].map((time) => (
-                  <button 
-                    key={time} 
-                    className={`time-slot-button ${selectedTimes.includes(time) ? 'selected' : ''}`}
-                    onClick={() => {
-                      if (selectedTimes.includes(time)) {
-                        setSelectedTimes(selectedTimes.filter(t => t !== time));
-                      } else {
-                        setSelectedTimes([...selectedTimes, time]);
-                      }
-                    }}
-                    style={{
-                      backgroundColor: selectedTimes.includes(time) ? '#0477BF' : 'white',
-                      color: selectedTimes.includes(time) ? 'white' : '#374151'
-                    }}
-                  >
-                    {time}
-                  </button>
-                ))}
+                {['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'].map((time) => {
+                  // Check if this time has passed for today
+                  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+                  let isPastTime = false;
+                  
+                  if (isToday) {
+                    const currentTime = new Date();
+                    const currentHour = currentTime.getHours();
+                    const currentMinute = currentTime.getMinutes();
+                    
+                    const [timeStr, period] = time.split(' ');
+                    const [hour, minute] = timeStr.split(':').map(Number);
+                    
+                    let hour24 = hour;
+                    if (period === 'PM' && hour !== 12) hour24 += 12;
+                    if (period === 'AM' && hour === 12) hour24 = 0;
+                    
+                    const timeInMinutes = hour24 * 60 + minute;
+                    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+                    
+                    isPastTime = timeInMinutes <= currentTimeInMinutes;
+                  }
+                  
+                  return (
+                    <button 
+                      key={time} 
+                      className={`time-slot-button ${selectedTimes.includes(time) ? 'selected' : ''} ${isPastTime ? 'disabled' : ''}`}
+                      onClick={() => {
+                        if (isPastTime) return; // Don't allow selection of past times
+                        
+                        if (selectedTimes.includes(time)) {
+                          setSelectedTimes(selectedTimes.filter(t => t !== time));
+                        } else {
+                          setSelectedTimes([...selectedTimes, time]);
+                        }
+                      }}
+                      disabled={isPastTime}
+                      style={{
+                        backgroundColor: selectedTimes.includes(time) ? '#0477BF' : 'white',
+                        color: selectedTimes.includes(time) ? 'white' : '#374151',
+                        opacity: isPastTime ? 0.5 : 1,
+                        cursor: isPastTime ? 'not-allowed' : 'pointer'
+                      }}
+                      title={isPastTime ? 'This time has already passed' : ''}
+                    >
+                      {time}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

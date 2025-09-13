@@ -1001,6 +1001,19 @@ html, body {
   box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
 }
 
+.time-slot-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  background-color: #f3f4f6 !important;
+  color: #9ca3af !important;
+  border-color: #e5e7eb !important;
+}
+
+.time-slot-button.disabled:hover {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
 /* Loading spinner animation */
 @keyframes spin {
   0% { transform: rotate(0deg); }
