@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Check, X, Clock, FileText, Plus, Trash2, Edit } from 'lucide-react';
+import { Calendar, Check, X, Clock, FileText, Plus, Trash2, Edit, History, Eye, AlertCircle } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
@@ -1165,7 +1165,7 @@ const handleReject = async () => {
                       marginTop: '6px',
                       flexShrink: 0
                     }}></div>
-                    
+
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                         <div>
@@ -1208,7 +1208,7 @@ const handleReject = async () => {
                           <strong>Rejection Reason:</strong> {activity.rejectionReason}
                         </div>
                       )}
-                      
+
                       <div style={{ fontSize: '12px', color: '#9ca3af' }}>
                         <div>Appointment: {activity.date} at {activity.time}</div>
                         <div>Submitted: {formatSubmissionDate(activity.createdAt)}</div>
@@ -1221,7 +1221,7 @@ const handleReject = async () => {
                 ))}
               </div>
             )}
-      
+
             <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
               <button className="primary-button full-width" onClick={() => setShowActivityModal(false)}>
                 Close
