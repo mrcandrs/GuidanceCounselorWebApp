@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Check, X, Clock, FileText, Plus, Trash2, Edit, History, Eye, AlertCircle } from 'lucide-react';
+import { Calendar, Check, X, Clock, FileText, Plus, Trash2, History, Eye, AlertCircle } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
@@ -348,52 +348,52 @@ const handleApprove = async (appointmentId) => {
   }
 };
 
-//Rejection method
-const handleReject = async () => {
-  if (!selectedAppointmentId) return;
+  //Rejection method
+  const handleReject = async () => {
+    if (!selectedAppointmentId) return;
 
-  // Validate rejection reason
-  if (!rejectionReason || rejectionReason.trim() === '') {
-    alert('Please provide a reason for rejection');
-    return;
-  }
-
-  setLoading(prev => ({ ...prev, [selectedAppointmentId]: 'rejecting' }));
-  setError(null);
-
-  try {
-    const token = localStorage.getItem('authToken');
-    const response = await axios.put(
-      `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/${selectedAppointmentId}/reject`,
-      { rejectionReason: rejectionReason.trim() },
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      }
-    );
-
-    console.log('Rejected appointment:', response.data);
-    
-    if (onAppointmentUpdate) {
-      onAppointmentUpdate();
+    // Validate rejection reason
+    if (!rejectionReason || rejectionReason.trim() === '') {
+      alert('Please provide a reason for rejection');
+      return;
     }
 
-    fetchAvailableSlots();
-    setShowRejectModal(false);
-    setSelectedAppointmentId(null);
-    setRejectionReason('');
+    setLoading(prev => ({ ...prev, [selectedAppointmentId]: 'rejecting' }));
+    setError(null);
 
-    alert(`Appointment rejected successfully for ${response.data.appointment.studentName}`);
-    
-  } catch (error) {
-    console.error('Error rejecting appointment:', error);
-    setError(error.response?.data?.message || error.message);
-    alert(`Error: ${error.response?.data?.message || error.message}`);
-  } finally {
-    setLoading(prev => ({ ...prev, [selectedAppointmentId]: null }));
-  }
-};
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.put(
+        `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/${selectedAppointmentId}/reject`,
+        { rejectionReason: rejectionReason.trim() },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Rejected appointment:', response.data);
+
+      if (onAppointmentUpdate) {
+        onAppointmentUpdate();
+      }
+
+      fetchAvailableSlots();
+      setShowRejectModal(false);
+      setSelectedAppointmentId(null);
+      setRejectionReason('');
+
+      alert(`Appointment rejected successfully for ${response.data.appointment.studentName}`);
+
+    } catch (error) {
+      console.error('Error rejecting appointment:', error);
+      setError(error.response?.data?.message || error.message);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setLoading(prev => ({ ...prev, [selectedAppointmentId]: null }));
+    }
+  };
 
   // Helper function to format the createdAt date
   const formatSubmissionDate = (createdAt) => {
