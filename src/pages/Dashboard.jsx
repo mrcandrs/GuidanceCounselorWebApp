@@ -54,6 +54,7 @@ const GuidanceDashboard = () => {
   const [alerts, setAlerts] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
+  const [notifications, setNotfications] = useState([]);
 
   // Update active tab when URL changes
   useEffect(() => {
@@ -65,6 +66,16 @@ const GuidanceDashboard = () => {
       navigate('/dashboard/students-list', { replace: true });
     }
   }, [location.pathname, navigate]);
+
+  // Background polling (e.g., every 30s). Safe and lightweight.
+  useEffect(() => {
+    const id = setInterval(() => {
+      fetchNotifications();
+    }, 30000);
+    // initial load once
+    fetchNotifications();
+    return () => clearInterval(id);
+  }, []);
 
   // Handle tab changes - now updates URL
   const handleTabChange = (tabId) => {
@@ -92,28 +103,43 @@ useEffect(() => {
   fetchPendingAppointments();
 }, []);
 
-  // Fetch alerts for notifications
-  const fetchAlerts = async () => {
-    setNotificationLoading(true);
-    try {
-      const res = await axios.get(
-        "https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts"
-      );
-      setAlerts(res.data);
-    } catch (error) {
-      console.error("Error fetching alerts:", error);
-    } finally {
-      setNotificationLoading(false);
-    }
-  };
+  // Replace your existing fetchAlerts with this unified fetcher
+const fetchNotifications = async () => {
+  setNotificationLoading(true);
+  try {
+    const [moodRes, pendingRes] = await Promise.all([
+      axios.get("https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts"),
+      axios.get("https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"),
+    ]);
+
+    const moodAlerts = (moodRes.data || []).map(a => ({ ...a, type: 'mood' }));
+    const pending = pendingRes.data || [];
+
+    // 1 summary item for appointments if there are pending ones
+    const appointmentAlert = pending.length > 0
+      ? [{
+          type: 'appointments',
+          level: pending.length >= 5 ? 'high' : pending.length >= 2 ? 'moderate' : 'info',
+          message: `${pending.length} pending appointment${pending.length > 1 ? 's' : ''} awaiting approval`,
+          count: pending.length,
+        }]
+      : [];
+
+    setNotifications([...appointmentAlert, ...moodAlerts]);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+  } finally {
+    setNotificationLoading(false);
+  }
+};
 
   // Handle notification bell click
   const handleNotificationClick = () => {
-    if (!showNotifications) {
-      fetchAlerts();
-    }
-    setShowNotifications(!showNotifications);
-  };
+  if (!showNotifications) {
+    fetchNotifications();
+  }
+  setShowNotifications(!showNotifications);
+};
 
   //Use effect for fetching Counselor from database
   useEffect(() => {
@@ -306,7 +332,7 @@ useEffect(() => {
                   style={{ position: 'relative' }}
                 >
                   <Bell size={20} />
-                  {alerts.length > 0 && (
+                  {notifications.length > 0 && (
                     <span className="notification-badge" style={{ 
                       position: 'absolute',
                       top: '-4px',
@@ -322,7 +348,7 @@ useEffect(() => {
                       justifyContent: 'center',
                       fontWeight: 'bold'
                     }}>
-                      {alerts.length > 9 ? '9+' : alerts.length}
+                      {notifications.length > 9 ? '9+' : notifications.length}
                     </span>
                   )}
                 </button>
@@ -350,7 +376,7 @@ useEffect(() => {
                       alignItems: 'center'
                     }}>
                       <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>
-                        Mood Alerts
+                        Notifications
                       </h3>
                       <button 
                         onClick={() => setShowNotifications(false)}
@@ -368,75 +394,124 @@ useEffect(() => {
                     <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                       {notificationLoading ? (
                         <div style={{ padding: '20px', textAlign: 'center' }}>
-                          <p>Loading alerts...</p>
+                          <p>Loading notifications...</p>
                         </div>
-                      ) : alerts.length === 0 ? (
+                      ) : notifications.length === 0 ? (
                         <div style={{ padding: '20px', textAlign: 'center', color: '#6b7280' }}>
                           <Bell size={32} style={{ opacity: 0.3, margin: '0 auto 8px' }} />
-                          <p style={{ margin: 0 }}>No alerts at the moment</p>
+                          <p style={{ margin: 0 }}>No notifications</p>
                         </div>
                       ) : (
-                        alerts.map((alert, index) => (
-                          <div 
-                            key={index} 
-                            style={{
-                              padding: '16px 20px',
-                              borderBottom: index < alerts.length - 1 ? '1px solid #f3f4f6' : 'none',
-                              background: alert.level === 'high' ? '#FEF2F2' : 
-                                         alert.level === 'moderate' ? '#FFFBEB' : '#EFF6FF'
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                              <div style={{
-                                width: '8px',
-                                height: '8px',
-                                borderRadius: '50%',
-                                backgroundColor: alert.level === 'high' ? '#EF4444' :
-                                                alert.level === 'moderate' ? '#F59E0B' : '#3B82F6',
-                                marginTop: '6px',
-                                flexShrink: 0
-                              }} />
-                              <div style={{ flex: 1 }}>
-                                <p style={{
-                                  margin: 0,
-                                  fontSize: '14px',
-                                  color: alert.level === 'high' ? '#991B1B' :
-                                         alert.level === 'moderate' ? '#92400E' : '#1E40AF',
-                                  lineHeight: '1.4'
-                                }}>
-                                  {alert.message}
-                                </p>
+                        notifications.map((n, index) => {
+                          const bg = n.level === 'high' ? '#FEF2F2'
+                            : n.level === 'moderate' ? '#FFFBEB'
+                            : '#EFF6FF';
+                          const dot = n.level === 'high' ? '#EF4444'
+                            : n.level === 'moderate' ? '#F59E0B'
+                            : '#3B82F6';
+                          const text = n.level === 'high' ? '#991B1B'
+                            : n.level === 'moderate' ? '#92400E'
+                            : '#1E40AF';
+
+                          return (
+                            <div 
+                              key={index} 
+                              style={{
+                                padding: '16px 20px',
+                                borderBottom: index < notifications.length - 1 ? '1px solid #f3f4f6' : 'none',
+                                background: bg,
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => {
+                                setShowNotifications(false);
+                                if (n.type === 'appointments') handleTabChange('appointments');
+                                if (n.type === 'mood') handleTabChange('mood');
+                              }}
+                              title={n.type === 'appointments' ? 'Go to Appointment Approval' : 'Go to Mood Insights'}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                                <div style={{
+                                  width: '8px',
+                                  height: '8px',
+                                  borderRadius: '50%',
+                                  backgroundColor: dot,
+                                  marginTop: '6px',
+                                  flexShrink: 0
+                                }} />
+                                <div style={{ flex: 1 }}>
+                                  <p style={{
+                                    margin: 0,
+                                    fontSize: '14px',
+                                    color: text,
+                                    lineHeight: '1.4'
+                                  }}>
+                                    {n.message}
+                                  </p>
+                                  {n.type === 'appointments' && typeof n.count === 'number' && (
+                                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#6b7280' }}>
+                                      Tap to review pending appointments
+                                    </p>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                     
-                    {alerts.length > 0 && (
+                {(notifications.some(n => n.type === 'mood') || notifications.some(n => n.type === 'appointments')) && (
                       <div style={{ 
                         padding: '12px 20px',
                         borderTop: '1px solid #e5e7eb',
-                        background: '#f9fafb'
+                        background: '#f9fafb',
+                        display: 'flex',
+                        gap: '8px'
                       }}>
-                        <button 
-                          style={{
-                            width: '100%',
-                            padding: '8px',
-                            border: 'none',
-                            background: 'none',
-                            color: '#6b7280',
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                            textAlign: 'center'
-                          }}
-                          onClick={() => {
-                            setShowNotifications(false);
-                            handleTabChange('mood');
-                          }}
-                        >
-                          View Mood Insights →
-                        </button>
+                        {notifications.some(n => n.type === 'mood') && (
+                          <button 
+                            style={{
+                              flex: 1,
+                              padding: '8px',
+                              border: 'none',
+                              background: 'white',
+                              color: '#374151',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              textAlign: 'center',
+                              borderRadius: '6px',
+                              border: '1px solid #e5e7eb'
+                            }}
+                            onClick={() => {
+                              setShowNotifications(false);
+                              handleTabChange('mood');
+                            }}
+                          >
+                            View Mood Insights →
+                          </button>
+                        )}
+                        {notifications.some(n => n.type === 'appointments') && (
+                          <button 
+                            style={{
+                              flex: 1,
+                              padding: '8px',
+                              border: 'none',
+                              background: 'white',
+                              color: '#374151',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              textAlign: 'center',
+                              borderRadius: '6px',
+                              border: '1px solid #e5e7eb'
+                            }}
+                            onClick={() => {
+                              setShowNotifications(false);
+                              handleTabChange('appointments');
+                            }}
+                          >
+                            Review Appointments →
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
