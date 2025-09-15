@@ -67,6 +67,7 @@ const GuidanceDashboard = () => {
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
+  const fetchingRef = React.useRef(false);
 
 
   const persistReadKeys = (nextSet) => {
@@ -85,14 +86,23 @@ const GuidanceDashboard = () => {
     }
   }, [location.pathname, navigate]);
 
-  // Background polling (e.g., every 30s). Safe and lightweight.
+  //Background polling 
   useEffect(() => {
-    const id = setInterval(() => {
-      fetchNotifications();
-    }, 30000);
-    // initial load once
-    fetchNotifications();
-    return () => clearInterval(id);
+    const interval = setInterval(fetchNotifications, 5000); // 5s
+    const onFocus = () => fetchNotifications();
+    const onStorage = (e) => {
+      if (e.key === 'readNotificationKeys') fetchNotifications();
+    };
+
+    fetchNotifications(); // initial
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
   // create a stable key that doesn't fluctuate with counts
@@ -136,6 +146,8 @@ const GuidanceDashboard = () => {
 
   // Replace your existing fetchAlerts with this unified fetcher
   const fetchNotifications = async () => {
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
     setNotificationLoading(true);
     try {
       const [moodRes, pendingRes] = await Promise.all([
@@ -150,8 +162,6 @@ const GuidanceDashboard = () => {
       }));
 
       const pending = pendingRes.data || [];
-      // API already orders by CreatedAt desc in pending-appointments.
-      // Use newest appointment’s ID (fallback to createdAt) to form a cycle marker.
       const latestPendingId = pending[0]?.appointmentId || null;
       const latestPendingAt = pending[0]?.createdAt || null;
 
@@ -167,9 +177,10 @@ const GuidanceDashboard = () => {
         : [];
 
       setNotifications([...appointmentAlert, ...moodAlerts]);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
+    } catch (e) {
+      console.error("Error fetching notifications:", e);
     } finally {
+      fetchingRef.current = false;
       setNotificationLoading(false);
     }
   };
