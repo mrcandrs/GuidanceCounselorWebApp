@@ -50,7 +50,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
       await fetchRecentActivity();
 
       setIsRefreshing(false);
-    }, 2000);
+    }, 1000); // 1 second
 
     return () => clearInterval(interval);
   }, [onAppointmentUpdate]);
