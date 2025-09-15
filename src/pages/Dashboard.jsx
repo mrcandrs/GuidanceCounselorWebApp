@@ -97,14 +97,15 @@ const GuidanceDashboard = () => {
 
   // create a stable key that doesn't fluctuate with counts
   const getNotificationKey = (n) => {
-    if (n.type === 'appointments') return 'appointments-pending';
-    if (n.type === 'mood') {
-      if (n.message?.toLowerCase().includes('students with recent high')) return 'mood-high-students';
-      if (n.level === 'high') return 'mood-high-threshold';
-      if (n.level === 'moderate') return 'mood-moderate-threshold';
-      return `mood-${n.level || 'info'}`;
+    if (n.type === 'appointments') {
+      // include the current count so changes are treated as new
+      return `appointments-pending-${n.count || 0}`;
     }
-    return `${n.type}-${n.level || 'info'}`;
+    if (n.type === 'mood') {
+      // include message to differentiate different alerts
+      return `mood-${n.level || 'info'}-${n.message || ''}`;
+    }
+    return `${n.type}-${n.level || 'info'}-${n.message || ''}`;
   };
 
   const unreadCount = notifications.filter(n => !readKeys.has(getNotificationKey(n))).length;
@@ -456,7 +457,7 @@ const GuidanceDashboard = () => {
                           const dotBase = n.level === 'high' ? '#EF4444'
                             : n.level === 'moderate' ? '#F59E0B'
                             : '#3B82F6';
-                                                
+
                           // override to grey when read
                           const dotColor = isRead ? '#d1d5db' : dotBase;
 
