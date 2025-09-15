@@ -98,11 +98,9 @@ const GuidanceDashboard = () => {
   // create a stable key that doesn't fluctuate with counts
   const getNotificationKey = (n) => {
     if (n.type === 'appointments') {
-      // include the current count so changes are treated as new
-      return `appointments-pending-${n.count || 0}`;
+      return `appointments-pending-${n.count || 0}-${n.latestId || n.latestAt || 'none'}`;
     }
     if (n.type === 'mood') {
-      // include message to differentiate different alerts
       return `mood-${n.level || 'info'}-${n.message || ''}`;
     }
     return `${n.type}-${n.level || 'info'}-${n.message || ''}`;
@@ -152,12 +150,19 @@ const GuidanceDashboard = () => {
       }));
 
       const pending = pendingRes.data || [];
+      // API already orders by CreatedAt desc in pending-appointments.
+      // Use newest appointment’s ID (fallback to createdAt) to form a cycle marker.
+      const latestPendingId = pending[0]?.appointmentId || null;
+      const latestPendingAt = pending[0]?.createdAt || null;
+
       const appointmentAlert = pending.length > 0
         ? [{
             type: 'appointments',
             level: pending.length >= 5 ? 'high' : pending.length >= 2 ? 'moderate' : 'info',
             message: `${pending.length} pending appointment${pending.length > 1 ? 's' : ''} awaiting approval`,
             count: pending.length,
+            latestId: latestPendingId,
+            latestAt: latestPendingAt
           }]
         : [];
 
