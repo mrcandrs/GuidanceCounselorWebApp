@@ -448,12 +448,17 @@ const GuidanceDashboard = () => {
                             : n.level === 'moderate' ? '#92400E'
                             : '#1E40AF';
 
-                          // NEW: override color if read
-                          const dotColor = isRead ? '#d1d5db' : dot;
-
                           const key = getNotificationKey(n);
                           const isRead = readKeys.has(key);
                           const opacity = isRead ? 0.6 : 1;
+
+                          // base level color
+                          const dotBase = n.level === 'high' ? '#EF4444'
+                            : n.level === 'moderate' ? '#F59E0B'
+                            : '#3B82F6';
+                                                
+                          // override to grey when read
+                          const dotColor = isRead ? '#d1d5db' : dotBase;
 
                           return (
                             <div 
