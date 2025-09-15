@@ -367,7 +367,7 @@ const GuidanceDashboard = () => {
                   style={{ position: 'relative' }}
                 >
                   <Bell size={20} />
-                  {notifications.length > 0 && (
+                  {unreadCount > 0 && (
                     <span className="notification-badge" style={{ 
                       position: 'absolute',
                       top: '-4px',
@@ -448,6 +448,9 @@ const GuidanceDashboard = () => {
                             : n.level === 'moderate' ? '#92400E'
                             : '#1E40AF';
 
+                          // NEW: override color if read
+                          const dotColor = isRead ? '#d1d5db' : dot;
+
                           const key = getNotificationKey(n);
                           const isRead = readKeys.has(key);
                           const opacity = isRead ? 0.6 : 1;
@@ -478,7 +481,7 @@ const GuidanceDashboard = () => {
                                   width: '8px',
                                   height: '8px',
                                   borderRadius: '50%',
-                                  backgroundColor: dot,
+                                  backgroundColor: dotColor,
                                   marginTop: '6px',
                                   flexShrink: 0
                                 }} />
@@ -575,7 +578,7 @@ const GuidanceDashboard = () => {
         <div className="modal-overlay">
           <div className="modal" style={{ width: '520px', textAlign: 'left' }}>
             <h3 style={{ marginTop: 0 }}>All Notifications</h3>
-      
+
             {notifications.length === 0 ? (
               <p style={{ color: '#6b7280' }}>No notifications</p>
             ) : (
@@ -584,10 +587,11 @@ const GuidanceDashboard = () => {
                   const key = getNotificationKey(n);
                   const isRead = readKeys.has(key);
                   const itemBg = isRead ? '#ffffff' : '#f8fafc';
-                  const levelDot =
+                  const levelDotBase =
                     n.level === 'high' ? '#EF4444' :
                     n.level === 'moderate' ? '#F59E0B' : '#3B82F6';
-                
+                  const levelDot = isRead ? '#d1d5db' : levelDotBase;
+
                   return (
                     <div
                       key={i}
@@ -636,7 +640,7 @@ const GuidanceDashboard = () => {
                 })}
               </div>
             )}
-  
+
             <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
               <button
                 className="filter-button full-width"
