@@ -53,8 +53,26 @@ const GuidanceDashboard = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [notifications, setNotifications] = useState([]);
+
+  // persisted read keys
+  const [readKeys, setReadKeys] = useState(() => {
+    try {
+      const saved = localStorage.getItem('readNotificationKeys');
+      return new Set(saved ? JSON.parse(saved) : []);
+    } catch {
+      return new Set();
+    }
+  });
+
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
+
+
+  const persistReadKeys = (nextSet) => {
+  setReadKeys(new Set(nextSet));
+  localStorage.setItem('readNotificationKeys', JSON.stringify(Array.from(nextSet)));
+  };
 
   // Update active tab when URL changes
   useEffect(() => {
@@ -77,6 +95,20 @@ const GuidanceDashboard = () => {
     return () => clearInterval(id);
   }, []);
 
+  // create a stable key that doesn't fluctuate with counts
+  const getNotificationKey = (n) => {
+    if (n.type === 'appointments') return 'appointments-pending';
+    if (n.type === 'mood') {
+      if (n.message?.toLowerCase().includes('students with recent high')) return 'mood-high-students';
+      if (n.level === 'high') return 'mood-high-threshold';
+      if (n.level === 'moderate') return 'mood-moderate-threshold';
+      return `mood-${n.level || 'info'}`;
+    }
+    return `${n.type}-${n.level || 'info'}`;
+  };
+
+  const unreadCount = notifications.filter(n => !readKeys.has(getNotificationKey(n))).length;
+
   // Handle tab changes - now updates URL
   const handleTabChange = (tabId) => {
     const path = tabToPathMap[tabId];
@@ -86,52 +118,55 @@ const GuidanceDashboard = () => {
     setActiveTab(tabId);
   };
 
-// Function to fetch pending appointments
-const fetchPendingAppointments = async () => {
-  try {
-    const res = await axios.get(
-      "https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"
-    );
-    setPendingAppointments(res.data);
-  } catch (error) {
-    console.error("Error fetching appointments:", error);
-  }
-};
+  // Function to fetch pending appointments
+  const fetchPendingAppointments = async () => {
+    try {
+      const res = await axios.get(
+        "https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"
+      );
+      setPendingAppointments(res.data);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
 
-//Use effect for pending appointments
-useEffect(() => {
-  fetchPendingAppointments();
-}, []);
+  //Use effect for pending appointments
+  useEffect(() => {
+    fetchPendingAppointments();
+  }, []);
 
   // Replace your existing fetchAlerts with this unified fetcher
-const fetchNotifications = async () => {
-  setNotificationLoading(true);
-  try {
-    const [moodRes, pendingRes] = await Promise.all([
-      axios.get("https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts"),
-      axios.get("https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"),
-    ]);
+  const fetchNotifications = async () => {
+    setNotificationLoading(true);
+    try {
+      const [moodRes, pendingRes] = await Promise.all([
+        axios.get("https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts"),
+        axios.get("https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"),
+      ]);
 
-    const moodAlerts = (moodRes.data || []).map(a => ({ ...a, type: 'mood' }));
-    const pending = pendingRes.data || [];
+      const moodAlerts = (moodRes.data || []).map(a => ({
+        ...a,
+        type: 'mood',
+        level: a.level || 'info'
+      }));
 
-    // 1 summary item for appointments if there are pending ones
-    const appointmentAlert = pending.length > 0
-      ? [{
-          type: 'appointments',
-          level: pending.length >= 5 ? 'high' : pending.length >= 2 ? 'moderate' : 'info',
-          message: `${pending.length} pending appointment${pending.length > 1 ? 's' : ''} awaiting approval`,
-          count: pending.length,
-        }]
-      : [];
+      const pending = pendingRes.data || [];
+      const appointmentAlert = pending.length > 0
+        ? [{
+            type: 'appointments',
+            level: pending.length >= 5 ? 'high' : pending.length >= 2 ? 'moderate' : 'info',
+            message: `${pending.length} pending appointment${pending.length > 1 ? 's' : ''} awaiting approval`,
+            count: pending.length,
+          }]
+        : [];
 
-    setNotifications([...appointmentAlert, ...moodAlerts]);
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
-  } finally {
-    setNotificationLoading(false);
-  }
-};
+      setNotifications([...appointmentAlert, ...moodAlerts]);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setNotificationLoading(false);
+    }
+  };
 
   // Handle notification bell click
   const handleNotificationClick = () => {
@@ -186,7 +221,7 @@ const fetchNotifications = async () => {
     { id: 'endorsement', icon: FileText, label: 'Endorsement and Custody' },
     { id: 'consultation', icon: ClipboardList, label: 'Consultation/Conference Forms' },
     { id: 'notes', icon: Edit, label: 'Guidance/Counseling Notes' },
-        { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
+    { id: 'appointments', icon: Calendar, label: 'Appointment Approval' },
     { id: 'pass', icon: UserCheck, label: 'Guidance Pass' },
     { id: 'referral', icon: AtSign, label: 'Referral' },
     { id: 'filemaintenance', icon: FileArchive, label: 'File Maintenance' },
@@ -348,7 +383,7 @@ const fetchNotifications = async () => {
                       justifyContent: 'center',
                       fontWeight: 'bold'
                     }}>
-                      {notifications.length > 9 ? '9+' : notifications.length}
+                      {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </button>
@@ -413,6 +448,10 @@ const fetchNotifications = async () => {
                             : n.level === 'moderate' ? '#92400E'
                             : '#1E40AF';
 
+                          const key = getNotificationKey(n);
+                          const isRead = readKeys.has(key);
+                          const opacity = isRead ? 0.6 : 1;
+
                           return (
                             <div 
                               key={index} 
@@ -420,14 +459,19 @@ const fetchNotifications = async () => {
                                 padding: '16px 20px',
                                 borderBottom: index < notifications.length - 1 ? '1px solid #f3f4f6' : 'none',
                                 background: bg,
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                opacity
                               }}
                               onClick={() => {
+                                // mark this one as read
+                                const next = new Set(readKeys);
+                                next.add(key);
+                                persistReadKeys(next);
+                                
                                 setShowNotifications(false);
                                 if (n.type === 'appointments') handleTabChange('appointments');
                                 if (n.type === 'mood') handleTabChange('mood');
                               }}
-                              title={n.type === 'appointments' ? 'Go to Appointment Approval' : 'Go to Mood Insights'}
                             >
                               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                                 <div style={{
@@ -460,60 +504,57 @@ const fetchNotifications = async () => {
                       )}
                     </div>
                     
-                {(notifications.some(n => n.type === 'mood') || notifications.some(n => n.type === 'appointments')) && (
-                      <div style={{ 
-                        padding: '12px 20px',
-                        borderTop: '1px solid #e5e7eb',
-                        background: '#f9fafb',
-                        display: 'flex',
-                        gap: '8px'
-                      }}>
-                        {notifications.some(n => n.type === 'mood') && (
-                          <button 
-                            style={{
-                              flex: 1,
-                              padding: '8px',
-                              border: 'none',
-                              background: 'white',
-                              color: '#374151',
-                              fontSize: '12px',
-                              cursor: 'pointer',
-                              textAlign: 'center',
-                              borderRadius: '6px',
-                              border: '1px solid #e5e7eb'
-                            }}
-                            onClick={() => {
-                              setShowNotifications(false);
-                              handleTabChange('mood');
-                            }}
-                          >
-                            View Mood Insights →
-                          </button>
-                        )}
-                        {notifications.some(n => n.type === 'appointments') && (
-                          <button 
-                            style={{
-                              flex: 1,
-                              padding: '8px',
-                              border: 'none',
-                              background: 'white',
-                              color: '#374151',
-                              fontSize: '12px',
-                              cursor: 'pointer',
-                              textAlign: 'center',
-                              borderRadius: '6px',
-                              border: '1px solid #e5e7eb'
-                            }}
-                            onClick={() => {
-                              setShowNotifications(false);
-                              handleTabChange('appointments');
-                            }}
-                          >
-                            Review Appointments →
-                          </button>
-                        )}
-                      </div>
-                    )}
+                    <div style={{ 
+                      padding: '12px 20px',
+                      borderTop: '1px solid #e5e7eb',
+                      background: '#f9fafb',
+                      display: 'flex',
+                      gap: '8px'
+                    }}>
+                      <button 
+                        style={{
+                          flex: 1,
+                          padding: '8px',
+                          border: 'none',
+                          background: 'white',
+                          color: '#374151',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          borderRadius: '6px',
+                          border: '1px solid #e5e7eb'
+                        }}
+                        onClick={() => {
+                          setShowNotifications(false);
+                          setShowNotificationCenter(true);
+                        }}
+                      >
+                        View all Notifications →
+                      </button>
+                      
+                      {unreadCount > 0 && (
+                        <button
+                          style={{
+                            padding: '8px',
+                            border: 'none',
+                            background: '#0477BF',
+                            color: 'white',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            borderRadius: '6px'
+                          }}
+                          onClick={() => {
+                            const allKeys = new Set(readKeys);
+                            notifications.forEach(n => allKeys.add(getNotificationKey(n)));
+                            persistReadKeys(allKeys);
+                          }}
+                        >
+                          Mark all as read
+                        </button>
+                      )}
+                    </div>
+
                   </div>
                 )}
               </div>
@@ -528,6 +569,92 @@ const fetchNotifications = async () => {
           {renderContent()}
         </main>
       </div>
+
+      {/* ADD THE ALL-NOTIFICATIONS MODAL HERE */}
+      {showNotificationCenter && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ width: '520px', textAlign: 'left' }}>
+            <h3 style={{ marginTop: 0 }}>All Notifications</h3>
+      
+            {notifications.length === 0 ? (
+              <p style={{ color: '#6b7280' }}>No notifications</p>
+            ) : (
+              <div style={{ maxHeight: '420px', overflowY: 'auto' }}>
+                {notifications.map((n, i) => {
+                  const key = getNotificationKey(n);
+                  const isRead = readKeys.has(key);
+                  const itemBg = isRead ? '#ffffff' : '#f8fafc';
+                  const levelDot =
+                    n.level === 'high' ? '#EF4444' :
+                    n.level === 'moderate' ? '#F59E0B' : '#3B82F6';
+                
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        padding: '12px 16px',
+                        borderBottom: '1px solid #e5e7eb',
+                        background: itemBg,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => {
+                        const next = new Set(readKeys);
+                        next.add(key);
+                        persistReadKeys(next);
+                        setShowNotificationCenter(false);
+                        if (n.type === 'appointments') handleTabChange('appointments');
+                        if (n.type === 'mood') handleTabChange('mood');
+                      }}
+                      title={n.type === 'appointments' ? 'Go to Appointment Approval' : 'Go to Mood Insights'}
+                    >
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: levelDot, flexShrink: 0 }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, color: '#111827' }}>{n.message}</div>
+                        <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                          {n.type === 'appointments' ? 'Appointment Approval' : 'Mood Insights'}
+                        </div>
+                      </div>
+                      {!isRead && (
+                        <button
+                          className="filter-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const next = new Set(readKeys);
+                            next.add(key);
+                            persistReadKeys(next);
+                          }}
+                          style={{ padding: '6px 8px', fontSize: 12 }}
+                        >
+                          Mark read
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+  
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button
+                className="filter-button full-width"
+                onClick={() => {
+                  const all = new Set(readKeys);
+                  notifications.forEach(n => all.add(getNotificationKey(n)));
+                  persistReadKeys(all);
+                }}
+              >
+                Mark all as read
+              </button>
+              <button className="primary-button full-width" onClick={() => setShowNotificationCenter(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
