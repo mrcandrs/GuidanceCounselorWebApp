@@ -52,9 +52,9 @@ const GuidanceDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [alerts, setAlerts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
-  const [notifications, setNotfications] = useState([]);
 
   // Update active tab when URL changes
   useEffect(() => {
