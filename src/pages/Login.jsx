@@ -45,13 +45,16 @@ const Login = () => {
 
     <div className="login-container">
       <div className="login-header">
-        <div className="logo"><img 
+        <div className="logo">
+          <img 
               src="/sti-tarlac-logo.jpg" 
               alt="STI Tarlac Logo" 
               style={{ 
-                width: '150px', 
-                height: '150px', 
-                objectFit: 'contain',
+                width: '100px', 
+                height: '100px', 
+                objectFit: 'cover',
+                borderRadius: '50%',
+                border: '3px solid #0477BF',
                 marginBottom: '8px'
               }} 
             /></div>
