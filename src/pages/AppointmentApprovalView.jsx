@@ -332,7 +332,9 @@ const handleToggleTimeSlot = async () => {
           `https://guidanceofficeapi-production.up.railway.app/api/guidancepass`,
           {
             appointmentId: appointmentId,
-            notes: `Guidance pass issued for approved appointment on ${response.data.appointment.date} at ${response.data.appointment.time}`,
+            notes: `Guidance pass issued for approved appointment`
+            + (response.data?.appointment?.date ? ` on ${response.data.appointment.date}` : '')
+            + (response.data?.appointment?.time ? ` at ${response.data.appointment.time}` : ''),
             counselorId: counselorId
           },
           {

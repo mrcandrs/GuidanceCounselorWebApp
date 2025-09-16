@@ -281,8 +281,48 @@ const GuidancePassView = () => {
       </div>
 
       {/* Add modals for viewing and deactivating passes */}
-    </div>
-  );
-};
+      {showPassModal && selectedPass && (
+          <div className="modal-overlay">
+            <div className="modal" style={{ width: '480px', textAlign: 'left' }}>
+              <h3 style={{ marginTop: 0 }}>Guidance Pass</h3>
+              <div style={{ fontSize: 14, color: '#374151' }}>
+                <div style={{ marginBottom: 8 }}><strong>Student:</strong> {selectedPass.appointment?.studentName}</div>
+                <div style={{ marginBottom: 8 }}><strong>Program/Section:</strong> {selectedPass.appointment?.programSection}</div>
+                <div style={{ marginBottom: 8 }}><strong>Appointment Date:</strong> {formatDate(selectedPass.appointment?.date)}</div>
+                <div style={{ marginBottom: 8 }}><strong>Appointment Time:</strong> {selectedPass.appointment?.time}</div>
+                <div style={{ marginBottom: 8 }}><strong>Issued:</strong> {formatDate(selectedPass.issuedDate)}</div>
+                <div style={{ marginBottom: 8 }}><strong>Issued By:</strong> {selectedPass.counselor?.name}</div>
+                {selectedPass.notes && (<div style={{ marginBottom: 8 }}><strong>Notes:</strong> {selectedPass.notes}</div>)}
+              </div>
+              <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+                <button className="primary-button full-width" onClick={() => setShowPassModal(false)}>Close</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showDeactivateModal && passToDeactivate && (
+          <div className="modal-overlay">
+            <div className="modal" style={{ width: '420px', textAlign: 'left' }}>
+              <h3 style={{ marginTop: 0, color: '#f59e0b' }}>Deactivate Slot</h3>
+              <p>Deactivate the time slot for {passToDeactivate.appointment?.studentName}?</p>
+              <div style={{ background: '#fffbeb', border: '1px solid #f59e0b', padding: 12, borderRadius: 6, fontSize: 14, color: '#92400e' }}>
+                This will mark the appointment as completed and free the student to book again.
+              </div>
+              <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+                <button className="primary-button full-width" onClick={confirmDeactivateSlot} style={{ backgroundColor: '#f59e0b' }}>
+                  Deactivate
+                </button>
+                <button className="filter-button full-width" onClick={() => { setShowDeactivateModal(false); setPassToDeactivate(null); }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+            </div>
+          );
+        };
 
 export default GuidancePassView;
