@@ -165,7 +165,7 @@ const actionsToString = (set, others) => {
                     </div>
                     <div className="referral-item-sub">
                       <span>Student No.: {r.studentNumber || r.studentNumber /* same name in DTO */}</span>
-                      <span>Program: {(r.program || r.program)}{r.section ? ` - ${r.section}` : ''}</span>
+                      <span>Program: {r.studentProgram}{r.section ? ` - ${r.section}` : ''}</span>
                     </div>
                   </button>
                 );
