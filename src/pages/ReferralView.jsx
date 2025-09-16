@@ -224,15 +224,34 @@ const actionsToString = (set, others) => {
         };
         return (
           <div className="referral-field">
-            <label className="label">Action/s Taken</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <label 
+                className="label"
+                >
+                Action/s Taken
+            </label>
+            <div 
+                style={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: 8,
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer' 
+                }}>
               {ACTIONS.map(a => (
                 <label key={a} className="time-slot-button" style={{ userSelect: 'none' }}>
                   <input
                     type="checkbox"
                     checked={set.has(a)}
                     onChange={() => toggle(a)}
-                    style={{ marginRight: 6 }}
+                    style={{ 
+                        marginRight: 6,
+                        position: 'relative',
+                        zIndex: 9999,
+                        pointerEvents: 'auto',
+                        cursor: 'pointer'
+                    }}
                   />
                   {a}
                 </label>
@@ -243,7 +262,13 @@ const actionsToString = (set, others) => {
                     type="checkbox"
                     checked={others && others.length > 0}
                     onChange={(e) => setOthers(e.target.checked ? others : '')}
-                    style={{ marginRight: 6 }}
+                    style={{ 
+                        marginRight: 6,
+                        position: 'relative',
+                        zIndex: 9999,
+                        pointerEvents: 'auto',
+                        cursor: 'pointer' 
+                    }}
                   />
                   Others
                 </label>
@@ -252,6 +277,12 @@ const actionsToString = (set, others) => {
                   placeholder="Specify others"
                   value={others}
                   onChange={e => setOthers(e.target.value)}
+                  style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
                 />
               </div>
             </div>
@@ -272,10 +303,29 @@ const actionsToString = (set, others) => {
       </div>
 
       <div className="referral-actions">
-        <button className="primary-button" onClick={saveFeedback} disabled={saving}>
+        <button 
+            className="primary-button" 
+            onClick={saveFeedback} 
+            disabled={saving}
+            style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+            }}
+            >
           {saving ? 'Saving...' : 'Save Feedback'}
         </button>
-        <button className="filter-button" onClick={() => setSelected(null)}>
+        <button 
+            className="filter-button" 
+            onClick={() => setSelected(null)}
+            style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+            }}
+            >
           Clear Selection
         </button>
       </div>
