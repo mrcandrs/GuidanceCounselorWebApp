@@ -300,53 +300,75 @@ const handleToggleTimeSlot = async () => {
   }, {});
 
   // Update the reject button click handler
-const handleRejectClick = (appointmentId) => {
-  setSelectedAppointmentId(appointmentId);
-  setRejectionReason('');
-  setShowRejectModal(true);
-};
+  const handleRejectClick = (appointmentId) => {
+    setSelectedAppointmentId(appointmentId);
+    setRejectionReason('');
+    setShowRejectModal(true);
+  };
 
   //Approval method
-const handleApprove = async (appointmentId) => {
-  setLoading(prev => ({ ...prev, [appointmentId]: 'approving' }));
-  setError(null);
+  const handleApprove = async (appointmentId) => {
+    setLoading(prev => ({ ...prev, [appointmentId]: 'approving' }));
+    setError(null);
 
-  try {
-    const token = localStorage.getItem('authToken');
-    const response = await axios.put(
-      `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/${appointmentId}/approve`,
-      {},
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.put(
+        `https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/${appointmentId}/approve`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Approved appointment:', response.data);
+
+      // Automatically create Guidance Pass for approved appointment
+      try {
+        const counselorId = localStorage.getItem('counselorId') || 1; // Default counselor ID
+        const guidancePassResponse = await axios.post(
+          `https://guidanceofficeapi-production.up.railway.app/api/guidancepass`,
+          {
+            appointmentId: appointmentId,
+            notes: `Guidance pass issued for approved appointment on ${response.data.appointment.date} at ${response.data.appointment.time}`,
+            counselorId: counselorId
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+        console.log('Guidance pass created:', guidancePassResponse.data);
+      } catch (passError) {
+        console.error('Error creating guidance pass:', passError);
+        // Don't fail the approval if guidance pass creation fails
       }
-    );
 
-    console.log('Approved appointment:', response.data);
-    
-    if (onAppointmentUpdate) {
-      onAppointmentUpdate();
+      if (onAppointmentUpdate) {
+        onAppointmentUpdate();
+      }
+
+      // Refresh available slots to update counts
+      fetchAvailableSlots();
+
+      alert(`Appointment approved successfully for ${response.data.appointment.studentName}. Guidance pass has been issued.`);
+
+    } catch (error) {
+      console.error('Error approving appointment:', error);
+
+      // Show detailed error message
+      const errorMessage = error.response?.data?.message || error.message;
+      console.log('Detailed error:', error.response?.data);
+
+      setError(errorMessage);
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setLoading(prev => ({ ...prev, [appointmentId]: null }));
     }
-
-    // Refresh available slots to update counts
-    fetchAvailableSlots();
-
-    alert(`Appointment approved successfully for ${response.data.appointment.studentName}`);
-    
-  } catch (error) {
-    console.error('Error approving appointment:', error);
-    
-    // Show detailed error message
-    const errorMessage = error.response?.data?.message || error.message;
-    console.log('Detailed error:', error.response?.data);
-    
-    setError(errorMessage);
-    alert(`Error: ${errorMessage}`);
-  } finally {
-    setLoading(prev => ({ ...prev, [appointmentId]: null }));
-  }
-};
+  };
 
   //Rejection method
   const handleReject = async () => {
