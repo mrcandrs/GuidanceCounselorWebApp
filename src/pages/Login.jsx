@@ -46,8 +46,8 @@ const Login = () => {
     <div className="login-container">
       <div className="login-header">
         <div className="logo">🎓</div>
-        <h1 className="login-title">STI Tarlac Guidance Office</h1>
-        <p className="login-subtitle">Guidance Counselor WebApp</p>
+        <h1 className="login-title">STI Tarlac Guidance and Counseling Office</h1>
+        <p className="login-subtitle">Guidance Counselor Web Application</p>
       </div>
 
       <form onSubmit={handleLogin} className="login-form">
