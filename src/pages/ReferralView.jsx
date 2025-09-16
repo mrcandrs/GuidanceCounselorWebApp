@@ -10,62 +10,88 @@ const ReferralView = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [currentCounselor, setCurrentCounselor] = useState(null);
+
+  // Fetch current counselor details
+  const fetchCurrentCounselor = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.get(
+        `${API_BASE}/api/counselor/me`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setCurrentCounselor(response.data);
+    } catch (error) {
+      console.error('Error fetching counselor details:', error);
+    }
+  };
 
   const fetchList = async () => {
-  setLoading(true);
-  setError('');
-  try {
-    const token = localStorage.getItem('authToken');
-    const url = API_BASE
-      ? `${API_BASE}/api/referral/latest-per-student`
-      : '/proxy/api/referral/latest-per-student';
-    const res = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setReferrals(res.data || []);
-  } catch (e) {
-    setError('Failed to load referrals.');
-    console.error(e);
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('authToken');
+      const url = API_BASE
+        ? `${API_BASE}/api/referral/latest-per-student`
+        : '/proxy/api/referral/latest-per-student';
+      const res = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReferrals(res.data || []);
+    } catch (e) {
+      setError('Failed to load referrals.');
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchList();
+    fetchCurrentCounselor(); // Fetch counselor on mount
   }, []);
 
+  // Auto-fill counselor name when selecting a referral
+  const handleSelectReferral = (referral) => {
+    setSelected({
+      ...referral,
+      counselorName: currentCounselor ? currentCounselor.name : referral.counselorName || ''
+    });
+  };
+
   const saveFeedback = async () => {
-  if (!selected) return;
-  setSaving(true);
-  setError('');
-  try {
-    const token = localStorage.getItem('authToken');
-    const url = API_BASE
-      ? `${API_BASE}/api/referral/${selected.referralId}/feedback`
-      : `/proxy/api/referral/${selected.referralId}/feedback`;
+    if (!selected) return;
+    setSaving(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('authToken');
+      const url = API_BASE
+        ? `${API_BASE}/api/referral/${selected.referralId}/feedback`
+        : `/proxy/api/referral/${selected.referralId}/feedback`;
 
-    await axios.put(
-      url,
-      {
-        counselorFeedbackStudentName: selected.counselorFeedbackStudentName || '',
-        counselorFeedbackDateReferred: selected.counselorFeedbackDateReferred || null,
-        counselorSessionDate: selected.counselorSessionDate || null,
-        counselorActionsTaken: selected.counselorActionsTaken || '',
-        counselorName: selected.counselorName || ''
-      },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+      await axios.put(
+        url,
+        {
+          counselorFeedbackStudentName: selected.counselorFeedbackStudentName || '',
+          counselorFeedbackDateReferred: selected.counselorFeedbackDateReferred || null,
+          counselorSessionDate: selected.counselorSessionDate || null,
+          counselorActionsTaken: selected.counselorActionsTaken || '',
+          counselorName: selected.counselorName || ''
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    await fetchList();
-    alert('Feedback saved.');
-  } catch (e) {
-    setError('Failed to save feedback.');
-    console.error(e);
-  } finally {
-    setSaving(false);
-  }
-};
+      await fetchList();
+      alert('Feedback saved.');
+    } catch (e) {
+      setError('Failed to save feedback.');
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
 
 // put near top (inside component file, above return)
 const ACTIONS = [
@@ -121,14 +147,8 @@ const actionsToString = (set, others) => {
                   <button
                     key={r.referralId}
                     className={`referral-item ${isActive ? 'active' : ''}`}
-                    onClick={() => setSelected(r)}
+                    onClick={() => handleSelectReferral(r)} // Use new handler
                     title="Open Feedback"
-                    style={{
-                      position: 'relative',
-                      zIndex: 9999,
-                      pointerEvents: 'auto',
-                      cursor: 'pointer'
-                    }}
                   >
                     <div className="referral-item-header">
                       <span className="referral-student">{r.fullName}</span>
@@ -148,74 +168,63 @@ const actionsToString = (set, others) => {
         </div>
 
         <div className="card referral-editor-card">
-  <div className="card-title">Feedback Slip</div>
-  {!selected ? (
-    <div className="empty-state">Select a referral to add feedback.</div>
-  ) : (
-    <div className="referral-editor">
-      {/* Header row: matches slip */}
-      <div className="referral-row-2">
-        <div className="referral-field">
-          <label className="label">Student’s Name</label>
-          <input className="input" value={selected.fullName || ''} readOnly />
-        </div>
-        <div className="referral-field">
-          <label className="label">Program & Section</label>
-          <input className="input" value={selected.program || ''} readOnly />
-        </div>
-      </div>
+          <div className="card-title">Feedback Slip</div>
+          {!selected ? (
+            <div className="empty-state">Select a referral to add feedback.</div>
+          ) : (
+            <div className="referral-editor">
+              {/* Header row: matches slip */}
+              <div className="referral-row-2">
+                <div className="referral-field">
+                  <label className="label">Student's Name</label>
+                  <input className="input" value={selected.fullName || ''} readOnly />
+                </div>
+                <div className="referral-field">
+                  <label className="label">Program & Section</label>
+                  <input className="input" value={selected.program || ''} readOnly />
+                </div>
+              </div>
 
-      <div className="referral-row-2">
-        <div className="referral-field">
-          <label className="label">Date Referred</label>
-          <input
-            className="input"
-            value={(selected.dateReferred || '').slice(0, 10)}
-            readOnly
-          />
-        </div>
-        <div className="referral-field">
-          <label className="label">Date of Session</label>
-          <input
-            className="input"
-            placeholder="YYYY-MM-DD"
-            value={selected.counselorSessionDate || ''}
-            onChange={e => setSelected({ ...selected, counselorSessionDate: e.target.value })}
-            style={{
-            position: 'relative',
-            zIndex: 9999,
-            pointerEvents: 'auto',
-            cursor: 'pointer'
-            }}
-          />
-        </div>
-      </div>
+              <div className="referral-row-2">
+                <div className="referral-field">
+                  <label className="label">Date Referred</label>
+                  <input
+                    className="input"
+                    value={(selected.dateReferred || '').slice(0, 10)}
+                    readOnly
+                  />
+                </div>
+                <div className="referral-field">
+                  <label className="label">Date of Session</label>
+                  <input
+                    type="date" // Changed to date picker
+                    className="input"
+                    value={selected.counselorSessionDate || ''}
+                    onChange={e => setSelected({ ...selected, counselorSessionDate: e.target.value })}
+                  />
+                </div>
+              </div>
 
-      <div className="referral-row-2">
-        <div className="referral-field">
-          <label className="label">Feedback Date</label>
-          <input
-            className="input"
-            placeholder="YYYY-MM-DD"
-            value={selected.counselorFeedbackDateReferred || ''}
-            onChange={e => setSelected({ ...selected, counselorFeedbackDateReferred: e.target.value })}
-            style={{
-            position: 'relative',
-            zIndex: 9999,
-            pointerEvents: 'auto',
-            cursor: 'pointer'
-            }}
-          />
-        </div>
-        <div className="referral-field">
-          <label className="label">Counselor Name (Prepared by)</label>
-          <input
-            className="input"
-            value={selected.counselorName || ''}
-            onChange={e => setSelected({ ...selected, counselorName: e.target.value })}
-          />
-        </div>
-      </div>
+            <div className="referral-row-2">
+                <div className="referral-field">
+                  <label className="label">Feedback Date</label>
+                  <input
+                    type="date" // Changed to date picker
+                    className="input"
+                    value={selected.counselorFeedbackDateReferred || ''}
+                    onChange={e => setSelected({ ...selected, counselorFeedbackDateReferred: e.target.value })}
+                  />
+                </div>
+                <div className="referral-field">
+                  <label className="label">Counselor Name (Prepared by)</label>
+                  <input
+                    className="input"
+                    value={selected.counselorName || ''}
+                    onChange={e => setSelected({ ...selected, counselorName: e.target.value })}
+                    placeholder={currentCounselor ? currentCounselor.name : 'Enter counselor name'}
+                  />
+                </div>
+              </div>
 
       {/* Action/s Taken (checkboxes + Others) */}
       {(() => {
@@ -303,47 +312,28 @@ const actionsToString = (set, others) => {
       })()}
 
       {/* Received by (read-only from person who referred on form) */}
-      <div className="referral-row-2">
-        <div className="referral-field">
-          <label className="label">Received by (Person who referred)</label>
-          <input className="input" value={selected.personWhoReferred || ''} readOnly />
-        </div>
-        <div className="referral-field">
-          <label className="label">Received Date</label>
-          <input className="input" value={(selected.dateReferred || '').slice(0, 10)} readOnly />
-        </div>
-      </div>
+              <div className="referral-row-2">
+                <div className="referral-field">
+                  <label className="label">Received by (Person who referred)</label>
+                  <input className="input" value={selected.personWhoReferred || ''} readOnly />
+                </div>
+                <div className="referral-field">
+                  <label className="label">Received Date</label>
+                  <input className="input" value={(selected.dateReferred || '').slice(0, 10)} readOnly />
+                </div>
+              </div>
 
-      <div className="referral-actions">
-        <button 
-            className="primary-button" 
-            onClick={saveFeedback} 
-            disabled={saving}
-            style={{
-            position: 'relative',
-            zIndex: 9999,
-            pointerEvents: 'auto',
-            cursor: 'pointer'
-            }}
-            >
-          {saving ? 'Saving...' : 'Save Feedback'}
-        </button>
-        <button 
-            className="filter-button" 
-            onClick={() => setSelected(null)}
-            style={{
-            position: 'relative',
-            zIndex: 9999,
-            pointerEvents: 'auto',
-            cursor: 'pointer'
-            }}
-            >
-          Clear Selection
-        </button>
-      </div>
-    </div>
-  )}
-</div>
+              <div className="referral-actions">
+                <button className="primary-button" onClick={saveFeedback} disabled={saving}>
+                  {saving ? 'Saving...' : 'Save Feedback'}
+                </button>
+                <button className="filter-button" onClick={() => setSelected(null)}>
+                  Clear Selection
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
