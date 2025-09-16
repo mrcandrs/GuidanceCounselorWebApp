@@ -74,7 +74,7 @@ const ReferralView = () => {
       await axios.put(
         url,
         {
-          counselorFeedbackStudentName: selected.counselorFeedbackStudentName || '',
+          counselorFeedbackStudentName: selected.counselorFeedbackStudentName || selected.fullName || '',
           counselorFeedbackDateReferred: selected.counselorFeedbackDateReferred || null,
           counselorSessionDate: selected.counselorSessionDate || null,
           counselorActionsTaken: selected.counselorActionsTaken || '',
