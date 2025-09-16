@@ -57,10 +57,8 @@ const ReferralView = () => {
   const handleSelectReferral = (referral) => {
     setSelected({
       ...referral,
-      // normalize fields used in editor
-        fullName: referral.studentFullName || referral.fullName,
-        program: referral.section ? `${referral.program || ''}${referral.program ? ' - ' : ''}${referral.section}` : (referral.program || ''),
-        counselorName: currentCounselor ? currentCounselor.name : (referral.counselorName || '')
+      
+      counselorName: currentCounselor ? currentCounselor.name : referral.counselorName || ''
     });
   };
 
