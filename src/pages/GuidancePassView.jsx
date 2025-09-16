@@ -25,11 +25,11 @@ const GuidancePassView = () => {
       `https://guidanceofficeapi-production.up.railway.app/api/guidancepass`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    setPasses(Array.isArray(data) ? data : []);
+    setGuidancePasses(Array.isArray(data) ? data : []); // <- changed
   } catch (err) {
     console.error('Error fetching guidance passes:', err);
     setError(err?.response?.data || err.message || 'Failed to fetch guidance passes');
-    setPasses([]);
+    setGuidancePasses([]); // <- changed
   } finally {
     setLoading(false);
   }
