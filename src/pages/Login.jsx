@@ -45,7 +45,16 @@ const Login = () => {
 
     <div className="login-container">
       <div className="login-header">
-        <div className="logo">🎓</div>
+        <div className="logo"><img 
+              src="/sti-tarlac-logo.jpg" 
+              alt="STI Tarlac Logo" 
+              style={{ 
+                width: '200px', 
+                height: '200px', 
+                objectFit: 'contain',
+                marginBottom: '12px'
+              }} 
+            /></div>
         <h1 className="login-title">STI Tarlac Guidance and Counseling Office</h1>
         <p className="login-subtitle">Guidance Counselor Web Application</p>
       </div>
