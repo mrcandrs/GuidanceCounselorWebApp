@@ -149,6 +149,12 @@ const actionsToString = (set, others) => {
                     className={`referral-item ${isActive ? 'active' : ''}`}
                     onClick={() => handleSelectReferral(r)} // Use new handler
                     title="Open Feedback"
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
                   >
                     <div className="referral-item-header">
                       <span className="referral-student">{r.fullName}</span>
@@ -201,6 +207,12 @@ const actionsToString = (set, others) => {
                     className="input"
                     value={selected.counselorSessionDate || ''}
                     onChange={e => setSelected({ ...selected, counselorSessionDate: e.target.value })}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
                   />
                 </div>
               </div>
@@ -213,6 +225,12 @@ const actionsToString = (set, others) => {
                     className="input"
                     value={selected.counselorFeedbackDateReferred || ''}
                     onChange={e => setSelected({ ...selected, counselorFeedbackDateReferred: e.target.value })}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
                   />
                 </div>
                 <div className="referral-field">
@@ -324,10 +342,29 @@ const actionsToString = (set, others) => {
               </div>
 
               <div className="referral-actions">
-                <button className="primary-button" onClick={saveFeedback} disabled={saving}>
+                <button 
+                    className="primary-button" 
+                    onClick={saveFeedback} 
+                    disabled={saving}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                    >
                   {saving ? 'Saving...' : 'Save Feedback'}
                 </button>
-                <button className="filter-button" onClick={() => setSelected(null)}>
+                <button 
+                    className="filter-button" 
+                    onClick={() => setSelected(null)}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                    >
                   Clear Selection
                 </button>
               </div>
