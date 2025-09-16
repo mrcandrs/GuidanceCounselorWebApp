@@ -57,7 +57,10 @@ const ReferralView = () => {
   const handleSelectReferral = (referral) => {
     setSelected({
       ...referral,
-      counselorName: currentCounselor ? currentCounselor.name : referral.counselorName || ''
+      // normalize fields used in editor
+        fullName: referral.studentFullName || referral.fullName,
+        program: referral.section ? `${referral.program || ''}${referral.program ? ' - ' : ''}${referral.section}` : (referral.program || ''),
+        counselorName: currentCounselor ? currentCounselor.name : (referral.counselorName || '')
     });
   };
 
@@ -157,14 +160,14 @@ const actionsToString = (set, others) => {
                     }}
                   >
                     <div className="referral-item-header">
-                      <span className="referral-student">{r.fullName}</span>
+                      <span className="referral-student">{r.studentFullName || r.fullName}</span>
                       <span className="referral-date">
                         {r.submissionDate ? new Date(r.submissionDate).toLocaleDateString() : '-'}
                       </span>
                     </div>
                     <div className="referral-item-sub">
-                      <span>Student No.: {r.studentNumber}</span>
-                      <span>Program: {r.program}</span>
+                      <span>Student No.: {r.studentNumber || r.studentNumber /* same name in DTO */}</span>
+                      <span>Program: {(r.program || r.program)}{r.section ? ` - ${r.section}` : ''}</span>
                     </div>
                   </button>
                 );
