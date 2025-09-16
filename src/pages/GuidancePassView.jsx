@@ -165,7 +165,7 @@ const GuidancePassView = () => {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h2 className="page-title">Guidance Pass</h2>
+        <h2 className="page-title">STI Guidance and Counseling Office Guidance Pass</h2>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button
             onClick={fetchGuidancePasses}

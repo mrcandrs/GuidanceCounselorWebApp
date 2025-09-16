@@ -309,8 +309,8 @@ const GuidanceDashboard = () => {
       {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
-          <h1 className="sidebar-title">Guidance Portal</h1>
-          <p className="sidebar-subtitle">Counselor Dashboard</p>
+          <h1 className="sidebar-title">STI Tarlac Guidance and Counseling Office</h1>
+          <p className="sidebar-subtitle">Counselor Web Application</p>
         </div>
         
         <nav className="nav">
