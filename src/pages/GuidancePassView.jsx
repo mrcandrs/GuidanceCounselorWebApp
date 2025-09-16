@@ -61,6 +61,7 @@ const GuidancePassView = () => {
       );
 
       alert('Time slot deactivated successfully. Student can now make new appointments.');
+      setGuidancePasses(prev => prev.filter(p => p.appointmentId !== passToDeactivate.appointmentId));
       setShowDeactivateModal(false);
       setPassToDeactivate(null);
       fetchGuidancePasses(); // Refresh the list
@@ -150,7 +151,7 @@ const GuidancePassView = () => {
   if (loading) {
     return (
       <div className="page-container">
-        <h2 className="page-title">Guidance Pass</h2>
+        <h2 className="page-title">STI Guidance and Counseling Office Guidance Pass</h2>
         <div className="card">
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <div className="loading-spinner"></div>
@@ -320,7 +321,7 @@ const GuidancePassView = () => {
             </div>
           </div>
         )}
-        
+
             </div>
           );
         };
