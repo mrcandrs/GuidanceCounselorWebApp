@@ -17,25 +17,23 @@ const GuidancePassView = () => {
   }, []);
 
   const fetchGuidancePasses = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/guidancepass',
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-      setGuidancePasses(response.data);
-    } catch (error) {
-      console.error('Error fetching guidance passes:', error);
-      setError('Failed to fetch guidance passes');
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  setError(null);
+  try {
+    const token = localStorage.getItem('authToken');
+    const { data } = await axios.get(
+      `https://guidanceofficeapi-production.up.railway.app/api/guidancepass`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setPasses(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.error('Error fetching guidance passes:', err);
+    setError(err?.response?.data || err.message || 'Failed to fetch guidance passes');
+    setPasses([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleViewPass = (pass) => {
     setSelectedPass(pass);
