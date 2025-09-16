@@ -49,10 +49,10 @@ const Login = () => {
               src="/sti-tarlac-logo.jpg" 
               alt="STI Tarlac Logo" 
               style={{ 
-                width: '200px', 
-                height: '200px', 
+                width: '150px', 
+                height: '150px', 
                 objectFit: 'contain',
-                marginBottom: '12px'
+                marginBottom: '8px'
               }} 
             /></div>
         <h1 className="login-title">STI Tarlac Guidance and Counseling Office</h1>
