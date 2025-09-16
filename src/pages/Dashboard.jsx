@@ -8,6 +8,7 @@ import EndorsementCustodyView from './EndorsementCustodyView';
 import ConsultationConferenceView from './ConsultationConferenceView';
 import GuidanceNotesView from './GuidanceNotesView';
 import GuidancePassView from './GuidancePassView';
+import ReferralView from './ReferralView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
@@ -293,7 +294,7 @@ const GuidanceDashboard = () => {
       case 'pass':
         return <GuidancePassView />;
       case 'referral':
-        return <GenericFormView title="Referral" description="View student referral forms." />;
+        return <ReferralView />;
       case 'filemaintenance':
         return <GenericFormView title="File Maintenance" description="Adjust and adapt system assets." />;
       case 'reports':

@@ -1,0 +1,106 @@
+/* Referral view specific styles only */
+.referral-page {
+  gap: 16px;
+}
+
+.referral-alert {
+  margin-bottom: 12px;
+}
+
+.referral-grid {
+  align-items: start;
+}
+
+.referral-list-card,
+.referral-editor-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.referral-list {
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.referral-list::-webkit-scrollbar {
+  width: 8px;
+}
+.referral-list::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 4px;
+}
+.referral-list {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.referral-item {
+  width: 100%;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.referral-item:hover {
+  background: #f9fafb;
+}
+.referral-item.active {
+  border-color: #0477BF;
+  background: #eff6ff;
+}
+
+.referral-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.referral-student {
+  font-weight: 600;
+  color: #111827;
+}
+.referral-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+.referral-item-sub {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.referral-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.referral-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.referral-field .label {
+  margin-bottom: 6px;
+}
+
+.referral-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (max-width: 1024px) {
+  .referral-row-2 {
+    grid-template-columns: 1fr;
+  }
+}
