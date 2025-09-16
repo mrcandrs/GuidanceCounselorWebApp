@@ -181,6 +181,12 @@ const actionsToString = (set, others) => {
             placeholder="YYYY-MM-DD"
             value={selected.counselorSessionDate || ''}
             onChange={e => setSelected({ ...selected, counselorSessionDate: e.target.value })}
+            style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+            }}
           />
         </div>
       </div>
@@ -193,6 +199,12 @@ const actionsToString = (set, others) => {
             placeholder="YYYY-MM-DD"
             value={selected.counselorFeedbackDateReferred || ''}
             onChange={e => setSelected({ ...selected, counselorFeedbackDateReferred: e.target.value })}
+            style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+            }}
           />
         </div>
         <div className="referral-field">
