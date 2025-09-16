@@ -94,6 +94,12 @@ const ReferralView = () => {
                     className={`referral-item ${isActive ? 'active' : ''}`}
                     onClick={() => setSelected(r)}
                     title="Open Feedback"
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
                   >
                     <div className="referral-item-header">
                       <span className="referral-student">{r.fullName}</span>

@@ -170,6 +170,12 @@ const GuidancePassView = () => {
           <button
             onClick={fetchGuidancePasses}
             className="filter-button"
+            style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
           >
             Refresh
           </button>
