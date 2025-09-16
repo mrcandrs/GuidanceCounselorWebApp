@@ -12,44 +12,60 @@ const ReferralView = () => {
   const [error, setError] = useState('');
 
   const fetchList = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await axios.get(`${API_BASE}/api/referral/latest-per-student`);
-      setReferrals(res.data || []);
-    } catch (e) {
-      setError('Failed to load referrals.');
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  setError('');
+  try {
+    const token = localStorage.getItem('authToken');
+    const url = API_BASE
+      ? `${API_BASE}/api/referral/latest-per-student`
+      : '/proxy/api/referral/latest-per-student';
+    const res = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setReferrals(res.data || []);
+  } catch (e) {
+    setError('Failed to load referrals.');
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchList();
   }, []);
 
   const saveFeedback = async () => {
-    if (!selected) return;
-    setSaving(true);
-    setError('');
-    try {
-      await axios.put(`${API_BASE}/api/referral/${selected.referralId}/feedback`, {
+  if (!selected) return;
+  setSaving(true);
+  setError('');
+  try {
+    const token = localStorage.getItem('authToken');
+    const url = API_BASE
+      ? `${API_BASE}/api/referral/${selected.referralId}/feedback`
+      : `/proxy/api/referral/${selected.referralId}/feedback`;
+
+    await axios.put(
+      url,
+      {
         counselorFeedbackStudentName: selected.counselorFeedbackStudentName || '',
         counselorFeedbackDateReferred: selected.counselorFeedbackDateReferred || null,
         counselorSessionDate: selected.counselorSessionDate || null,
         counselorActionsTaken: selected.counselorActionsTaken || '',
         counselorName: selected.counselorName || ''
-      });
-      await fetchList();
-      alert('Feedback saved.');
-    } catch (e) {
-      setError('Failed to save feedback.');
-      console.error(e);
-    } finally {
-      setSaving(false);
-    }
-  };
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    await fetchList();
+    alert('Feedback saved.');
+  } catch (e) {
+    setError('Failed to save feedback.');
+    console.error(e);
+  } finally {
+    setSaving(false);
+  }
+};
 
   return (
     <div className="page-container referral-page">
