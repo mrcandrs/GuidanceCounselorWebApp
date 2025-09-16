@@ -309,18 +309,19 @@ const GuidanceDashboard = () => {
       {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
             <img 
               src="/sti-tarlac-logo.jpg" 
               alt="STI Tarlac Logo" 
               style={{ 
-                width: '40px', 
-                height: '40px', 
-                objectFit: 'contain' 
+                width: '80px', 
+                height: '80px', 
+                objectFit: 'contain',
+                marginBottom: '12px'
               }} 
             />
-            <h1 className="sidebar-title">STI Tarlac Guidance and Counseling Office</h1>
           </div>
+          <h1 className="sidebar-title">STI Tarlac Guidance and Counseling Office</h1>
           <p className="sidebar-subtitle">Counselor Web Application</p>
         </div>
         
