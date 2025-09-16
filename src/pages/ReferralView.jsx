@@ -187,7 +187,7 @@ const actionsToString = (set, others) => {
                   <input className="input" value={selected.fullName || ''} readOnly />
                 </div>
                 <div className="referral-field">
-                  <label className="label">Program & Section</label>
+                  <label className="label">Program</label>
                   <input className="input" value={selected.program || ''} readOnly />
                 </div>
               </div>
