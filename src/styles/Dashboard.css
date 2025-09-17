@@ -95,7 +95,7 @@ html, body {
   left: 72px;
   top: 50%;
   transform: translateY(-50%);
-  background: #111827;
+  background: #0477BF;
   color: #fff;
   padding: 6px 8px;
   border-radius: 6px;
@@ -112,7 +112,7 @@ html, body {
   top: 50%;
   transform: translateY(-50%);
   border: 6px solid transparent;
-  border-right-color: #111827;
+  border-right-color: #0477BF;
 }
 
 .sidebar.collapsed .nav-button .nav-label {
