@@ -7,8 +7,23 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isCapsOn, setIsCapsOn] = useState(false);
   const navigate = useNavigate();
   const passwordInputRef = useRef(null);
+
+
+  // prefill remembered email
+  React.useEffect(() => {
+    const remembered = localStorage.getItem('rememberedEmail');
+    if (remembered) setEmail(remembered);
+  }, []);
+
+  const handlePasswordKeyUp = (e) => {
+  const caps = e.getModifierState && e.getModifierState('CapsLock');
+  setIsCapsOn(!!caps);
+  };
 
   const togglePassword = () => {
     const input = passwordInputRef.current;
@@ -18,21 +33,34 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await api.post('https://guidanceofficeapi-production.up.railway.app/api/counselor/login', {
-        email,
-        password
-      });
+  e.preventDefault();
+  setError('');
+  setIsLoading(true);
+  try {
+    const response = await api.post('/counselor/login', {
+      email: email.trim().toLowerCase(),
+      password: password.trim()
+    });
 
-      const token = response.data.token;
-      localStorage.setItem('authToken', token);
-      navigate('/dashboard');
-    } catch (err) {
-      console.error(err);
-      setError('Invalid credentials. Please try again.');
+    const token = response.data.token;
+    localStorage.setItem('authToken', token);
+
+    if (rememberMe) {
+      localStorage.setItem('rememberedEmail', email.trim().toLowerCase());
+    } else {
+      localStorage.removeItem('rememberedEmail');
     }
-  };
+
+    navigate('/dashboard');
+  } catch (err) {
+    const msg = err?.response?.status === 401
+      ? 'Invalid email or password.'
+      : 'Unable to sign in. Please try again.';
+    setError(msg);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="login-wrapper">
@@ -48,22 +76,19 @@ const Login = () => {
         <div className="logo">
           <img 
               src="/sti-tarlac-logo.png" 
-              alt="STI Tarlac Logo" 
-              style={{ 
-                width: '100px', 
-                height: '100px', 
-                objectFit: 'cover',
-                borderRadius: '50%',
-                border: '3px solid #0477BF',
-                marginBottom: '8px'
-              }} 
+              alt="STI Tarlac Logo"
+              className="logo-img"
             /></div>
         <h1 className="login-title">STI Tarlac Guidance and Counseling Office</h1>
         <p className="login-subtitle">Guidance Counselor Web Application</p>
       </div>
 
       <form onSubmit={handleLogin} className="login-form">
-        {error && <p className="error-message">{error}</p>}
+        {error && (
+          <p className="error-message" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
 
         <div className="form-group">
           <label>Email</label>
@@ -90,15 +115,48 @@ const Login = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyUp={handlePasswordKeyUp}
               placeholder="Enter your password"
+              autoComplete="current-password"
+              aria-describedby={isCapsOn ? 'caps-hint' : undefined}
             />
             <span className="input-icon">🔒</span>
-            <button type="button" className="password-toggle" onClick={togglePassword}>👁️</button>
-          </div>
+            <button 
+              type="button" 
+              className="password-toggle" 
+              onClick={togglePassword}
+              aria-label="Toggle password visibility"
+            >
+              👁️
+            </button>
+              </div>
+              {isCapsOn && (
+                <small id="caps-hint" className="caps-hint">
+                Caps Lock is on
+                </small>
+            )}
         </div>
 
-        <button type="submit" className="login-button">
-          <span id="buttonText">Login</span>
+              <div className="remember-forgot">
+          <label className="remember-me">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            Remember me
+          </label>
+          <a className="forgot-password" href="/forgot-password">
+            Forgot password?
+          </a>
+        </div>
+
+        <button 
+          type="submit" 
+          className={`login-button ${isLoading ? 'loading' : ''}`}
+          disabled={isLoading}
+          >
+          <span id="buttonText">{isLoading ? 'Logging in…' : 'Login'}</span>
         </button>
       </form>
       </div>
