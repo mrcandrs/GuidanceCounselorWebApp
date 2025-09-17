@@ -8,7 +8,6 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [isCapsOn, setIsCapsOn] = useState(false);
   const navigate = useNavigate();
   const passwordInputRef = useRef(null);
@@ -44,12 +43,6 @@ const Login = () => {
 
     const token = response.data.token;
     localStorage.setItem('authToken', token);
-
-    if (rememberMe) {
-      localStorage.setItem('rememberedEmail', email.trim().toLowerCase());
-    } else {
-      localStorage.removeItem('rememberedEmail');
-    }
 
     navigate('/dashboard');
   } catch (err) {
@@ -137,15 +130,7 @@ const Login = () => {
             )}
         </div>
 
-              <div className="remember-forgot">
-          <label className="remember-me">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-            Remember me
-          </label>
+          <div className="remember-forgot">
           <a className="forgot-password" href="/forgot-password">
             Forgot password?
           </a>
