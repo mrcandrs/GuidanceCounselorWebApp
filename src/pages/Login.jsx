@@ -50,11 +50,11 @@ const Login = () => {
               src="/sti-tarlac-logo.png" 
               alt="STI Tarlac Logo" 
               style={{ 
-                width: '80px', 
-                height: '80px', 
+                width: '100px', 
+                height: '100px', 
                 objectFit: 'cover',
-                borderRadius: '80%',
-                border: '3px solid #0477BF',
+                borderRadius: '50%',
+                border: '5px solid #0477BF',
                 marginBottom: '8px'
               }} 
             /></div>
