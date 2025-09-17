@@ -314,8 +314,8 @@ const GuidanceDashboard = () => {
               src="/sti-tarlac-logo.jpg" 
               alt="STI Tarlac Logo" 
               style={{ 
-                width: '150px', 
-                height: '150px', 
+                width: '100px', 
+                height: '100px', 
                 objectFit: 'contain',
                 marginBottom: '8px'
               }} 
