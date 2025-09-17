@@ -29,24 +29,25 @@ const ReferralView = () => {
   };
 
   const fetchList = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const token = localStorage.getItem('authToken');
-      const url = API_BASE
-        ? `${API_BASE}/api/referral/latest-per-student`
-        : '/proxy/api/referral/latest-per-student';
-      const res = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setReferrals(res.data || []);
-    } catch (e) {
-      setError('Failed to load referrals.');
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  setError('');
+  try {
+    const token = localStorage.getItem('authToken');
+    const url = API_BASE
+      ? `${API_BASE}/api/referral/latest-per-student`
+      : '/proxy/api/referral/latest-per-student';
+    const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+    const data = res.data || [];
+    setReferrals(data);
+    return data; // <-- return loaded list
+  } catch (e) {
+    setError('Failed to load referrals.');
+    console.error(e);
+    return []; // <-- safe fallback
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchList();
@@ -84,12 +85,12 @@ const ReferralView = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      await fetchList();
+      const refreshed = await fetchList();
       //Ensure selection reflects the refreshed, completed item after save
       setSelected(prev => {
         if (!prev) return prev;
-        const updated = res?.data?.find(x => x.referralId === prev.referralId);
-        return updated ? {...updated} : prev;
+        const updated = refreshed.find(x => x.referralId === prev.referralId);
+        return updated ? { ...updated } : prev;
       });
       alert('Feedback saved.');
     } catch (e) {
@@ -240,6 +241,7 @@ const completed = selected && hasFeedback(selected);
                     className="input"
                     value={selected.counselorFeedbackDateReferred || ''}
                     onChange={e => setSelected({ ...selected, counselorFeedbackDateReferred: e.target.value })}
+                    disabled={completed}
                     style={{
                       position: 'relative',
                       zIndex: 9999,
