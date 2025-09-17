@@ -320,6 +320,7 @@ const completed = selected && hasFeedback(selected);
                     type="checkbox"
                     checked={others && others.length > 0}
                     onChange={(e) => setOthers(e.target.checked ? others : '')}
+                    disabled={completed}
                     style={{ 
                         marginRight: 6,
                         position: 'relative',
