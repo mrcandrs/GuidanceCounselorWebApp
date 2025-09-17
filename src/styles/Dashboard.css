@@ -32,7 +32,7 @@ html, body {
 }
 
 .sidebar-header {
-  padding: 12px;
+  padding: 24px;
   background: linear-gradient(to right, #0477BF, #0369a1);
   color: white;
 }
