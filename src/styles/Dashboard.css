@@ -49,6 +49,59 @@ html, body {
   margin: 0;
 }
 
+/* Sidebar collapse toggle button */
+.sidebar-toggle {
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+.sidebar-toggle:hover {
+  background: #f9fafb;
+}
+
+/* Collapsed sidebar */
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* Header area in collapsed state */
+.sidebar.collapsed .sidebar-header {
+  padding: 16px;
+  text-align: center;
+}
+.sidebar.collapsed .sidebar-header img {
+  width: 56px;
+  height: 56px;
+}
+.sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .sidebar-subtitle {
+  display: none;
+}
+
+/* Nav buttons in collapsed state: center icons, hide labels */
+.sidebar.collapsed .nav-button {
+  justify-content: center;
+  gap: 0;
+  padding: 12px 0;
+}
+.sidebar.collapsed .nav-button .nav-label {
+  display: none;
+}
+
+/* User section: keep avatar, hide name/email; keep action buttons */
+.sidebar.collapsed .user-info {
+  justify-content: center;
+}
+.sidebar.collapsed .user-info .user-meta {
+  display: none;
+}
+.sidebar.collapsed .user-actions {
+  justify-content: center;
+}
+
 .nav {
   flex: 1;
   margin-top: 24px;
@@ -828,6 +881,11 @@ html, body {
   
   .sidebar.open {
     transform: translateX(0);
+  }
+
+  /* Ensure mobile off-canvas still works; collapsed only applies for desktop widths */
+  .sidebar.collapsed {
+    width: 100%; /* prefer mobile slide-out behavior */
   }
   
   .main-content {

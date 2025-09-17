@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Calendar, ClipboardList, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X } from 'lucide-react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, Menu, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X } from 'lucide-react';
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
@@ -65,6 +65,19 @@ const GuidanceDashboard = () => {
       return new Set();
     }
   });
+
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sidebarCollapsed');
+      return saved ? JSON.parse(saved) : false;
+    } catch {
+      return false;
+    }
+  });
+
+useEffect(() => {
+  localStorage.setItem('sidebarCollapsed', JSON.stringify(isCollapsed));
+}, [isCollapsed]);
 
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -307,7 +320,7 @@ const GuidanceDashboard = () => {
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
-      <div className="sidebar">
+      <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
           <div style={{ textAlign: 'center',}}>
             <img 
@@ -332,7 +345,7 @@ const GuidanceDashboard = () => {
               className={`nav-button ${activeTab === item.id ? 'active' : ''}`}
             >
               <item.icon size={20} />
-              {item.label}
+              <span className="nav-label">{item.label}</span>
             </button>
           ))}
         </nav>
@@ -343,7 +356,7 @@ const GuidanceDashboard = () => {
             <div className="user-avatar">
               {counselor.name ? counselor.name.charAt(0) : 'GC'}
               </div>
-            <div>
+            <div className="user-meta">
               <p className="user-name">{counselor.name || 'Loading...'}</p>
               <p className="user-email">{counselor.email || ''}</p>
             </div>
@@ -382,12 +395,22 @@ const GuidanceDashboard = () => {
         {/* Header */}
         <header className="header">
           <div className="header-content">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            className="sidebar-toggle"
+            onClick={() => setIsCollapsed(prev => !prev)}
+            aria-label="Toggle sidebar"
+            title="Toggle sidebar"
+          >
+            <Menu size={20} />
+          </button>
             <div>
               <h2 className="header-title">
                 {sidebarItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
               </h2>
               <p className="header-subtitle">Manage student guidance and counseling</p>
             </div>
+          </div>
             
             <div className="header-actions">
               <div style={{ position: 'relative' }}>
