@@ -99,16 +99,17 @@ html, body {
   display: none;
 }
 
+/* Keep vertical stack centered in collapsed state */
 .sidebar.collapsed .user-actions {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 10px;
 }
 
 .sidebar.collapsed .user-action-button {
-  width: 36px;              /* keeps nice square buttons */
-  height: 36px;
+  width: 48px;              /* keeps nice square buttons */
+  height: 48px;
   padding: 0;
 }
 
@@ -196,14 +197,17 @@ html, body {
 }
 
 .user-action-button {
-  flex: 1;
-  padding: 8px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex: 0 0 auto;           /* stop stretching/shrinking */
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+}
+
+/* Ensure the icons scale appropriately */
+.user-action-button svg {
+  width: 20px;
+  height: 20px;
 }
 
 .settings-button {
