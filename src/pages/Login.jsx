@@ -47,11 +47,11 @@ const Login = () => {
       <div className="login-header">
         <div className="logo">
           <img 
-              src="/sti-tarlac-logo.jpg" 
+              src="/sti-tarlac-logo.png" 
               alt="STI Tarlac Logo" 
               style={{ 
-                width: '100px', 
-                height: '100px', 
+                width: '80px', 
+                height: '80px', 
                 objectFit: 'cover',
                 borderRadius: '50%',
                 border: '3px solid #0477BF',

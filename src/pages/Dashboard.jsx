@@ -309,7 +309,7 @@ const GuidanceDashboard = () => {
       {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
-          <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+          <div style={{ textAlign: 'center',}}>
             <img 
               src="/sti-tarlac-logo.jpg" 
               alt="STI Tarlac Logo" 
