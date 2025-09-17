@@ -37,6 +37,18 @@ html, body {
   color: white;
 }
 
+.sidebar-logo {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  transition: width 0.2s ease, height 0.2s ease;
+}
+
+.sidebar.collapsed .sidebar-logo {
+  width: 56px;
+  height: 56px;
+}
+
 .sidebar-title {
   font-size: 20px;
   font-weight: bold;
@@ -73,8 +85,8 @@ html, body {
   text-align: center;
 }
 .sidebar.collapsed .sidebar-header img {
-  width: 24px;
-  height: 24px;
+  width: 56px;
+  height: 56px;
 }
 .sidebar.collapsed .sidebar-title,
 .sidebar.collapsed .sidebar-subtitle {
