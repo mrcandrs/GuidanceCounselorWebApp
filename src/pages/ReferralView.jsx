@@ -142,6 +142,32 @@ const selectedFromList = selected
   : null;
 const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
 
+const isEditing = !!selected && !completed;
+const needs = {
+  session: isEditing && !selected?.counselorSessionDate,
+  feedbackDate: isEditing && !selected?.counselorFeedbackDateReferred,
+  actions: isEditing && !(selected?.counselorActionsTaken && selected.counselorActionsTaken.trim()),
+  counselorName: isEditing && !selected?.counselorName
+};
+
+//Date helper
+const toDateInput = (iso) => {
+  if (!iso) return '';
+  const s = String(iso);
+  if (s.length >= 10) return s.slice(0, 10); // handles "2025-09-17T00:00:00"
+  return s;
+};
+
+const formatCardDate = (iso) => {
+  if (!iso) return '-';
+  const s = String(iso);
+  const hasZ = s.endsWith('Z');
+  const d = new Date(hasZ ? s : s + 'Z'); // treat as UTC then display Manila
+  return d.toLocaleDateString('en-PH', { timeZone: 'Asia/Manila' });
+};
+
+
+
   return (
     <div className="page-container referral-page">
       <h2 className="page-title">Referral</h2>
@@ -182,9 +208,7 @@ const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
                         {saved ? '✓ ' : ''}{r.studentFullName || r.fullName}
                       </span>
                       <span className="referral-date">
-                        {r.submissionDate
-                          ? new Date(r.submissionDate).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila' })
-                          : '-'}
+                        {formatCardDate(r.submissionDate)}
                       </span>
                     </div>
                     <div className="referral-item-sub">
@@ -229,8 +253,8 @@ const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
                   <label className="label">Date of Session</label>
                   <input
                     type="date" // Changed to date picker
-                    className="input"
-                    value={selected.counselorSessionDate || ''}
+                    className={`input ${needs.session ? 'input-error' : ''} ${selected?.counselorSessionDate ? 'prefilled' : ''}`}
+                    value={toDateInput(selected.counselorSessionDate) || ''}
                     onChange={e => setSelected({ ...selected, counselorSessionDate: e.target.value })}
                     disabled={completed}
                     style={{
@@ -248,8 +272,8 @@ const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
                   <label className="label">Feedback Date</label>
                   <input
                     type="date" // Changed to date picker
-                    className="input"
-                    value={selected.counselorFeedbackDateReferred || ''}
+                    className={`input ${needs.feedbackDate ? 'input-error' : ''} ${selected?.counselorFeedbackDateReferred ? 'prefilled' : ''}`}
+                    value={toDateInput(selected.counselorFeedbackDateReferred) || ''}
                     onChange={e => setSelected({ ...selected, counselorFeedbackDateReferred: e.target.value })}
                     disabled={completed}
                     style={{
@@ -263,7 +287,7 @@ const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
                 <div className="referral-field">
                   <label className="label">Counselor Name (Prepared by)</label>
                   <input
-                    className="input"
+                    className={`input ${needs.counselorName ? 'input-error' : ''} ${selected?.counselorName ? 'prefilled' : ''}`}
                     value={selected.counselorName || ''}
                     onChange={e => setSelected({ ...selected, counselorName: e.target.value })}
                     disabled={completed}
@@ -290,7 +314,7 @@ const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
           });
         };
         return (
-          <div className="referral-field">
+          <div className={`referral-field ${needs.actions ? 'group-error' : ''}`}>
             <label 
                 className="label"
                 >

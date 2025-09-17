@@ -111,6 +111,23 @@
   margin-top: 8px;
 }
 
+.input-error {
+  border-color: #dc2626 !important; /* red-600 */
+  box-shadow: 0 0 0 1px #dc2626 inset;
+}
+.group-error {
+  border: 1px solid #dc2626;
+  border-radius: 8px;
+  padding: 8px;
+}
+.input.prefilled {
+  background: #f9fafb; /* subtle disabled-like */
+}
+.input:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
 @media (max-width: 1024px) {
   .referral-row-2 {
     grid-template-columns: 1fr;
