@@ -24,9 +24,25 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err?.response?.status === 401) {
-      localStorage.clear();
-      window.location.href = '/';
+    const status = err?.response?.status;
+    const isUnauthorized = status === 401;
+
+    // Where we are in the app
+    const isOnLoginPage = window.location.pathname === '/login';
+
+    // Which endpoint failed
+    const reqUrl = (err?.config?.url || '').toLowerCase();
+    const isLoginRequest = reqUrl.endsWith('/counselor/login') || reqUrl.includes('/counselor/login');
+
+    if (isUnauthorized) {
+      // If the 401 is from login (bad creds) or we’re already on login, let the page show the inline error
+      if (isOnLoginPage || isLoginRequest) {
+        return Promise.reject(err);
+      }
+
+      // For protected routes, drop token and send to login
+      localStorage.removeItem('authToken');
+      window.location.assign('/login'); // use '/login' instead of '/'
     }
     return Promise.reject(err);
   }

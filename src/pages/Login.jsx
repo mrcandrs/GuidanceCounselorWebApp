@@ -54,7 +54,7 @@ const Login = () => {
                 height: '100px', 
                 objectFit: 'cover',
                 borderRadius: '50%',
-                border: '5px solid #0477BF',
+                border: '3px solid #0477BF',
                 marginBottom: '8px'
               }} 
             /></div>
