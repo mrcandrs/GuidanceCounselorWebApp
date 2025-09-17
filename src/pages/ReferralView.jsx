@@ -85,6 +85,12 @@ const ReferralView = () => {
       );
 
       await fetchList();
+      //Ensure selection reflects the refreshed, completed item after save
+      setSelected(prev => {
+        if (!prev) return prev;
+        const updated = res?.data?.find(x => x.referralId === prev.referralId);
+        return updated ? {...updated} : prev;
+      });
       alert('Feedback saved.');
     } catch (e) {
       setError('Failed to save feedback.');
@@ -123,6 +129,12 @@ const actionsToString = (set, others) => {
   return arr.join(', ');
 };
 
+//Checking if the form has the counselor's feedback
+const hasFeedback = r =>
+  !!(r.counselorName || r.counselorActionsTaken || r.counselorFeedbackDateReferred || r.counselorSessionDate);
+
+const completed = selected && hasFeedback(selected);
+
   return (
     <div className="page-container referral-page">
       <h2 className="page-title">Referral</h2>
@@ -147,9 +159,9 @@ const actionsToString = (set, others) => {
                 return (
                   <button
                     key={r.referralId}
-                    className={`referral-item ${isActive ? 'active' : ''}`}
+                    className={`referral-item ${isActive ? 'active' : ''} ${hasFeedback(r) ? 'completed' : ''}`}
                     onClick={() => handleSelectReferral(r)} // Use new handler
-                    title="Open Feedback"
+                    title={hasFeedback(r) ? 'Feedback saved' : 'Open Feedback'}
                     style={{
                       position: 'relative',
                       zIndex: 9999,
@@ -158,7 +170,8 @@ const actionsToString = (set, others) => {
                     }}
                   >
                     <div className="referral-item-header">
-                      <span className="referral-student">{r.studentFullName || r.fullName}</span>
+                      <span className="referral-student">{r.studentFullName || r.fullName}
+                      </span>
                       <span className="referral-date">
                         {r.submissionDate ? new Date(r.submissionDate).toLocaleDateString() : '-'}
                       </span>
@@ -208,6 +221,7 @@ const actionsToString = (set, others) => {
                     className="input"
                     value={selected.counselorSessionDate || ''}
                     onChange={e => setSelected({ ...selected, counselorSessionDate: e.target.value })}
+                    disabled={completed}
                     style={{
                       position: 'relative',
                       zIndex: 9999,
@@ -240,6 +254,7 @@ const actionsToString = (set, others) => {
                     className="input"
                     value={selected.counselorName || ''}
                     onChange={e => setSelected({ ...selected, counselorName: e.target.value })}
+                    disabled={completed}
                     placeholder={currentCounselor ? currentCounselor.name : 'Enter counselor name'}
                   />
                 </div>
@@ -285,6 +300,7 @@ const actionsToString = (set, others) => {
                     type="checkbox"
                     checked={set.has(a)}
                     onChange={() => toggle(a)}
+                    disabled={completed}
                     style={{ 
                         marginRight: 6,
                         position: 'relative',
@@ -317,6 +333,7 @@ const actionsToString = (set, others) => {
                   placeholder="Specify others"
                   value={others}
                   onChange={e => setOthers(e.target.value)}
+                  disabled={completed}
                   style={{
                   position: 'relative',
                   zIndex: 9999,
@@ -346,7 +363,7 @@ const actionsToString = (set, others) => {
                 <button 
                     className="primary-button" 
                     onClick={saveFeedback} 
-                    disabled={saving}
+                    disabled={saving || completed}
                     style={{
                       position: 'relative',
                       zIndex: 9999,
@@ -354,7 +371,7 @@ const actionsToString = (set, others) => {
                       cursor: 'pointer'
                     }}
                     >
-                  {saving ? 'Saving...' : 'Save Feedback'}
+                  {completed ? 'Feedback Locked' : saving ? 'Saving...' : 'Save Feedback'}
                 </button>
                 <button 
                     className="filter-button" 

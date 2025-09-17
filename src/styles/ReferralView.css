@@ -61,6 +61,18 @@
   gap: 8px;
   margin-bottom: 6px;
 }
+
+.referral-item.completed {
+  background: #ecfdf5;          /* light green */
+  border-color: #10b981;        /* emerald */
+}
+.referral-item.completed:hover {
+  background: #d1fae5;
+}
+.referral-item.completed .referral-student {
+  color: #065f46;
+}
+
 .referral-student {
   font-weight: 600;
   color: #111827;
