@@ -86,7 +86,35 @@ html, body {
   justify-content: center;
   gap: 0;
   padding: 12px 0;
+  position: relative;
 }
+
+.sidebar.collapsed .nav-button:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 72px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #111827;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.sidebar.collapsed .nav-button:hover::before {
+  content: '';
+  position: absolute;
+  left: 68px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right-color: #111827;
+}
+
 .sidebar.collapsed .nav-button .nav-label {
   display: none;
 }

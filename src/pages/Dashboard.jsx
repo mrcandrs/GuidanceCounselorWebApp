@@ -343,6 +343,8 @@ useEffect(() => {
               key={item.id}
               onClick={() => handleTabChange(item.id)}
               className={`nav-button ${activeTab === item.id ? 'active' : ''}`}
+              data-label={item.label}
+              aria-label={item.label}
             >
               <item.icon size={20} />
               <span className="nav-label">{item.label}</span>
