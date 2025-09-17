@@ -58,8 +58,6 @@ const ReferralView = () => {
   const handleSelectReferral = (referral) => {
     setSelected({
       ...referral,
-      
-      counselorName: currentCounselor ? currentCounselor.name : referral.counselorName || ''
     });
   };
 
@@ -132,7 +130,7 @@ const actionsToString = (set, others) => {
 
 //Checking if the form has the counselor's feedback
 const hasFeedback = r =>
-  !!(r.counselorName || r.counselorActionsTaken || r.counselorFeedbackDateReferred || r.counselorSessionDate);
+  !!(r.counselorActionsTaken || r.counselorFeedbackDateReferred || r.counselorSessionDate);
 
 const completed = selected && hasFeedback(selected);
 
@@ -171,10 +169,13 @@ const completed = selected && hasFeedback(selected);
                     }}
                   >
                     <div className="referral-item-header">
-                      <span className="referral-student">{r.studentFullName || r.fullName}
+                      <span className="referral-student">
+                        {hasFeedback(r) ? '✓ ' : ''}{r.studentFullName || r.fullName}
                       </span>
                       <span className="referral-date">
-                        {r.submissionDate ? new Date(r.submissionDate).toLocaleDateString() : '-'}
+                        {r.submissionDate
+                          ? new Date(r.submissionDate).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila' })
+                          : '-'}
                       </span>
                     </div>
                     <div className="referral-item-sub">
