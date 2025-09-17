@@ -287,7 +287,7 @@ const formatCardDate = (iso) => {
                 <div className="referral-field">
                   <label className="label">Counselor Name (Prepared by)</label>
                   <input
-                    className={`input ${needs.counselorName ? 'input-error' : ''} ${selected?.counselorName ? 'prefilled' : ''}`}
+                    className="input"
                     value={selected.counselorName || ''}
                     onChange={e => setSelected({ ...selected, counselorName: e.target.value })}
                     disabled={completed}
