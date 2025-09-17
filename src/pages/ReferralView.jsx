@@ -129,10 +129,18 @@ const actionsToString = (set, others) => {
 };
 
 //Checking if the form has the counselor's feedback
-const hasFeedback = r =>
-  !!(r.counselorActionsTaken || r.counselorFeedbackDateReferred || r.counselorSessionDate);
+const hasSavedFeedback = r =>
+  !!(
+    (r?.counselorActionsTaken && r.counselorActionsTaken.trim()) ||
+    (r?.counselorFeedbackDateReferred && r.counselorFeedbackDateReferred.trim()) ||
+    (r?.counselorSessionDate && r.counselorSessionDate.trim())
+  );
 
-const completed = selected && hasFeedback(selected);
+//Compute completed from the refreshed list
+const selectedFromList = selected
+  ? referrals.find(x => x.referralId === selected.referralId)
+  : null;
+const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
 
   return (
     <div className="page-container referral-page">
@@ -154,11 +162,12 @@ const completed = selected && hasFeedback(selected);
           ) : (
             <div className="referral-list">
               {referrals.map(r => {
+                const saved = hasSavedFeedback(r);
                 const isActive = selected?.referralId === r.referralId;
                 return (
                   <button
                     key={r.referralId}
-                    className={`referral-item ${isActive ? 'active' : ''} ${hasFeedback(r) ? 'completed' : ''}`}
+                    className={`referral-item ${isActive ? 'active' : ''} ${saved ? 'completed' : ''}`}
                     onClick={() => handleSelectReferral(r)} // Use new handler
                     title={hasFeedback(r) ? 'Feedback saved' : 'Open Feedback'}
                     style={{
@@ -170,7 +179,7 @@ const completed = selected && hasFeedback(selected);
                   >
                     <div className="referral-item-header">
                       <span className="referral-student">
-                        {hasFeedback(r) ? '✓ ' : ''}{r.studentFullName || r.fullName}
+                        {saved ? '✓ ' : ''}{r.studentFullName || r.fullName}
                       </span>
                       <span className="referral-date">
                         {r.submissionDate
