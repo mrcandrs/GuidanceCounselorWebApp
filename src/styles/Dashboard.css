@@ -73,8 +73,8 @@ html, body {
   text-align: center;
 }
 .sidebar.collapsed .sidebar-header img {
-  width: 56px;
-  height: 56px;
+  width: 24px;
+  height: 24px;
 }
 .sidebar.collapsed .sidebar-title,
 .sidebar.collapsed .sidebar-subtitle {
