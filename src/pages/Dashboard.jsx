@@ -401,6 +401,12 @@ useEffect(() => {
             onClick={() => setIsCollapsed(prev => !prev)}
             aria-label="Toggle sidebar"
             title="Toggle sidebar"
+            style={{
+            position: 'relative',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            cursor: 'pointer'
+          }}
           >
             <Menu size={20} />
           </button>
