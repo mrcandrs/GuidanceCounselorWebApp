@@ -168,8 +168,8 @@ const completed = !!selectedFromList && hasSavedFeedback(selectedFromList);
                   <button
                     key={r.referralId}
                     className={`referral-item ${isActive ? 'active' : ''} ${saved ? 'completed' : ''}`}
+                    title={saved ? 'Feedback saved' : 'Open Feedback'}
                     onClick={() => handleSelectReferral(r)} // Use new handler
-                    title={hasFeedback(r) ? 'Feedback saved' : 'Open Feedback'}
                     style={{
                       position: 'relative',
                       zIndex: 9999,
