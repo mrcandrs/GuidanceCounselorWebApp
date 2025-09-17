@@ -53,7 +53,7 @@ const Login = () => {
                 width: '80px', 
                 height: '80px', 
                 objectFit: 'cover',
-                borderRadius: '50%',
+                borderRadius: '80%',
                 border: '3px solid #0477BF',
                 marginBottom: '8px'
               }} 
