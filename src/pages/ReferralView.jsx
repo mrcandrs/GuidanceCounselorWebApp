@@ -222,6 +222,97 @@ const formatCardDate = (iso) => {
           )}
         </div>
 
+
+        {/* Referral Form Details (read-only) */}
+        <div className="card-subtitle" style={{ marginTop: 4, marginBottom: 8 }}>Referral Form Details</div>
+
+        <div className="referral-editor">
+          <div className="referral-row-2">
+            <div className="referral-field">
+              <label className="label">Student's Name (submitted)</label>
+              <input className="input" value={selected.fullName || selected.studentFullName || '-'} readOnly />
+            </div>
+            <div className="referral-field">
+              <label className="label">Program</label>
+              <input className="input" value={selected.program || selected.studentProgram || '-'} readOnly />
+            </div>
+          </div>
+
+          <div className="referral-row-2">
+            <div className="referral-field">
+              <label className="label">Student No.</label>
+              <input className="input" value={selected.studentNumber || '-'} readOnly />
+            </div>
+            <div className="referral-field">
+              <label className="label">Section</label>
+              <input className="input" value={selected.section || '-'} readOnly />
+            </div>
+          </div>
+
+          <div className="referral-row-2">
+            <div className="referral-field">
+              <label className="label">Prepared by (Person who referred)</label>
+              <input className="input" value={selected.personWhoReferred || '-'} readOnly />
+            </div>
+            <div className="referral-field">
+              <label className="label">Date Referred</label>
+              <input className="input" value={(selected.dateReferred || '').slice(0,10) || '-'} readOnly />
+            </div>
+          </div>
+
+          {/* Optional fields – will show "-" if not provided by API */}
+          <div className="referral-row-2">
+            <div className="referral-field">
+              <label className="label">Academic Level</label>
+              <input className="input" value={selected.academicLevel || '-'} readOnly />
+            </div>
+            <div className="referral-field">
+              <label className="label">Referred By</label>
+              <input className="input" value={selected.referredBy || '-'} readOnly />
+            </div>
+          </div>
+
+          <div className="referral-row-2">
+            <div className="referral-field">
+              <label className="label">Areas of Concern</label>
+              <input className="input" value={selected.areasOfConcern || '-'} readOnly />
+            </div>
+            <div className="referral-field">
+              <label className="label">Action Requested</label>
+              <input className="input" value={selected.actionRequested || '-'} readOnly />
+            </div>
+          </div>
+
+          <div className="referral-row-2">
+            <div className="referral-field">
+              <label className="label">Priority Level</label>
+              <input className="input" value={selected.priorityLevel || '-'} readOnly />
+            </div>
+            <div className="referral-field">
+              <label className="label">Priority Date</label>
+              <input className="input" value={(selected.priorityDate || '').slice(0,10) || '-'} readOnly />
+            </div>
+          </div>
+
+          <div className="referral-field">
+            <label className="label">Action/s Taken Before Referral</label>
+            <textarea className="input" value={selected.actionsTakenBefore || '-'} readOnly rows={3} />
+          </div>
+
+          <div className="referral-field">
+            <label className="label">Reasons for Referral / Comments</label>
+            <textarea className="input" value={selected.referralReasons || '-'} readOnly rows={3} />
+          </div>
+
+          <div className="referral-field">
+            <label className="label">Counselor's Initial Action</label>
+            <textarea className="input" value={selected.counselorInitialAction || '-'} readOnly rows={3} />
+          </div>
+        </div>
+
+        <hr style={{ margin: '12px 0' }} />
+
+        {/*Feedback Slip*/}
         <div className="card referral-editor-card">
           <div className="card-title">Feedback Slip</div>
           {!selected ? (

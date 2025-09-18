@@ -17,6 +17,11 @@
   flex-direction: column;
 }
 
+.card-subtitle {
+  font-weight: 600;
+  color: #374151;
+}
+
 .referral-list {
   max-height: 520px;
   overflow-y: auto;
