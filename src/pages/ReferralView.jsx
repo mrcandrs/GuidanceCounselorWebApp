@@ -54,12 +54,19 @@ const ReferralView = () => {
     fetchCurrentCounselor(); // Fetch counselor on mount
   }, []);
 
-  // Auto-fill counselor name when selecting a referral
-  const handleSelectReferral = (referral) => {
-    setSelected({
-      ...referral,
-    });
-  };
+  const handleSelectReferral = async (referral) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${API_BASE}/api/referral/${referral.referralId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setSelected(response.data);
+  } catch (error) {
+    console.error('Error fetching referral details:', error);
+    setSelected(referral); // fallback to list data
+  }
+};
 
   const saveFeedback = async () => {
     if (!selected) return;
