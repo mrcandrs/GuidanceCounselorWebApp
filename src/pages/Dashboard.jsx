@@ -190,13 +190,21 @@ useEffect(() => {
     }] : [];
 
     const referrals = referralRes.data || [];
-    const referralAlert = referrals.length > 0 ? [{
+    const newReferrals = referrals.filter(r => {
+      // Check if this referral was submitted recently (within last 24 hours)
+      const submissionDate = new Date(r.submissionDate);
+      const now = new Date();
+      const hoursDiff = (now - submissionDate) / (1000 * 60 * 60);
+      return hoursDiff <= 24; // Only show referrals submitted in last 24 hours
+    });
+    
+    const referralAlert = newReferrals.length > 0 ? [{
       type: 'referrals',
-      level: referrals.length >= 5 ? 'moderate' : 'info',
-      message: `${referrals.length} referral${referrals.length > 1 ? 's' : ''} submitted`,
-      count: referrals.length,
-      latestId: referrals[0]?.referralId || null,
-      latestAt: referrals[0]?.submissionDate || null
+      level: newReferrals.length >= 3 ? 'moderate' : 'info',
+      message: `${newReferrals.length} new referral${newReferrals.length > 1 ? 's' : ''} submitted`,
+      count: newReferrals.length,
+      latestId: newReferrals[0]?.referralId || null,
+      latestAt: newReferrals[0]?.submissionDate || null
     }] : [];
 
     setNotifications([...appointmentAlert, ...referralAlert, ...moodAlerts]);
@@ -547,7 +555,7 @@ useEffect(() => {
                                 setShowNotifications(false);
                                 if (n.type === 'appointments') handleTabChange('appointments');
                                 if (n.type === 'mood') handleTabChange('mood');
-                                if (n.type === 'referrals') handleTabChange('referral');
+                                if (n.type === 'referrals') handleTabChange('referral'); // Fixed: was 'referrals'
                               }}
                             >
                               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
@@ -687,13 +695,18 @@ useEffect(() => {
                         if (n.type === 'mood') handleTabChange('mood');
                         if (n.type === 'referrals') handleTabChange('referral');
                       }}
-                      title={n.type === 'appointments' ? 'Go to Appointment Approval' : 'Go to Mood Insights'}
-                    >
+                      // Update the modal title:
+                      title={n.type === 'appointments' ? 'Go to Appointment Approval' : 
+                             n.type === 'referrals' ? 'Go to Referral' : 
+                             n.type === 'mood' ? 'Go to Mood Insights' : 'View Details'}
+                      >
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: levelDot, flexShrink: 0 }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 14, color: '#111827' }}>{n.message}</div>
                         <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-                          {n.type === 'appointments' ? 'Appointment Approval' : 'Mood Insights'}
+                          {n.type === 'appointments' ? 'Appointment Approval' : 
+                            n.type === 'referrals' ? 'Referral' : 
+                            n.type === 'mood' ? 'Mood Insights' : 'Notification'}
                         </div>
                       </div>
                       {!isRead && (
