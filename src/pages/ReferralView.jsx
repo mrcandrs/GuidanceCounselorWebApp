@@ -169,7 +169,7 @@ const formatCardDate = (iso) => {
 
 
   return (
-    <div className="page-container referral-page">
+    <div className="page-container referral-page referral-scrollable-form">
       <h2 className="page-title">Referral</h2>
 
       {error && (
@@ -224,7 +224,6 @@ const formatCardDate = (iso) => {
 
         {/*Feedback Slip*/}
         <div className="card referral-editor-card">
-          <div className="card-title">Feedback Slip</div>
           {!selected ? (
             <div className="empty-state">Select a referral to add feedback.</div>
           ) : (
@@ -317,7 +316,7 @@ const formatCardDate = (iso) => {
 
               <hr style={{ margin: '12px 0' }} />
               <div className="card-subtitle" style={{ marginTop: 4, marginBottom: 8 }}>Feedback Slip</div>
-              
+
               {/* Header row: matches slip */}
               <div className="referral-row-2">
                 <div className="referral-field">
