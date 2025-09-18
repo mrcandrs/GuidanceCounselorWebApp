@@ -125,6 +125,9 @@ useEffect(() => {
     if (n.type === 'appointments') {
       return `appointments-pending-${n.count || 0}-${n.latestId || n.latestAt || 'none'}`;
     }
+    if (n.type === 'referrals') {
+    return `referrals-${n.count || 0}-${n.latestId || n.latestAt || 'none'}`;
+    }
     if (n.type === 'mood') {
       return `mood-${n.level || 'info'}-${n.message || ''}`;
     }
@@ -161,44 +164,49 @@ useEffect(() => {
 
   // Replace your existing fetchAlerts with this unified fetcher
   const fetchNotifications = async () => {
-    if (fetchingRef.current) return;
-    fetchingRef.current = true;
-    setNotificationLoading(true);
-    try {
-      const [moodRes, pendingRes] = await Promise.all([
-        axios.get("https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts"),
-        axios.get("https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments"),
-      ]);
+  if (fetchingRef.current) return;
+  fetchingRef.current = true;
+  setNotificationLoading(true);
+  try {
+    const token = localStorage.getItem('authToken');
+    const [moodRes, pendingRes, referralRes] = await Promise.all([
+      axios.get('https://guidanceofficeapi-production.up.railway.app/api/moodtracker/alerts'),
+      axios.get('https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/pending-appointments'),
+      axios.get('https://guidanceofficeapi-production.up.railway.app/api/referral/latest-per-student', {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+    ]);
 
-      const moodAlerts = (moodRes.data || []).map(a => ({
-        ...a,
-        type: 'mood',
-        level: a.level || 'info'
-      }));
+    const moodAlerts = (moodRes.data || []).map(a => ({ ...a, type: 'mood', level: a.level || 'info' }));
 
-      const pending = pendingRes.data || [];
-      const latestPendingId = pending[0]?.appointmentId || null;
-      const latestPendingAt = pending[0]?.createdAt || null;
+    const pending = pendingRes.data || [];
+    const appointmentAlert = pending.length > 0 ? [{
+      type: 'appointments',
+      level: pending.length >= 5 ? 'high' : pending.length >= 2 ? 'moderate' : 'info',
+      message: `${pending.length} pending appointment${pending.length > 1 ? 's' : ''} awaiting approval`,
+      count: pending.length,
+      latestId: pending[0]?.appointmentId || null,
+      latestAt: pending[0]?.createdAt || null
+    }] : [];
 
-      const appointmentAlert = pending.length > 0
-        ? [{
-            type: 'appointments',
-            level: pending.length >= 5 ? 'high' : pending.length >= 2 ? 'moderate' : 'info',
-            message: `${pending.length} pending appointment${pending.length > 1 ? 's' : ''} awaiting approval`,
-            count: pending.length,
-            latestId: latestPendingId,
-            latestAt: latestPendingAt
-          }]
-        : [];
+    const referrals = referralRes.data || [];
+    const referralAlert = referrals.length > 0 ? [{
+      type: 'referrals',
+      level: referrals.length >= 5 ? 'moderate' : 'info',
+      message: `${referrals.length} referral${referrals.length > 1 ? 's' : ''} submitted`,
+      count: referrals.length,
+      latestId: referrals[0]?.referralId || null,
+      latestAt: referrals[0]?.submissionDate || null
+    }] : [];
 
-      setNotifications([...appointmentAlert, ...moodAlerts]);
-    } catch (e) {
-      console.error("Error fetching notifications:", e);
-    } finally {
-      fetchingRef.current = false;
-      setNotificationLoading(false);
-    }
-  };
+    setNotifications([...appointmentAlert, ...referralAlert, ...moodAlerts]);
+  } catch (e) {
+    console.error('Error fetching notifications:', e);
+  } finally {
+    fetchingRef.current = false;
+    setNotificationLoading(false);
+  }
+};
 
   // Handle notification bell click
   const handleNotificationClick = () => {
@@ -536,10 +544,10 @@ useEffect(() => {
                                 const next = new Set(readKeys);
                                 next.add(key);
                                 persistReadKeys(next);
-                                
                                 setShowNotifications(false);
                                 if (n.type === 'appointments') handleTabChange('appointments');
                                 if (n.type === 'mood') handleTabChange('mood');
+                                if (n.type === 'referrals') handleTabChange('referral');
                               }}
                             >
                               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
@@ -677,6 +685,7 @@ useEffect(() => {
                         setShowNotificationCenter(false);
                         if (n.type === 'appointments') handleTabChange('appointments');
                         if (n.type === 'mood') handleTabChange('mood');
+                        if (n.type === 'referrals') handleTabChange('referral');
                       }}
                       title={n.type === 'appointments' ? 'Go to Appointment Approval' : 'Go to Mood Insights'}
                     >
