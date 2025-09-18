@@ -54,6 +54,27 @@ const ReferralView = () => {
     fetchCurrentCounselor(); // Fetch counselor on mount
   }, []);
 
+  // Add real-time polling
+  useEffect(() => {
+    // Set up polling interval
+    const interval = setInterval(() => {
+      fetchList(); // This will refresh the referrals list
+    }, 5000); // Poll every 5 seconds
+
+    // Also poll when window regains focus
+    const handleFocus = () => {
+      fetchList();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    // Cleanup
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
   const handleSelectReferral = async (referral) => {
   try {
     const token = localStorage.getItem('authToken');
