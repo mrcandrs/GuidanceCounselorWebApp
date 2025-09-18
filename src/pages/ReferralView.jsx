@@ -227,7 +227,7 @@ const formatCardDate = (iso) => {
           {!selected ? (
             <div className="empty-state">Select a referral to add feedback.</div>
           ) : (
-            <div className="referral-editor">
+            <div className="referral-editor referral-scrollable-form">
               {/* Referral Form Details (read-only) */}
               <div className="card-subtitle" style={{ marginTop: 4, marginBottom: 8 }}>Referral Form Details</div>
 
