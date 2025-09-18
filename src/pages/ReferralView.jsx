@@ -169,7 +169,7 @@ const formatCardDate = (iso) => {
 
 
   return (
-    <div className="page-container referral-page referral-scrollable-form">
+    <div className="page-container referral-page">
       <h2 className="page-title">Referral</h2>
 
       {error && (
@@ -223,7 +223,7 @@ const formatCardDate = (iso) => {
         </div>
 
         {/*Feedback Slip*/}
-        <div className="card referral-editor-card">
+        <div className="card referral-editor-card referral-scrollable-form">
           {!selected ? (
             <div className="empty-state">Select a referral to add feedback.</div>
           ) : (
