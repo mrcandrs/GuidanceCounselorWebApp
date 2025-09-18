@@ -61,7 +61,14 @@ const ReferralView = () => {
       `${API_BASE}/api/referral/${referral.referralId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    setSelected(response.data);
+    
+    // Auto-populate counselor name if not already set
+    const referralData = response.data;
+    if (!referralData.counselorName && currentCounselor?.name) {
+      referralData.counselorName = currentCounselor.name;
+    }
+    
+    setSelected(referralData);
   } catch (error) {
     console.error('Error fetching referral details:', error);
     setSelected(referral); // fallback to list data
@@ -387,6 +394,7 @@ const formatCardDate = (iso) => {
                     value={selected.counselorName || ''}
                     onChange={e => setSelected({ ...selected, counselorName: e.target.value })}
                     disabled={completed}
+                    readOnly={!!currentCounselor?.name} // Make read-only if auto-populated
                     placeholder={currentCounselor ? currentCounselor.name : 'Enter counselor name'}
                   />
                 </div>
