@@ -11,6 +11,7 @@ const ReferralView = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [currentCounselor, setCurrentCounselor] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch current counselor details
   const fetchCurrentCounselor = async () => {
@@ -29,6 +30,7 @@ const ReferralView = () => {
   };
 
   const fetchList = async () => {
+  setIsRefreshing(true);
   setLoading(true);
   setError('');
   try {
@@ -46,6 +48,7 @@ const ReferralView = () => {
     return []; // <-- safe fallback
   } finally {
     setLoading(false);
+    setIsRefreshing(false);
   }
 };
 
@@ -54,16 +57,16 @@ const ReferralView = () => {
     fetchCurrentCounselor(); // Fetch counselor on mount
   }, []);
 
-  // Add real-time polling
+  // Add real-time polling useEffect
   useEffect(() => {
     // Set up polling interval
     const interval = setInterval(() => {
-      fetchList(); // This will refresh the referrals list
+      refreshList(); // This will refresh the referrals list
     }, 5000); // Poll every 5 seconds
 
     // Also poll when window regains focus
     const handleFocus = () => {
-      fetchList();
+      refreshList();
     };
 
     window.addEventListener('focus', handleFocus);
@@ -93,6 +96,21 @@ const ReferralView = () => {
   } catch (error) {
     console.error('Error fetching referral details:', error);
     setSelected(referral); // fallback to list data
+  }
+};
+
+  // Add this new function for background refresh
+const refreshList = async () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const url = API_BASE
+      ? `${API_BASE}/api/referral/latest-per-student`
+      : '/proxy/api/referral/latest-per-student';
+    const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+    const data = res.data || [];
+    setReferrals(data);
+  } catch (e) {
+    console.error('Background refresh failed:', e);
   }
 };
 
