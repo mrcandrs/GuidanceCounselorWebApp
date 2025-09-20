@@ -79,7 +79,7 @@ const Login = () => {
               alt="STI Tarlac Logo"
               className="logo-img"
             /></div>
-        <h1 className="login-title">STI Tarlac Guidance and Counseling Office</h1>
+        <h1 className="login-title">Guidance and Counseling Office</h1>
         <p className="login-subtitle">Guidance Counselor Web Application</p>
       </div>
 
