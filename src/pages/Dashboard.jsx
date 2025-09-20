@@ -349,7 +349,7 @@ useEffect(() => {
               }} 
             />
           </div>
-          <h1 className="sidebar-title">STI Tarlac Guidance and Counseling Office</h1>
+          <h1 className="sidebar-title">Guidance and Counseling Office</h1>
           <p className="sidebar-subtitle">Counselor Web Application</p>
         </div>
         
