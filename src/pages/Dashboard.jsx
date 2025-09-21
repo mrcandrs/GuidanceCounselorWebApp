@@ -346,7 +346,9 @@ useEffect(() => {
                 width: '150px', 
                 height: '150px', 
                 objectFit: 'contain',
-              }} 
+                cursor: 'pointer'
+              }}
+              onClick={() => handleTabChange('students')}
             />
           </div>
           <h1 className="sidebar-title">Guidance and Counseling Office</h1>
