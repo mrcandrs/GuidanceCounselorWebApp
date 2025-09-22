@@ -499,7 +499,7 @@ const EndorsementCustodyView = () => {
           <form onSubmit={handleSubmit} className="endorsement-form">
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="studentId" className="form-label">Student *</label>
+                <label htmlFor="studentId" className="form-label">Student</label>
                 <select
                   id="studentId"
                   name="studentId"
@@ -520,7 +520,7 @@ const EndorsementCustodyView = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="date" className="form-label">Date *</label>
+                <label htmlFor="date" className="form-label">Date</label>
                 <input
                   type="date"
                   id="date"
@@ -533,7 +533,7 @@ const EndorsementCustodyView = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="time" className="form-label">Time *</label>
+                <label htmlFor="time" className="form-label">Time</label>
                 <input
                   type="time"
                   id="time"
