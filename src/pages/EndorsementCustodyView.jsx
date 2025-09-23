@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import '../styles/EndorsementCustodyView.css';
 import Select from 'react-select';
+import '../styles/EndorsementCustodyView.css';
 
 // Add this PDF handler function to your EndorsementCustodyView component
 const handleDownloadPDF = (formData) => {
@@ -217,47 +217,47 @@ const EndorsementCustodyView = () => {
 
 
   // helper for selecting student
-const selectStudent = async (studentId) => {
-  setFormData(prev => ({ ...prev, studentId }));
-
-  if (studentId) {
-    try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(
-        `https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/student-details/${studentId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const studentDetails = response.data;
-      setFormData(prev => ({
-        ...prev,
-        gradeYearLevel: studentDetails.gradeYearLevel || '',
-        section: studentDetails.section || ''
-      }));
-      console.log(`Student details fetched from ${studentDetails.source}:`, studentDetails);
-    } catch (error) {
-      console.error('Error fetching student details:', error);
+  const selectStudent = async (studentId) => {
+    setFormData(prev => ({ ...prev, studentId }));
+  
+    if (studentId) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(
+          `https://guidanceofficeapi-production.up.railway.app/api/endorsement-custody/student-details/${studentId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const studentDetails = response.data;
+        setFormData(prev => ({
+          ...prev,
+          gradeYearLevel: studentDetails.gradeYearLevel || '',
+          section: studentDetails.section || ''
+        }));
+        console.log(`Student details fetched from ${studentDetails.source}:`, studentDetails);
+      } catch (error) {
+        console.error('Error fetching student details:', error);
+      }
+    } else {
+      setFormData(prev => ({ ...prev, gradeYearLevel: '', section: '' }));
     }
-  } else {
-    setFormData(prev => ({ ...prev, gradeYearLevel: '', section: '' }));
-  }
-};
-
-// Build options and a filter for name or student number
-const studentOptions = students.map(s => ({
-  value: s.studentId,
-  label: `${s.fullName} - ${s.studentNumber}`,
-  meta: s
-}));
-
-const filterOption = (option, rawInput) => {
-  if (!rawInput) return true;
-  const q = rawInput.toLowerCase();
-  const s = option.data.meta;
-  return (
-    (s.fullName || '').toLowerCase().includes(q) ||
-    String(s.studentNumber || '').toLowerCase().includes(q)
-  );
-};
+  };
+  
+  // Build options and a filter for name or student number
+  const studentOptions = students.map(s => ({
+    value: s.studentId,
+    label: `${s.fullName} - ${s.studentNumber}`,
+    meta: s
+  }));
+  
+  const filterOption = (option, rawInput) => {
+    if (!rawInput) return true;
+    const q = rawInput.toLowerCase();
+    const s = option.data.meta;
+    return (
+      (s.fullName || '').toLowerCase().includes(q) ||
+      String(s.studentNumber || '').toLowerCase().includes(q)
+    );
+  };
 
   // Fetch all forms
   const fetchForms = async () => {

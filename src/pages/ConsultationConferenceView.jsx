@@ -219,6 +219,49 @@ const ConsultationConferenceView = () => {
     parentcontactnumber: ''
   });
 
+  // helper for selecting student
+  const selectStudent = async (studentId) => {
+    setFormData(prev => ({ ...prev, studentId }));
+  
+    if (studentId) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(
+          `https://guidanceofficeapi-production.up.railway.app/api/consultation-conference/student-details/${value}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const studentDetails = response.data;
+        setFormData(prev => ({
+          ...prev,
+          gradeYearLevel: studentDetails.gradeYearLevel || '',
+          section: studentDetails.section || ''
+        }));
+        console.log(`Student details fetched from ${studentDetails.source}:`, studentDetails);
+      } catch (error) {
+        console.error('Error fetching student details:', error);
+      }
+    } else {
+      setFormData(prev => ({ ...prev, gradeYearLevel: '', section: '' }));
+    }
+  };
+  
+  // Build options and a filter for name or student number
+  const studentOptions = students.map(s => ({
+    value: s.studentId,
+    label: `${s.fullName} - ${s.studentNumber}`,
+    meta: s
+  }));
+  
+  const filterOption = (option, rawInput) => {
+    if (!rawInput) return true;
+    const q = rawInput.toLowerCase();
+    const s = option.data.meta;
+    return (
+      (s.fullName || '').toLowerCase().includes(q) ||
+      String(s.studentNumber || '').toLowerCase().includes(q)
+    );
+  };
+
   //Fetching all forms
   const fetchForms = async () => {
     setLoading(true);
@@ -283,49 +326,6 @@ const ConsultationConferenceView = () => {
       ...prev,
       [name]: value
     }));
-  };
-
-  // Handle student selection change and fetch student details
-  const handleStudentChange = async (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // If a student is selected, fetch their details from Career Planning Form
-    if (value) {
-      try {
-        const token = localStorage.getItem('authToken');
-        const response = await axios.get(
-          `https://guidanceofficeapi-production.up.railway.app/api/consultation-conference/student-details/${value}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-
-        const studentDetails = response.data;
-        
-        // Auto-populate Grade/Year Level and Section
-        setFormData(prev => ({
-          ...prev,
-          gradeYearLevel: studentDetails.gradeYearLevel || '',
-          section: studentDetails.section || ''
-        }));
-
-        console.log(`Student details fetched from ${studentDetails.source}:`, studentDetails);
-      } catch (error) {
-        console.error('Error fetching student details:', error);
-        // Don't show error to user, just log it
-      }
-    } else {
-      // Clear the fields if no student is selected
-      setFormData(prev => ({
-        ...prev,
-        gradeYearLevel: '',
-        section: ''
-      }));
-    }
   };
 
   // Handle form submission
@@ -505,21 +505,17 @@ const ConsultationConferenceView = () => {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="studentId" className="form-label">Student</label>
-                <select
-                  id="studentId"
-                  name="studentId"
-                  value={formData.studentId}
-                  onChange={handleStudentChange}
-                  required
-                  className="form-select"
-                >
-                  <option value="">Select Student</option>
-                  {students.map(student => (
-                    <option key={student.studentId} value={student.studentId}>
-                      {student.fullName} - {student.studentNumber}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  inputId="studentId"
+                  classNamePrefix="rs"
+                  placeholder="Search by name or student number..."
+                  isClearable
+                  isSearchable
+                  options={studentOptions}
+                  filterOption={filterOption}
+                  value={studentOptions.find(o => o.value === formData.studentId) || null}
+                  onChange={(opt) => selectStudent(opt?.value || '')}
+                />
               </div>
             </div>
 
