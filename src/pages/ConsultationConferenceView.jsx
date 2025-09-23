@@ -228,7 +228,7 @@ const ConsultationConferenceView = () => {
       try {
         const token = localStorage.getItem('authToken');
         const response = await axios.get(
-          `https://guidanceofficeapi-production.up.railway.app/api/consultation-conference/student-details/${value}`,
+          `https://guidanceofficeapi-production.up.railway.app/api/consultation-conference/student-details/${studentId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const studentDetails = response.data;
