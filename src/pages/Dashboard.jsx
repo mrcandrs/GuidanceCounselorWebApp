@@ -334,7 +334,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container dashboard-scrollable-form">
       {/* Sidebar */}
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
