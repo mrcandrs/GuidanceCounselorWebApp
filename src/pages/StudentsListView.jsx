@@ -11,7 +11,7 @@ const CourseSelectionView = ({ courses, handleCourseSelect }) => (
       <h2 className="page-title">Students List</h2>
     </div>
 
-    <div className="card">
+    <div className="card student-scrollable-form">
       <div style={{ marginBottom: '24px' }}>
         <h3 style={{ 
           fontSize: '18px', 
