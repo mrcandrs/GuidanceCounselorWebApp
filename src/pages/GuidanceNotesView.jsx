@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle } from 'lucide-react';
 import '../styles/GuidanceNotes.css';
+import Select from 'react-select';
 import axios from 'axios';
 
 // Utility functions
@@ -104,7 +105,71 @@ const GuidanceNotesView = () => {
     counselorName: ''
   });
 
-  // Validation function
+  // Build options and a filter for name or student number
+  const studentOptions = useMemo(() => students.map(s => ({
+    value: String(s.studentId),
+    label: `${s.fullName} - ${s.studentNumber}`,
+    meta: s
+  })), [students]);
+
+  const filterOption = (option, rawInput) => {
+    if (!rawInput) return true;
+    const q = rawInput.toLowerCase();
+    const s = option.data.meta;
+    return (
+      (s.fullName || '').toLowerCase().includes(q) ||
+      String(s.studentNumber || '').toLowerCase().includes(q)
+    );
+  };
+
+  // Replace native select change with react-select change
+  const handleStudentSelect = async (opt) => {
+    const value = opt?.value || '';
+
+    // Clear validation error
+    if (validationErrors.studentId) {
+      setValidationErrors(prev => ({ ...prev, studentId: undefined }));
+    }
+
+    setFormData(prev => ({ ...prev, studentId: value }));
+
+    if (value) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get(
+          `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/student-details/${value}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const selectedStudent = response.data;
+        if (selectedStudent) {
+          setFormData(prev => ({
+            ...prev,
+            gradeYearLevelSection: selectedStudent.gradeYearLevelSection,
+            program: selectedStudent.program
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching student details:', error);
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        gradeYearLevelSection: '',
+        program: ''
+      }));
+    }
+  };
+
+  const rsStyles = useMemo(() => ({
+  control: (base) => ({
+    ...base,
+    borderColor: validationErrors.studentId ? '#ef4444' : base.borderColor,
+    boxShadow: validationErrors.studentId ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : base.boxShadow
+  }),
+  menu: (base) => ({ ...base, zIndex: 20 })
+}), [validationErrors.studentId]);
+
+// Validation function
 const validateForm = () => {
   const errors = {};
 
@@ -292,50 +357,6 @@ const validateForm = () => {
     }
 
     setFormData(newFormData);
-  };
-
-  // Handle student selection and auto-populate data
-  const handleStudentChange = async (e) => {
-    const { name, value } = e.target;
-    
-    // Clear validation error
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({
-        ...prev,
-        [name]: undefined
-      }));
-    }
-
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    if (value) {
-      try {
-        const token = localStorage.getItem('authToken');
-        const response = await axios.get(
-          `https://guidanceofficeapi-production.up.railway.app/api/guidance-notes/student-details/${value}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const selectedStudent = response.data;
-        if (selectedStudent) {
-          setFormData(prev => ({
-            ...prev,
-            gradeYearLevelSection: selectedStudent.gradeYearLevelSection,
-            program: selectedStudent.program
-          }));
-        }
-      } catch (error) {
-        console.error('Error fetching student details:', error);
-      }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        gradeYearLevelSection: '',
-        program: ''
-      }));
-    }
   };
 
   // Handle form submission
@@ -569,21 +590,18 @@ const validateForm = () => {
             {/* Student Selection */}
             <div className="form-group">
               <label htmlFor="studentId" className="form-label">Student</label>
-              <select
-                id="studentId"
-                name="studentId"
-                value={formData.studentId}
-                onChange={handleStudentChange}
-                required
-                className={`form-select ${validationErrors.studentId ? 'error' : ''}`}
-              >
-                <option value="">Select Student</option>
-                {students.map(student => (
-                  <option key={student.studentId} value={student.studentId}>
-                    {student.fullName} - {student.studentNumber}
-                  </option>
-                ))}
-              </select>
+              <Select
+                  inputId="studentId"
+                  classNamePrefix="rs"
+                  placeholder="Search by name or student number..."
+                  isClearable
+                  isSearchable
+                  options={studentOptions}
+                  filterOption={filterOption}
+                  value={studentOptions.find(o => o.value === formData.studentId) || null}
+                  onChange={handleStudentSelect}
+                  styles={rsStyles} // uncomment if you added rsStyles for error border
+              />
               {validationErrors.studentId && (
                 <div className="error-message">
                   <AlertCircle size={16} />
