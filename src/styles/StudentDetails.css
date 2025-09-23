@@ -833,17 +833,3 @@
     font-size: 13px;
   }
 }
-
-/* Make Mood Tracking History scrollable */
-.student-mood-history-card.details-scrollable-form {
-  display: flex;
-  flex-direction: column;
-  max-height: 70vh;
-  overflow: hidden; /* wrapper */
-}
-
-.student-mood-history-content {
-  flex: 1 1 auto;
-  overflow-y: auto !important;
-  overflow-x: hidden;
-}

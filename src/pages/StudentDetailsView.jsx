@@ -584,7 +584,7 @@ const resetMoodFilter = () => {
         )}
 
   {activeTab === 'mood' && (
-  <div className="student-card student-mood-history-card">
+  <div className="student-card student-mood-history-card details-scrollable-form">
     <div className="student-mood-history-header">
       <div className="student-mood-history-title-section">
         <Heart className="student-mood-history-icon" size={24} />
