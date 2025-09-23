@@ -252,7 +252,7 @@ const resetMoodFilter = () => {
   }
 
   return (
-    <div className="student-details-container">
+    <div className="student-details-container details-scrollable-form">
       {/* Header */}
       <div className="student-details-header">
         <div className="student-header-content">
