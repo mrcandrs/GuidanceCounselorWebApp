@@ -600,6 +600,12 @@
   overflow: hidden;
 }
 
+/* Simplest fix: allow the mood card itself to scroll */
+.student-mood-history-card.details-scrollable-form {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
+
 .student-mood-history-header {
   display: flex;
   justify-content: space-between;
