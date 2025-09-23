@@ -600,12 +600,6 @@
   overflow: hidden;
 }
 
-/* Simplest fix: allow the mood card itself to scroll */
-.student-mood-history-card.details-scrollable-form {
-  overflow-y: auto !important;
-  overflow-x: hidden;
-}
-
 .student-mood-history-header {
   display: flex;
   justify-content: space-between;
@@ -840,6 +834,16 @@
   }
 }
 
-/* Force scroll inside the content area */
-.student-mood-history-card.details-scrollable-form { overflow: visible !important; }
-.student-mood-history-content { max-height: 60vh; overflow-y: auto !important; }
+/* Make Mood Tracking History scrollable */
+.student-mood-history-card.details-scrollable-form {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow: hidden; /* wrapper */
+}
+
+.student-mood-history-content {
+  flex: 1 1 auto;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
