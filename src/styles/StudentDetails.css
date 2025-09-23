@@ -839,3 +839,7 @@
     font-size: 13px;
   }
 }
+
+/* Force scroll inside the content area */
+.student-mood-history-card.details-scrollable-form { overflow: visible !important; }
+.student-mood-history-content { max-height: 60vh; overflow-y: auto !important; }
