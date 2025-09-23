@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
 import jsPDF from 'jspdf';
 import axios from 'axios';
+import Select from 'react-select';
 import '../styles/ConsultationConferenceView.css';
 
 // Updated PDF handler function for Consultation/Conference Form
