@@ -276,6 +276,15 @@ const resetMoodFilter = () => {
     );
   }
 
+  // inside component render (before return)
+  const inventory = forms.inventoryForm?.data;
+  const parentContacts = {
+    father: inventory?.fatherContact || '',
+    mother: inventory?.motherContact || '',
+    guardian: inventory?.guardianContact || ''
+  };
+  const hasAnyParentContact = !!(parentContacts.father || parentContacts.mother || parentContacts.guardian);
+
   return (
     <div className="student-details-container details-scrollable-form">
       {/* Header */}
@@ -414,6 +423,36 @@ const resetMoodFilter = () => {
                       <div className="student-info-content">
                         <p className="student-info-label">Email Address</p>
                         <p className="student-info-value">{student.email}</p>
+                      </div>
+                    </div>
+                    <div className="student-info-item">
+                      <Phone className="student-info-icon" size={20} />
+                      <div className="student-info-content">
+                        <p className="student-info-label">Parent Contacts</p>
+                        {hasAnyParentContact ? (
+                          <div className="student-info-sublist">
+                            {parentContacts.father && (
+                              <div className="student-info-subitem">
+                                <span className="student-info-subitem-label">Father:</span>
+                                <span className="student-info-subitem-value">{parentContacts.father}</span>
+                              </div>
+                            )}
+                            {parentContacts.mother && (
+                              <div className="student-info-subitem">
+                                <span className="student-info-subitem-label">Mother:</span>
+                                <span className="student-info-subitem-value">{parentContacts.mother}</span>
+                              </div>
+                            )}
+                            {parentContacts.guardian && (
+                              <div className="student-info-subitem">
+                                <span className="student-info-subitem-label">Guardian:</span>
+                                <span className="student-info-subitem-value">{parentContacts.guardian}</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="student-info-value">N/A</p>
+                        )}
                       </div>
                     </div>
                   </div>
