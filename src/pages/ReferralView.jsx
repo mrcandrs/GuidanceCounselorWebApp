@@ -293,11 +293,38 @@ const visible = getVisibleReferrals();
         <div className="card referral-list-card">
           <div className="card-title">Submitted Referrals</div>
           <div className="referral-tabs">
-            <button className={`ref-tab ${category==='all'?'active':''}`} onClick={() => setCategory('all')}>All</button>
-            <button className={`ref-tab ${category==='emergency'?'active':''}`} onClick={() => setCategory('emergency')}>Emergency ({counts.emergency})</button>
-            <button className={`ref-tab ${category==='asap'?'active':''}`} onClick={() => setCategory('asap')}>ASAP ({counts.asap})</button>
-            <button className={`ref-tab ${category==='scheduled'?'active':''}`} onClick={() => setCategory('scheduled')}>Before date ({counts.scheduled})</button>
-            <button className={`ref-tab ${category==='pastdue'?'active':''}`} onClick={() => setCategory('pastdue')}>Past due ({counts.pastdue})</button>
+            <button className={`ref-tab ${category==='all'?'active':''}`} onClick={() => setCategory('all')}style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}>
+                      All
+                      </button>
+            <button className={`ref-tab ${category==='emergency'?'active':''}`} onClick={() => setCategory('emergency')}style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}>Emergency ({counts.emergency})</button>
+            <button className={`ref-tab ${category==='asap'?'active':''}`} onClick={() => setCategory('asap')}style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}>ASAP ({counts.asap})</button>
+            <button className={`ref-tab ${category==='scheduled'?'active':''}`} onClick={() => setCategory('scheduled')}style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}>Before date ({counts.scheduled})</button>
+            <button className={`ref-tab ${category==='pastdue'?'active':''}`} onClick={() => setCategory('pastdue')}style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}>Past due ({counts.pastdue})</button>
           </div>
           {loading ? (
             <div className="empty-state">Loading...</div>
