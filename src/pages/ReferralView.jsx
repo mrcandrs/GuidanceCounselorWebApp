@@ -12,6 +12,64 @@ const ReferralView = () => {
   const [error, setError] = useState('');
   const [currentCounselor, setCurrentCounselor] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [category, setCategory] = useState('all'); // 'all' | 'emergency' | 'asap' | 'scheduled' | 'pastdue'
+
+  // helper: compute due status
+  const isPastDue = (r) => {
+    if (!r.priorityDate) return false;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const due = new Date(String(r.priorityDate).slice(0,10) + 'T00:00:00Z');
+    return due < today;
+  };
+
+  // helper: filter + sort by category
+  const getVisibleReferrals = () => {
+    let list = [...referrals];
+
+    switch (category) {
+      case 'emergency':
+        list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency'));
+        // newest first
+        list.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
+        break;
+      case 'asap':
+        list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap'));
+        list.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
+        break;
+      case 'scheduled':
+        list = list
+          .filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && !isPastDue(r))
+          // earliest due first
+          .sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
+        break;
+      case 'pastdue':
+        list = list
+          .filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && isPastDue(r))
+          // oldest due first
+          .sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
+        break;
+      default:
+        // all: put Emergency, then ASAP, then Scheduled upcoming, then Past Due
+        const em = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency'));
+        const as = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap'));
+        const sch = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && !isPastDue(r));
+        const pd = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && isPastDue(r));
+        em.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
+        as.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
+        sch.sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
+        pd.sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
+        list = [...em, ...as, ...sch, ...pd];
+    }
+    return list;
+  };
+
+  // counts for tabs
+  const counts = {
+    emergency: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency')).length,
+    asap: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap')).length,
+    scheduled: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && !isPastDue(r)).length,
+    pastdue: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && isPastDue(r)).length
+  };
 
   // Fetch current counselor details
   const fetchCurrentCounselor = async () => {
@@ -234,15 +292,33 @@ const formatCardDate = (iso) => {
       <div className="grid grid-cols-2 referral-grid">
         <div className="card referral-list-card">
           <div className="card-title">Submitted Referrals</div>
+          <div className="referral-tabs">
+            <button className={`ref-tab ${category==='all'?'active':''}`} onClick={() => setCategory('all')}>All</button>
+            <button className={`ref-tab ${category==='emergency'?'active':''}`} onClick={() => setCategory('emergency')}>Emergency ({counts.emergency})</button>
+            <button className={`ref-tab ${category==='asap'?'active':''}`} onClick={() => setCategory('asap')}>ASAP ({counts.asap})</button>
+            <button className={`ref-tab ${category==='scheduled'?'active':''}`} onClick={() => setCategory('scheduled')}>Before date ({counts.scheduled})</button>
+            <button className={`ref-tab ${category==='pastdue'?'active':''}`} onClick={() => setCategory('pastdue')}>Past due ({counts.pastdue})</button>
+          </div>
           {loading ? (
             <div className="empty-state">Loading...</div>
           ) : referrals.length === 0 ? (
             <div className="empty-state">No referrals found.</div>
           ) : (
             <div className="referral-list">
-              {referrals.map(r => {
+              {visible.map(r => {
                 const saved = hasSavedFeedback(r);
                 const isActive = selected?.referralId === r.referralId;
+                const level = (r.priorityLevel || '').toLowerCase();
+                const badgeClass =
+                  level.includes('emergency') ? 'badge-emergency' :
+                  level.includes('asap') ? 'badge-asap' :
+                  (level.includes('before') && r.priorityDate && isPastDue(r)) ? 'badge-pastdue' :
+                  level.includes('before') ? 'badge-scheduled' : 'badge-default';
+                const badgeText =
+                  level.includes('before') && r.priorityDate
+                    ? (isPastDue(r) ? `Before: ${String(r.priorityDate).slice(0,10)} (past due)` : `Before: ${String(r.priorityDate).slice(0,10)}`)
+                    : (r.priorityLevel || '—');
+                    
                 return (
                   <button
                     key={r.referralId}
@@ -260,6 +336,7 @@ const formatCardDate = (iso) => {
                       <span className="referral-student">
                         {saved ? '✓ ' : ''}{r.studentFullName || r.fullName}
                       </span>
+                      <span className={`referral-badge ${badgeClass}`}>{badgeText}</span>
                       <span className="referral-date">
                         {formatCardDate(r.submissionDate)}
                       </span>
