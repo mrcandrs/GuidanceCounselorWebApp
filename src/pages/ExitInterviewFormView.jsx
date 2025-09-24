@@ -119,7 +119,7 @@ const ExitInterviewFormView = ({ data, onBack }) => {
           </div>
 
           <div className="form-section">
-            <h3 className="form-section-title">Comments</h3>
+            <h3 className="form-section-title">Comments/Recommendations</h3>
             <div className="form-info-grid">
               <Row label="Comments" value={data.comments} />
             </div>
