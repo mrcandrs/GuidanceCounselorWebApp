@@ -9,7 +9,7 @@ const Row = ({ label, value }) => (
   </div>
 );
 
-const ExitInterviewFormView = ({ data, onBack }) => {
+const ExitInterviewFormView = ({ data, onBack, studentNumber }) => {
     const specificReasons = data?.specificReasons ? data.specificReasons.split(',').map(s => s.trim()).filter(Boolean) : [];
     let servicesObj = null;
     try { servicesObj = data?.serviceResponsesJson ? JSON.parse(data.serviceResponsesJson) : null; } catch { servicesObj = null; }
@@ -69,6 +69,7 @@ const ExitInterviewFormView = ({ data, onBack }) => {
             <h3 className="form-section-title">Submission Details</h3>
             <div className="form-info-grid">
               <Row label="Student ID" value={data.studentId} />
+              <Row label="Student Number" value={studentNumber} />
               <Row label="Submitted At" value={data.submittedAt ? new Date(data.submittedAt).toLocaleString() : ''} />
             </div>
           </div>
@@ -95,7 +96,7 @@ const ExitInterviewFormView = ({ data, onBack }) => {
             Object.keys(servicesObj).length ? (
             <div className="form-info-item" style={{ gridColumn: '1 / -1' }}>
             <span className="form-label">Service Responses:</span>
-            <ul className="form-value">
+            <ul className="form-value-list">
                 {Object.entries(servicesObj).map(([k, v]) => (
               <li key={k}>{k}: {String(v)}</li>
             ))}

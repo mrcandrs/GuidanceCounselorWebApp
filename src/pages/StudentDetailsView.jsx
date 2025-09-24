@@ -238,7 +238,13 @@ const resetMoodFilter = () => {
       case 'careerForm':
         return <CareerFormView data={formData} onBack={handleBackFromForm} />;
       case 'exitInterviewForm':
-        return <ExitInterviewFormView data={formData} onBack={handleBackFromForm} />;
+        return (
+        <ExitInterviewFormView
+          data={formData}
+          studentNumber={student.studentNumber || student.studentno}
+          onBack={handleBackFromForm}
+        />
+      );
       default:
         return null;
     }
