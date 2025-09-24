@@ -277,7 +277,7 @@ const formatCardDate = (iso) => {
   return d.toLocaleDateString('en-PH', { timeZone: 'Asia/Manila' });
 };
 
-
+const visible = getVisibleReferrals();
 
   return (
     <div className="page-container referral-page">
@@ -318,7 +318,7 @@ const formatCardDate = (iso) => {
                   level.includes('before') && r.priorityDate
                     ? (isPastDue(r) ? `Before: ${String(r.priorityDate).slice(0,10)} (past due)` : `Before: ${String(r.priorityDate).slice(0,10)}`)
                     : (r.priorityLevel || '—');
-                    
+
                 return (
                   <button
                     key={r.referralId}
