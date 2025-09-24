@@ -5,6 +5,7 @@ import axios from 'axios';
 import ConsentFormView from './ConsentFormView';
 import InventoryFormView from './InventoryFormView';
 import CareerFormView from './CareerFormView';
+import ExitInterviewFormView from './ExitInterviewFormView';
 
 const StudentDetailsView = ({ studentId, onBack }) => {
   const [student, setStudent] = useState(null);
@@ -12,7 +13,8 @@ const StudentDetailsView = ({ studentId, onBack }) => {
   const [forms, setForms] = useState({
     consentForm: null,
     inventoryForm: null,
-    careerForm: null
+    careerForm: null,
+    exitInterviewForm: null
   });
   const [moodFilter, setMoodFilter] = useState({
   moodLevel: 'all', // 'all', 'MILD', 'MODERATE', 'HIGH'
@@ -120,6 +122,21 @@ const StudentDetailsView = ({ studentId, onBack }) => {
         setForms(prev => ({ ...prev, careerForm: { submitted: false } }));
       }
 
+      // Check Exit Interview Form
+      try {
+        const exitResponse = await axios.get(`${API_BASE}/student/${studentId}/exit-interview-form`, { headers });
+        setForms(prev => ({
+          ...prev,
+          exitInterviewForm: exitResponse.data ? {
+            submitted: true,
+            date: exitResponse.data.submittedAt || exitResponse.data.createdAt,
+            data: exitResponse.data
+          } : { submitted: false }
+        }));
+      } catch (error) {
+        setForms(prev => ({ ...prev, exitInterviewForm: { submitted: false } }));
+      }
+
     } catch (error) {
       console.error('Error checking form submissions:', error);
     }
@@ -220,6 +237,8 @@ const resetMoodFilter = () => {
         return <InventoryFormView data={formData} onBack={handleBackFromForm} />;
       case 'careerForm':
         return <CareerFormView data={formData} onBack={handleBackFromForm} />;
+      case 'exitInterviewForm':
+        return <ExitInterviewFormView data={formData} onBack={handleBackFromForm} />;
       default:
         return null;
     }
@@ -580,6 +599,39 @@ const resetMoodFilter = () => {
                 <div className="student-form-not-submitted">Not submitted</div>
               )}
             </div>
+
+            {/* Exit Interview Form */}
+            <div className="student-card student-form-card">
+              <div className="student-form-card-header">
+                <div className="student-form-card-info">
+                  <FileText className="student-form-icon" size={24} />
+                  <div className="student-form-card-text">
+                    <h3 className="student-form-card-title">Exit Interview Form</h3>
+                    <p className="student-form-card-description">Submitted upon leaving</p>
+                  </div>
+                </div>
+                {getStatusIcon(forms.exitInterviewForm?.submitted)}
+              </div>
+                        
+              {forms.exitInterviewForm?.submitted ? (
+                <div className="student-form-card-content">
+                  <div className="student-form-submission-date">
+                    Submitted: {new Date(forms.exitInterviewForm.date).toLocaleDateString()}
+                  </div>
+                  <button
+                    onClick={() => setViewingForm('exitInterviewForm')}
+                    className="student-form-view-button"
+                    type="button"
+                    style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                  >
+                    View Form
+                  </button>
+                </div>
+              ) : (
+                <div className="student-form-not-submitted">Not submitted</div>
+              )}
+            </div>
+
           </div>
         )}
 
