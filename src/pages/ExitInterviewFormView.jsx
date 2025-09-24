@@ -64,7 +64,7 @@ const ExitInterviewFormView = ({ data, onBack }) => {
       </div>
 
       <div className="form-view-content">
-        <div className="form-card">
+        <div className="form-card form-scrollable-form">
           <div className="form-section">
             <h3 className="form-section-title">Submission Details</h3>
             <div className="form-info-grid">
