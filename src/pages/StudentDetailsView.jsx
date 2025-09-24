@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ALargeSmall, User, Calendar, Mail, Phone, MapPin, FileText, TrendingUp, Heart, GraduationCap, Users, Clock, AlertCircle, CheckCircle, XCircle, Filter } from 'lucide-react';
+import { ArrowLeft, ALargeSmall, User, Calendar, Mail, LogOut, Phone, MapPin, FileText, TrendingUp, Heart, GraduationCap, Users, Clock, AlertCircle, CheckCircle, XCircle, Filter } from 'lucide-react';
 import '../styles/StudentDetails.css';
 import axios from 'axios';
 import ConsentFormView from './ConsentFormView';
@@ -604,7 +604,7 @@ const resetMoodFilter = () => {
             <div className="student-card student-form-card">
               <div className="student-form-card-header">
                 <div className="student-form-card-info">
-                  <FileText className="student-form-icon" size={24} />
+                  <LogOut className="student-form-icon student-form-icon-exit" size={24} />
                   <div className="student-form-card-text">
                     <h3 className="student-form-card-title">Exit Interview Form</h3>
                     <p className="student-form-card-description">Submitted upon leaving</p>
@@ -612,7 +612,7 @@ const resetMoodFilter = () => {
                 </div>
                 {getStatusIcon(forms.exitInterviewForm?.submitted)}
               </div>
-                        
+
               {forms.exitInterviewForm?.submitted ? (
                 <div className="student-form-card-content">
                   <div className="student-form-submission-date">
@@ -620,7 +620,7 @@ const resetMoodFilter = () => {
                   </div>
                   <button
                     onClick={() => setViewingForm('exitInterviewForm')}
-                    className="student-form-view-button"
+                    className="student-form-view-button student-form-view-button-exit"
                     type="button"
                     style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                   >

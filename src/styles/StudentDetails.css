@@ -510,6 +510,19 @@
   color: #8b5cf6;
 }
 
+.student-form-icon-exit {
+  color: #F59E0B; /* amber-500 */
+}
+
+.student-form-view-button-exit {
+  background-color: #F59E0B;
+  color: white;
+}
+
+.student-form-view-button-exit:hover {
+  background-color: #D97706; /* amber-600 */
+}
+
 /* Form Status Icons */
 .student-form-status-icon {
   flex-shrink: 0;
