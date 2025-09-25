@@ -9,6 +9,7 @@ import ConsultationConferenceView from './ConsultationConferenceView';
 import GuidanceNotesView from './GuidanceNotesView';
 import GuidancePassView from './GuidancePassView';
 import ReferralView from './ReferralView';
+import FileMaintenanceView from './FileMaintenanceView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
@@ -325,7 +326,7 @@ useEffect(() => {
       case 'referral':
         return <ReferralView />;
       case 'filemaintenance':
-        return <GenericFormView title="File Maintenance" description="Adjust and adapt system assets." />;
+        return <FileMaintenanceView />;
       case 'reports':
         return <GenericFormView title="History and Reports" description="View tracked history and detailed reports." />;
       default:
