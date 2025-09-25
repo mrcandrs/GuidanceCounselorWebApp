@@ -303,7 +303,7 @@ const FileMaintenanceView = () => {
       endpoint: '/api/maintenance/programs',
       columns: [
         { key: 'code', label: 'Code', placeholder: 'BSIT' },
-        { key: 'name', label: 'Name', placeholder: 'Information Technology' },
+        { key: 'name', label: 'Name', placeholder: 'Bachelor of Science in Information Technology' },
         { key: 'isActive', label: 'Active', type: 'checkbox' }
       ],
       defaults: { code: '', name: '', isActive: true }
