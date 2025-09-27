@@ -361,7 +361,7 @@ const FileMaintenanceView = () => {
         maxAppointments: parseInt(f.maxAppointments || 0, 10),
       })
     },
-    {
+    /*{
       id: 'mood-thresholds',
       label: 'Mood Alert Thresholds',
       endpoint: '/api/maintenance/mood-thresholds',
@@ -378,7 +378,7 @@ const FileMaintenanceView = () => {
         moderateMax: parseInt(f.moderateMax || 0, 10),
         highMin: parseInt(f.highMin || 0, 10),
       })
-    }
+    }*/
   ];
 
   const [active, setActive] = useState(tabs[0].id);
