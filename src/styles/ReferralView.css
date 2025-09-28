@@ -163,8 +163,8 @@
 }
 
 .referral-item.completed {
-  background: #ecfdf5;          /* light green */
-  border-color: #10b981;        /* emerald */
+  background: #ecfdf5;
+  border-color: #10b981;
 }
 .referral-item.completed:hover {
   background: #d1fae5;
@@ -269,7 +269,7 @@
 }
 
 .input-error {
-  border-color: #dc2626 !important; /* red-600 */
+  border-color: #dc2626 !important;
   box-shadow: 0 0 0 1px #dc2626 inset;
 }
 .group-error {
@@ -278,7 +278,7 @@
   padding: 8px;
 }
 .input.prefilled {
-  background: #f9fafb; /* subtle disabled-like */
+  background: #f9fafb;
 }
 .input:disabled {
   background: #f3f4f6;
@@ -291,17 +291,16 @@
 }
 
 .referral-scrollable-form {
-  max-height: 70vh;       /* keep the form height within the viewport */
-  overflow-y: auto;       /* enable vertical scrolling */
-  padding-right: 8px;     /* space for scrollbar */
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
   position: relative;
   z-index: 10;
   pointer-events: auto;
-  scrollbar-width: thin;  /* Firefox */
-  scrollbar-color: #d1d5db transparent; /* Firefox scrollbar color */
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
 }
 
-/* Optional: nicer scrollbar for Webkit (Chrome, Edge, Safari) */
 .referral-scrollable-form::-webkit-scrollbar {
   width: 8px;
 }
@@ -318,5 +317,16 @@
 @media (max-width: 1024px) {
   .referral-row-2 {
     grid-template-columns: 1fr;
+  }
+  
+  .filter-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .sort-controls {
+    width: 100%;
+    justify-content: space-between;
   }
 }
