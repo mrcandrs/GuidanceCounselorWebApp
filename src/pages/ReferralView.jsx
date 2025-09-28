@@ -12,7 +12,13 @@ const ReferralView = () => {
   const [error, setError] = useState('');
   const [currentCounselor, setCurrentCounselor] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [category, setCategory] = useState('all'); // 'all' | 'emergency' | 'asap' | 'scheduled' | 'pastdue'
+  const [category, setCategory] = useState('all'); // 'all' | 'emergency' | 'asap' | 'scheduled' | 'pastdue' | 'completed'
+
+  // New state for search, sort, and filter
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('submissionDate'); // 'submissionDate' | 'priorityDate' | 'studentName' | 'priorityLevel'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc' | 'desc'
+  const [showCompleted, setShowCompleted] = useState(false);
 
   // helper: compute due status
   const isPastDue = (r) => {
@@ -22,53 +28,131 @@ const ReferralView = () => {
     return due < today;
   };
 
+  // helper: search function
+  const matchesSearch = (referral) => {
+    if (!searchTerm.trim()) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (referral.studentFullName || referral.fullName || '').toLowerCase().includes(term) ||
+      (referral.studentNumber || '').toLowerCase().includes(term) ||
+      (referral.studentProgram || referral.program || '').toLowerCase().includes(term) ||
+      (referral.section || '').toLowerCase().includes(term) ||
+      (referral.personWhoReferred || '').toLowerCase().includes(term) ||
+      (referral.areasOfConcern || '').toLowerCase().includes(term) ||
+      (referral.actionRequested || '').toLowerCase().includes(term) ||
+      (referral.referralReasons || '').toLowerCase().includes(term)
+    );
+  };
+
+  // helper: sort function
+  const sortReferrals = (list) => {
+    return [...list].sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'studentName':
+          aValue = (a.studentFullName || a.fullName || '').toLowerCase();
+          bValue = (b.studentFullName || b.fullName || '').toLowerCase();
+          break;
+        case 'priorityLevel':
+          // Custom priority order: Emergency > ASAP > Scheduled > Past Due
+          const priorityOrder = { 'emergency': 1, 'asap': 2, 'scheduled': 3, 'pastdue': 4 };
+          const aLevel = (a.priorityLevel || '').toLowerCase();
+          const bLevel = (b.priorityLevel || '').toLowerCase();
+          aValue = priorityOrder[aLevel.includes('emergency') ? 'emergency' : 
+                                aLevel.includes('asap') ? 'asap' : 
+                                aLevel.includes('before') ? (isPastDue(a) ? 'pastdue' : 'scheduled') : 5];
+          bValue = priorityOrder[bLevel.includes('emergency') ? 'emergency' : 
+                                bLevel.includes('asap') ? 'asap' : 
+                                bLevel.includes('before') ? (isPastDue(b) ? 'pastdue' : 'scheduled') : 5];
+          break;
+        case 'priorityDate':
+          aValue = new Date(a.priorityDate || '9999-12-31');
+          bValue = new Date(b.priorityDate || '9999-12-31');
+          break;
+        case 'submissionDate':
+        default:
+          aValue = new Date(a.submissionDate);
+          bValue = new Date(b.submissionDate);
+          break;
+      }
+      
+      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
   // helper: filter + sort by category
   const getVisibleReferrals = () => {
     let list = [...referrals];
 
+    // Filter by completion status
+    if (showCompleted) {
+      list = list.filter(r => hasSavedFeedback(r));
+    } else {
+      list = list.filter(r => !hasSavedFeedback(r));
+    }
+
+    // Apply search filter
+    list = list.filter(matchesSearch);
+
+    // Apply category filter
     switch (category) {
       case 'emergency':
         list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency'));
-        // newest first
-        list.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
         break;
       case 'asap':
         list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap'));
-        list.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
         break;
       case 'scheduled':
-        list = list
-          .filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && !isPastDue(r))
-          // earliest due first
-          .sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
+        list = list.filter(r => 
+          (r.priorityLevel || '').toLowerCase().includes('before') && 
+          !!r.priorityDate && 
+          !isPastDue(r)
+        );
         break;
       case 'pastdue':
-        list = list
-          .filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && isPastDue(r))
-          // oldest due first
-          .sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
+        list = list.filter(r => 
+          (r.priorityLevel || '').toLowerCase().includes('before') && 
+          !!r.priorityDate && 
+          isPastDue(r)
+        );
         break;
+      case 'completed':
+        list = list.filter(r => hasSavedFeedback(r));
+        break;
+      case 'all':
       default:
-        // all: put Emergency, then ASAP, then Scheduled upcoming, then Past Due
-        const em = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency'));
-        const as = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap'));
-        const sch = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && !isPastDue(r));
-        const pd = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && isPastDue(r));
-        em.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
-        as.sort((a,b) => new Date(b.submissionDate) - new Date(a.submissionDate));
-        sch.sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
-        pd.sort((a,b) => new Date(a.priorityDate) - new Date(b.priorityDate));
-        list = [...em, ...as, ...sch, ...pd];
+        // No additional filtering for 'all'
+        break;
     }
-    return list;
+
+    // Apply sorting
+    return sortReferrals(list);
   };
 
-  // counts for tabs
+  // counts for tabs (excluding completed from main categories)
   const counts = {
-    emergency: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency')).length,
-    asap: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap')).length,
-    scheduled: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && !isPastDue(r)).length,
-    pastdue: referrals.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && isPastDue(r)).length
+    emergency: referrals.filter(r => 
+      (r.priorityLevel || '').toLowerCase().includes('emergency') && !hasSavedFeedback(r)
+    ).length,
+    asap: referrals.filter(r => 
+      (r.priorityLevel || '').toLowerCase().includes('asap') && !hasSavedFeedback(r)
+    ).length,
+    scheduled: referrals.filter(r => 
+      (r.priorityLevel || '').toLowerCase().includes('before') && 
+      !!r.priorityDate && 
+      !isPastDue(r) && 
+      !hasSavedFeedback(r)
+    ).length,
+    pastdue: referrals.filter(r => 
+      (r.priorityLevel || '').toLowerCase().includes('before') && 
+      !!r.priorityDate && 
+      isPastDue(r) && 
+      !hasSavedFeedback(r)
+    ).length,
+    completed: referrals.filter(r => hasSavedFeedback(r)).length
   };
 
   // Fetch current counselor details
@@ -88,27 +172,27 @@ const ReferralView = () => {
   };
 
   const fetchList = async () => {
-  setIsRefreshing(true);
-  setLoading(true);
-  setError('');
-  try {
-    const token = localStorage.getItem('authToken');
-    const url = API_BASE
-      ? `${API_BASE}/api/referral/latest-per-student`
-      : '/proxy/api/referral/latest-per-student';
-    const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
-    const data = res.data || [];
-    setReferrals(data);
-    return data; // <-- return loaded list
-  } catch (e) {
-    setError('Failed to load referrals.');
-    console.error(e);
-    return []; // <-- safe fallback
-  } finally {
-    setLoading(false);
-    setIsRefreshing(false);
-  }
-};
+    setIsRefreshing(true);
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('authToken');
+      const url = API_BASE
+        ? `${API_BASE}/api/referral/latest-per-student`
+        : '/proxy/api/referral/latest-per-student';
+      const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+      const data = res.data || [];
+      setReferrals(data);
+      return data;
+    } catch (e) {
+      setError('Failed to load referrals.');
+      console.error(e);
+      return [];
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     fetchList();
@@ -159,18 +243,18 @@ const ReferralView = () => {
 
   // Add this new function for background refresh
 const refreshList = async () => {
-  try {
-    const token = localStorage.getItem('authToken');
-    const url = API_BASE
-      ? `${API_BASE}/api/referral/latest-per-student`
-      : '/proxy/api/referral/latest-per-student';
-    const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
-    const data = res.data || [];
-    setReferrals(data);
-  } catch (e) {
-    console.error('Background refresh failed:', e);
-  }
-};
+    try {
+      const token = localStorage.getItem('authToken');
+      const url = API_BASE
+        ? `${API_BASE}/api/referral/latest-per-student`
+        : '/proxy/api/referral/latest-per-student';
+      const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+      const data = res.data || [];
+      setReferrals(data);
+    } catch (e) {
+      console.error('Background refresh failed:', e);
+    }
+  };
 
   const saveFeedback = async () => {
     if (!selected) return;
@@ -239,13 +323,13 @@ const actionsToString = (set, others) => {
   return arr.join(', ');
 };
 
-//Checking if the form has the counselor's feedback
-const hasSavedFeedback = r =>
-  !!(
-    (r?.counselorActionsTaken && r.counselorActionsTaken.trim()) ||
-    (r?.counselorFeedbackDateReferred && r.counselorFeedbackDateReferred.trim()) ||
-    (r?.counselorSessionDate && r.counselorSessionDate.trim())
-  );
+// helper: check if referral has feedback
+  const hasSavedFeedback = r =>
+    !!(
+      (r?.counselorActionsTaken && r.counselorActionsTaken.trim()) ||
+      (r?.counselorFeedbackDateReferred && r.counselorFeedbackDateReferred.trim()) ||
+      (r?.counselorSessionDate && r.counselorSessionDate.trim())
+    );
 
 //Compute completed from the refreshed list
 const selectedFromList = selected
@@ -292,6 +376,54 @@ const visible = getVisibleReferrals();
       <div className="grid grid-cols-2 referral-grid">
         <div className="card referral-list-card">
           <div className="card-title">Submitted Referrals</div>
+
+          {/* Search and Filter Controls */}
+          <div className="referral-controls">
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder="Search referrals..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            
+            <div className="filter-controls">
+              <div className="sort-controls">
+                <label className="control-label">Sort by:</label>
+                <select 
+                  value={sortBy} 
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="control-select"
+                >
+                  <option value="submissionDate">Submission Date</option>
+                  <option value="priorityDate">Priority Date</option>
+                  <option value="studentName">Student Name</option>
+                  <option value="priorityLevel">Priority Level</option>
+                </select>
+                <button
+                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className="sort-toggle"
+                  title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                >
+                  {sortOrder === 'asc' ? '↑' : '↓'}
+                </button>
+              </div>
+              
+              <div className="completion-toggle">
+                <label className="toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={showCompleted}
+                    onChange={(e) => setShowCompleted(e.target.checked)}
+                  />
+                  Show Completed Only
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div className="referral-tabs">
             <button className={`ref-tab ${category==='all'?'active':''}`} onClick={() => setCategory('all')}style={{
                       position: 'relative',
@@ -325,7 +457,20 @@ const visible = getVisibleReferrals();
                       pointerEvents: 'auto',
                       cursor: 'pointer'
                     }}>Past due ({counts.pastdue})</button>
+            <button 
+              className={`ref-tab ${category==='completed'?'active':''}`} 
+              onClick={() => setCategory('completed')}
+              style={{
+                position: 'relative',
+                zIndex: 9999,
+                pointerEvents: 'auto',
+                cursor: 'pointer'
+              }}
+            >
+              Completed ({counts.completed})
+            </button>
           </div>
+          
           {loading ? (
             <div className="empty-state">Loading...</div>
           ) : referrals.length === 0 ? (
