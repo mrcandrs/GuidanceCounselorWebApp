@@ -387,6 +387,12 @@ const visible = getVisibleReferrals();
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
+                style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
               />
             </div>
             
@@ -407,6 +413,12 @@ const visible = getVisibleReferrals();
                   onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
                   className="sort-toggle"
                   title={`Sort ${sortOrder === 'asc' ? 'Descending' : 'Ascending'}`}
+                  style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
                 >
                   {sortOrder === 'asc' ? '↑' : '↓'}
                 </button>
@@ -418,6 +430,12 @@ const visible = getVisibleReferrals();
                     type="checkbox"
                     checked={showCompleted}
                     onChange={(e) => setShowCompleted(e.target.checked)}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
                   />
                   Show Completed Only
                 </label>
