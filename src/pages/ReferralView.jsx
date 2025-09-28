@@ -28,6 +28,14 @@ const ReferralView = () => {
     return due < today;
   };
 
+  // helper: check if referral has feedback
+  const hasSavedFeedback = r =>
+    !!(
+      (r?.counselorActionsTaken && r.counselorActionsTaken.trim()) ||
+      (r?.counselorFeedbackDateReferred && r.counselorFeedbackDateReferred.trim()) ||
+      (r?.counselorSessionDate && r.counselorSessionDate.trim())
+    );
+
   // helper: search function
   const matchesSearch = (referral) => {
     if (!searchTerm.trim()) return true;
@@ -323,13 +331,6 @@ const actionsToString = (set, others) => {
   return arr.join(', ');
 };
 
-// helper: check if referral has feedback
-  const hasSavedFeedback = r =>
-    !!(
-      (r?.counselorActionsTaken && r.counselorActionsTaken.trim()) ||
-      (r?.counselorFeedbackDateReferred && r.counselorFeedbackDateReferred.trim()) ||
-      (r?.counselorSessionDate && r.counselorSessionDate.trim())
-    );
 
 //Compute completed from the refreshed list
 const selectedFromList = selected
@@ -470,7 +471,7 @@ const visible = getVisibleReferrals();
               Completed ({counts.completed})
             </button>
           </div>
-          
+
           {loading ? (
             <div className="empty-state">Loading...</div>
           ) : referrals.length === 0 ? (
