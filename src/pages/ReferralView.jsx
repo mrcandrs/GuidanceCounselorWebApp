@@ -403,6 +403,12 @@ const visible = getVisibleReferrals();
                   value={sortBy} 
                   onChange={(e) => setSortBy(e.target.value)}
                   className="control-select"
+                  style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
                 >
                   <option value="submissionDate">Submission Date</option>
                   <option value="priorityDate">Priority Date</option>
