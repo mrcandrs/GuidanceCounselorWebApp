@@ -92,53 +92,51 @@ const ReferralView = () => {
   };
 
   // helper: filter + sort by category
-  const getVisibleReferrals = () => {
-    let list = [...referrals];
+const getVisibleReferrals = () => {
+  let list = [...referrals];
 
-    // Filter by completion status
-    if (showCompleted) {
+  // Apply search filter first
+  list = list.filter(matchesSearch);
+
+  // Apply category filter
+  switch (category) {
+    case 'emergency':
+      list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency'));
+      break;
+    case 'asap':
+      list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap'));
+      break;
+    case 'scheduled':
+      list = list.filter(r => 
+        (r.priorityLevel || '').toLowerCase().includes('before') && 
+        !!r.priorityDate && 
+        !isPastDue(r)
+      );
+      break;
+    case 'pastdue':
+      list = list.filter(r => 
+        (r.priorityLevel || '').toLowerCase().includes('before') && 
+        !!r.priorityDate && 
+        isPastDue(r)
+      );
+      break;
+    case 'completed':
       list = list.filter(r => hasSavedFeedback(r));
-    } else {
-      list = list.filter(r => !hasSavedFeedback(r));
-    }
-
-    // Apply search filter
-    list = list.filter(matchesSearch);
-
-    // Apply category filter
-    switch (category) {
-      case 'emergency':
-        list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency'));
-        break;
-      case 'asap':
-        list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap'));
-        break;
-      case 'scheduled':
-        list = list.filter(r => 
-          (r.priorityLevel || '').toLowerCase().includes('before') && 
-          !!r.priorityDate && 
-          !isPastDue(r)
-        );
-        break;
-      case 'pastdue':
-        list = list.filter(r => 
-          (r.priorityLevel || '').toLowerCase().includes('before') && 
-          !!r.priorityDate && 
-          isPastDue(r)
-        );
-        break;
-      case 'completed':
+      break;
+    case 'all':
+    default:
+      // For 'all', filter by completion status based on showCompleted checkbox
+      if (showCompleted) {
         list = list.filter(r => hasSavedFeedback(r));
-        break;
-      case 'all':
-      default:
-        // No additional filtering for 'all'
-        break;
-    }
+      } else {
+        list = list.filter(r => !hasSavedFeedback(r));
+      }
+      break;
+  }
 
-    // Apply sorting
-    return sortReferrals(list);
-  };
+  // Apply sorting
+  return sortReferrals(list);
+};
 
   // counts for tabs (excluding completed from main categories)
   const counts = {
