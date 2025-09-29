@@ -117,7 +117,7 @@ const StudentsTableView = ({
     <div className="card student-scrollable-form">
       <div className="search-container">
         <div className="search-input-container">
-          <Search className="search-icon" size={20} />
+          {/*<Search className="search-icon" size={20} />*/}
           <input
             type="text"
             placeholder={`Search ${selectedCourse?.code === 'ALL' ? 'all students' : selectedCourse?.code + ' students'}...`}
