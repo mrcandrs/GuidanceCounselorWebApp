@@ -372,8 +372,8 @@ html, body {
 
 /* Fix notification dropdown z-index */
 .notification-dropdown {
-  z-index: 9999;
-  position: relative;
+  z-index: 11000;
+  position: fixed;
 }
 
 .header-avatar {

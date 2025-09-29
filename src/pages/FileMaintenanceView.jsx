@@ -40,7 +40,6 @@ const RowActions = ({ onEdit, onDelete, busy }) => (
       type="button"
       onClick={onEdit}
       className="action-button edit-button"
-      style={{ pointerEvents: 'auto', zIndex: 999 }}
       title="Edit"
       disabled={busy}
     >
@@ -50,7 +49,6 @@ const RowActions = ({ onEdit, onDelete, busy }) => (
       type="button"
       onClick={onDelete}
       className="action-button delete-button"
-      style={{ pointerEvents: 'auto', zIndex: 999 }}
       title="Delete"
       disabled={busy}
     >
@@ -398,8 +396,6 @@ const FileMaintenanceView = () => {
               type="button"
               style={{
                 position: 'relative',
-                zIndex: 9999,
-                pointerEvents: 'auto',
                 cursor: 'pointer',
                 background: active === t.id ? '#dbeafe' : undefined,
                 borderColor: active === t.id ? '#bfdbfe' : undefined
