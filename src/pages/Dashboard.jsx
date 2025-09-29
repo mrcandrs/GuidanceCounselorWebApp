@@ -424,7 +424,6 @@ useEffect(() => {
             title="Toggle sidebar"
             style={{
             position: 'relative',
-            zIndex: 9999,
             pointerEvents: 'auto',
             cursor: 'pointer'
           }}
