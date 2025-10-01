@@ -13,7 +13,6 @@ const Login = () => {
   const navigate = useNavigate();
   const passwordInputRef = useRef(null);
 
-
   // prefill remembered email
   React.useEffect(() => {
     const remembered = localStorage.getItem('rememberedEmail');
@@ -69,7 +68,6 @@ const Login = () => {
         <div className="shape"></div>
         <div className="shape"></div>
     </div>
-
 
     <div className="login-container">
       <div className="login-header">
