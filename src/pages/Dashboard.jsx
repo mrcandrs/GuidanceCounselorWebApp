@@ -645,8 +645,6 @@ useEffect(() => {
                   </div>
                 )}
               </div>
-              
-              <div className="header-avatar">GC</div>
             </div>
           </div>
         </header>
