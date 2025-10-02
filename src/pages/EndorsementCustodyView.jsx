@@ -1007,7 +1007,7 @@ const uniqueEndorsedTo = useMemo(() => {
     <div className="endorsement-custody-container">
       <h2 className="page-title">Endorsement and Custody Forms</h2>
       
-      <div className="endorsement-card endorsement-scrollable-form">
+      <div className="endorsement-card">
         <p className="page-description">Manage custody and endorsement forms for students.</p>
         
         <div className="card-header">
