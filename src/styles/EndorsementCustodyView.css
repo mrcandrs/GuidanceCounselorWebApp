@@ -152,7 +152,7 @@
   border: 1px solid #d1d5db;
   border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  z-index: 5000 !important;  /* higher than anything below */
+  z-index: 99999 !important;  /* higher than anything below */
   min-width: 250px;
 }
 
