@@ -1247,7 +1247,7 @@ const uniqueEndorsedTo = useMemo(() => {
                             handleView(form);
                           }}
                           className="action-button view-button"
-                          style={{ pointerEvents: 'auto', zIndex: 500 }}
+                          style={{ pointerEvents: 'auto', zIndex: 50 }}
                           title="View"
                         >
                           <Eye size={16} />
@@ -1260,7 +1260,7 @@ const uniqueEndorsedTo = useMemo(() => {
                             handleEdit(form);
                           }}
                           className="action-button edit-button"
-                          style={{ pointerEvents: 'auto', zIndex: 500 }}
+                          style={{ pointerEvents: 'auto', zIndex: 50 }}
                           title="Edit"
                         >
                           <Edit size={16} />
@@ -1273,7 +1273,7 @@ const uniqueEndorsedTo = useMemo(() => {
                             handleDelete(form.custodyId);
                           }}
                           className="action-button delete-button"
-                          style={{ pointerEvents: 'auto', zIndex: 500 }}
+                          style={{ pointerEvents: 'auto', zIndex: 50 }}
                           title="Delete"
                         >
                           <Trash2 size={16} />
