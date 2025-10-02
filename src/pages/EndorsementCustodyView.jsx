@@ -1111,8 +1111,68 @@ const uniqueEndorsedTo = useMemo(() => {
           </div>
           
           <div className="filter-grid">
-            {/* All the filter inputs go here */}
-          </div>
+  <div className="filter-group">
+    <label className="filter-label">Date From</label>
+    <input
+      type="date"
+      value={filters.dateFrom}
+      onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+      className="filter-input"
+    />
+  </div>
+  
+  <div className="filter-group">
+    <label className="filter-label">Date To</label>
+    <input
+      type="date"
+      value={filters.dateTo}
+      onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+      className="filter-input"
+    />
+  </div>
+  
+  <div className="filter-group">
+    <label className="filter-label">Grade Level</label>
+    <select
+      value={filters.gradeLevel}
+      onChange={(e) => handleFilterChange('gradeLevel', e.target.value)}
+      className="filter-input"
+    >
+      <option value="">All Grade Levels</option>
+      {uniqueGradeLevels.map(level => (
+        <option key={level} value={level}>{level}</option>
+      ))}
+    </select>
+  </div>
+  
+  <div className="filter-group">
+    <label className="filter-label">Endorsed By</label>
+    <select
+      value={filters.endorsedBy}
+      onChange={(e) => handleFilterChange('endorsedBy', e.target.value)}
+      className="filter-input"
+    >
+      <option value="">All Endorsers</option>
+      {uniqueEndorsedBy.map(endorser => (
+        <option key={endorser} value={endorser}>{endorser}</option>
+      ))}
+    </select>
+  </div>
+  
+  <div className="filter-group">
+    <label className="filter-label">Endorsed To</label>
+    <select
+      value={filters.endorsedTo}
+      onChange={(e) => handleFilterChange('endorsedTo', e.target.value)}
+      className="filter-input"
+    >
+      <option value="">All Recipients</option>
+      {uniqueEndorsedTo.map(recipient => (
+        <option key={recipient} value={recipient}>{recipient}</option>
+      ))}
+    </select>
+  </div>
+</div>
         </div>
       )}
       
