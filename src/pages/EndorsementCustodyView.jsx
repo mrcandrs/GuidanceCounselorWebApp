@@ -851,6 +851,32 @@ const EndorsementCustodyView = () => {
               <Plus size={20} />
               Create New
             </button>
+          </div>
+
+          <div className="header-right">
+            {/* Search Bar */}
+            <div className="search-box">
+              <Search size={20} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search students, endorsements..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </div>
+
+            {/* Sort Dropdown */}
+              <div className="sort-dropdown-container">
+                <button className="sort-button">
+                  <SortAsc size={20} />
+                  Sort
+                  <ChevronDown size={16} />
+                </button>
+              </div>
+
+
+            {/* Filter Button */}
             <button className="filter-button">
               <Filter size={20} />
               Filter
