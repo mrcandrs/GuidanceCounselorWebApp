@@ -61,6 +61,7 @@
   left: 12px;
   color: #6b7280;
   z-index: 1;
+  pointer-events: none; /* Prevent icon from blocking input clicks */
 }
 
 .search-input {
@@ -101,17 +102,24 @@
 /* Sort Dropdown Styles */
 .sort-dropdown-container {
   position: relative;
+  z-index: 100;
 }
 
 .sort-button-active {
   background-color: #0477BF;
-  color: white;
+  color: white !important; /* Force white text */
   border-color: #0477BF;
 }
 
 .sort-button-active:hover {
   background-color: #0369a1;
   border-color: #0369a1;
+  color: white !important; /* Keep white text on hover */
+}
+
+/* Ensure all child elements in active sort button are white */
+.sort-button-active * {
+  color: white !important;
 }
 
 .sort-chevron {
@@ -131,7 +139,7 @@
   border: 1px solid #d1d5db;
   border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  z-index: 50;
+  z-index: 1000 !important; /* Much higher z-index */
   min-width: 250px;
 }
 
@@ -186,14 +194,20 @@
 
 /* Filter Panel Styles */
 .filter-button-active {
-  background-color: #0477BF;
-  color: white;
-  border-color: #0477BF;
+  background-color: #0477BF !important;
+  color: white !important;
+  border-color: #0477BF !important;
 }
 
 .filter-button-active:hover {
-  background-color: #0369a1;
-  border-color: #0369a1;
+  background-color: #0369a1 !important;
+  border-color: #0369a1 !important;
+  color: white !important;
+}
+
+/* Ensure all child elements in active filter button are white */
+.filter-button-active * {
+  color: white !important;
 }
 
 .filter-badge {
@@ -211,8 +225,8 @@
 }
 
 .filter-button-active .filter-badge {
-  background-color: #fef2f2;
-  color: #ef4444;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
 }
 
 .filter-panel {
@@ -609,6 +623,12 @@
   background-color: #f9fafb;
 }
 
+/* Make sure table rows don't interfere with dropdowns */
+.forms-table tbody tr {
+  position: relative;
+  z-index: 1;
+}
+
 .forms-table th {
   padding: 12px 16px;
   text-align: left;
@@ -665,6 +685,8 @@
 .action-buttons {
   display: flex;
   gap: 8px;
+  position: relative;
+  z-index: 10;
 }
 
 .action-button {
