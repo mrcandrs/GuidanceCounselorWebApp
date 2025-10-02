@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react'; // Add useMemo
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronUp, ChevronDown, X, SortAsc } from 'lucide-react'; // Add Search, ChevronUp, ChevronDown, X, SortAsc
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import Select from 'react-select';
@@ -214,7 +214,18 @@ const EndorsementCustodyView = () => {
     endorsedBy: '',
     endorsedTo: ''
   });
-
+  // Search, Sort, and Filter States
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [filters, setFilters] = useState({
+    dateFrom: '',
+    dateTo: '',
+    gradeLevel: '',
+    endorsedBy: '',
+    endorsedTo: ''
+  });
 
   // helper for selecting student
   const selectStudent = async (studentId) => {
@@ -258,6 +269,104 @@ const EndorsementCustodyView = () => {
       String(s.studentNumber || '').toLowerCase().includes(q)
     );
   };
+
+
+  // Sort options for the dropdown
+  const sortOptions = [
+    { key: 'date', label: 'Date & Time', direction: 'desc' },
+    { key: 'student', label: 'Student Name', direction: 'asc' },
+    { key: 'gradeLevel', label: 'Grade Level', direction: 'asc' },
+    { key: 'endorsedBy', label: 'Endorsed By', direction: 'asc' },
+    { key: 'endorsedTo', label: 'Endorsed To', direction: 'asc' }
+  ];
+
+  // Search, Sort, and Filter Logic
+  const filteredAndSortedForms = useMemo(() => {
+    let filtered = forms;
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(form =>
+        form.student?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        form.student?.studentNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        form.endorsedBy?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        form.endorsedTo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        form.gradeYearLevel?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        form.section?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply date range filter
+    if (filters.dateFrom) {
+      filtered = filtered.filter(form => new Date(form.date) >= new Date(filters.dateFrom));
+    }
+    if (filters.dateTo) {
+      filtered = filtered.filter(form => new Date(form.date) <= new Date(filters.dateTo));
+    }
+
+    // Apply grade level filter
+    if (filters.gradeLevel) {
+      filtered = filtered.filter(form => 
+        form.gradeYearLevel?.toLowerCase().includes(filters.gradeLevel.toLowerCase())
+      );
+    }
+
+    // Apply endorsed by filter
+    if (filters.endorsedBy) {
+      filtered = filtered.filter(form => 
+        form.endorsedBy?.toLowerCase().includes(filters.endorsedBy.toLowerCase())
+      );
+    }
+
+    // Apply endorsed to filter
+    if (filters.endorsedTo) {
+      filtered = filtered.filter(form => 
+        form.endorsedTo?.toLowerCase().includes(filters.endorsedTo.toLowerCase())
+      );
+    }
+
+    // Apply sorting
+    if (sortConfig.key) {
+      filtered.sort((a, b) => {
+        let aValue, bValue;
+
+        switch (sortConfig.key) {
+          case 'student':
+            aValue = a.student?.fullName || '';
+            bValue = b.student?.fullName || '';
+            break;
+          case 'date':
+            aValue = new Date(a.date);
+            bValue = new Date(b.date);
+            break;
+          case 'gradeLevel':
+            aValue = a.gradeYearLevel || '';
+            bValue = b.gradeYearLevel || '';
+            break;
+          case 'endorsedBy':
+            aValue = a.endorsedBy || '';
+            bValue = b.endorsedBy || '';
+            break;
+          case 'endorsedTo':
+            aValue = a.endorsedTo || '';
+            bValue = b.endorsedTo || '';
+            break;
+          default:
+            return 0;
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filtered;
+  }, [forms, searchTerm, filters, sortConfig]);
 
   // Fetch all forms
   const fetchForms = async () => {
@@ -324,6 +433,71 @@ const EndorsementCustodyView = () => {
       [name]: value
     }));
   };
+
+  // Handle sorting
+const handleSort = (key, direction = null) => {
+  setSortConfig(prev => ({
+    key,
+    direction: direction || (prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc')
+  }));
+  setShowSortMenu(false);
+};
+
+// Handle filter change
+const handleFilterChange = (filterKey, value) => {
+  setFilters(prev => ({
+    ...prev,
+    [filterKey]: value
+  }));
+};
+
+// Clear all filters
+const clearFilters = () => {
+  setFilters({
+    dateFrom: '',
+    dateTo: '',
+    gradeLevel: '',
+    endorsedBy: '',
+    endorsedTo: ''
+  });
+  setSearchTerm('');
+};
+
+// Get current sort display text
+const getCurrentSortText = () => {
+  const currentSort = sortOptions.find(opt => opt.key === sortConfig.key);
+  const directionText = sortConfig.direction === 'asc' ? 'A-Z' : 'Z-A';
+  if (sortConfig.key === 'date') {
+    return `${currentSort?.label} (${sortConfig.direction === 'asc' ? 'Oldest' : 'Newest'})`;
+  }
+  return `${currentSort?.label} (${directionText})`;
+};
+
+// Check if any filters are active
+const hasActiveFilters = useMemo(() => {
+  return searchTerm || 
+         filters.dateFrom || 
+         filters.dateTo || 
+         filters.gradeLevel || 
+         filters.endorsedBy || 
+         filters.endorsedTo;
+}, [searchTerm, filters]);
+
+// Get unique values for filter dropdowns
+const uniqueGradeLevels = useMemo(() => {
+  const levels = forms.map(form => form.gradeYearLevel).filter(Boolean);
+  return [...new Set(levels)].sort();
+}, [forms]);
+
+const uniqueEndorsedBy = useMemo(() => {
+  const endorsers = forms.map(form => form.endorsedBy).filter(Boolean);
+  return [...new Set(endorsers)].sort();
+}, [forms]);
+
+const uniqueEndorsedTo = useMemo(() => {
+  const endorsees = forms.map(form => form.endorsedTo).filter(Boolean);
+  return [...new Set(endorsees)].sort();
+}, [forms]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -837,7 +1011,7 @@ const EndorsementCustodyView = () => {
         <p className="page-description">Manage custody and endorsement forms for students.</p>
         
         <div className="card-header">
-          <div className="header-actions">
+          <div className="header-left">
             <button 
               type="button"
               onClick={(e) => {
@@ -864,32 +1038,99 @@ const EndorsementCustodyView = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
               />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="search-clear"
+                >
+                  <X size={16} />
+                </button>
+              )}
             </div>
 
             {/* Sort Dropdown */}
-              <div className="sort-dropdown-container">
-                <button className="sort-button">
-                  <SortAsc size={20} />
-                  Sort
-                  <ChevronDown size={16} />
-                </button>
-              </div>
+            <div className="sort-dropdown-container">
+              <button 
+                className={`sort-button ${showSortMenu ? 'sort-button-active' : ''}`}
+                onClick={() => setShowSortMenu(!showSortMenu)}
+              >
+                <SortAsc size={20} />
+                Sort
+                <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
+              </button>
 
+              {showSortMenu && (
+                <div className="sort-dropdown">
+                  <div className="sort-dropdown-header">
+                    <span>Sort by</span>
+                    <span className="current-sort">{getCurrentSortText()}</span>
+                  </div>
+                  {sortOptions.map((option) => (
+                    <button
+                      key={`${option.key}-${option.direction}`}
+                      className={`sort-option ${sortConfig.key === option.key && sortConfig.direction === option.direction ? 'sort-option-active' : ''}`}
+                      onClick={() => handleSort(option.key, option.direction)}
+                    >
+                      <span>{option.label}</span>
+                      <span className="sort-direction">
+                        {option.key === 'date' 
+                          ? (option.direction === 'asc' ? 'Oldest First' : 'Newest First')
+                          : (option.direction === 'asc' ? 'A-Z' : 'Z-A')
+                        }
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Filter Button */}
-            <button className="filter-button">
+            <button 
+              className={`filter-button ${showFilters ? 'filter-button-active' : ''}`}
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter size={20} />
-              Filter
+              Filter 
+              {hasActiveFilters && <span className="filter-badge">{Object.values(filters).filter(Boolean).length + (searchTerm ? 1 : 0)}</span>}
             </button>
           </div>
         </div>
+
+        {/* 👇 ADD THE FILTER PANEL AND RESULTS SUMMARY HERE 👇 */}
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="filter-panel">
+          <div className="filter-panel-header">
+            <h3>Filters</h3>
+            {hasActiveFilters && (
+              <button onClick={clearFilters} className="clear-filters-button">
+                <X size={16} />
+                Clear All
+              </button>
+            )}
+          </div>
+          
+          <div className="filter-grid">
+            {/* All the filter inputs go here */}
+          </div>
+        </div>
+      )}
+      
+      {/* Results Summary */}
+      <div className="results-summary">
+        <p>
+          Showing {filteredAndSortedForms.length} of {forms.length} forms
+          {hasActiveFilters && " (filtered)"}
+        </p>
+      </div>
+      {/* 👆 ADD THE FILTER PANEL AND RESULTS SUMMARY ABOVE 👆 */}
         
         {loading ? (
           <div className="loading-state">
             <div className="loading-spinner"></div>
             <p>Loading forms...</p>
           </div>
-        ) : forms.length === 0 ? (
+        ) : filteredAndSortedForms.length === 0 ? (
           <div className="empty-state">
             <FileText size={48} className="empty-icon" />
             <p>No endorsement and custody forms found. Click "Create New" to get started.</p>
@@ -908,7 +1149,7 @@ const EndorsementCustodyView = () => {
                 </tr>
               </thead>
               <tbody>
-                {forms.map((form) => (
+                {filteredAndSortedForms.map((form) => (
                   <tr key={form.custodyId}>
                     <td>
                       <div className="student-info">
