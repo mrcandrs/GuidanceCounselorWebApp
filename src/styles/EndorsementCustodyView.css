@@ -649,11 +649,11 @@
   background-color: #f9fafb;
 }
 
-/* Make sure table rows don't interfere with dropdowns */
+/* Make sure table rows don't interfere with dropdowns
 .forms-table tbody tr {
   position: relative;
   z-index: 1;
-}
+}*/
 
 .forms-table th {
   padding: 12px 16px;
