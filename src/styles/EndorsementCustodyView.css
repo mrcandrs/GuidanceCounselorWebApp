@@ -28,6 +28,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 24px;
   min-width: 0;
+  overflow: visible;
 }
 
 .card-header {
@@ -46,6 +47,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  z-index: 3000;
 }
 
 .search-box {
@@ -102,19 +105,29 @@
 /* Sort Dropdown Styles */
 .sort-dropdown-container {
   position: relative;
-  z-index: 100;
+  z-index: 4000;
 }
 
 .sort-button-active {
-  background-color: #0477BF;
+  background-color: #0477BF !important; 
   color: white !important; /* Force white text */
-  border-color: #0477BF;
+  border-color: #0477BF !important;
 }
 
 .sort-button-active:hover {
-  background-color: #0369a1;
-  border-color: #0369a1;
+  background-color: #0369a1 !important;
+  border-color: #0369a1 !important;
   color: white !important; /* Keep white text on hover */
+}
+
+.sort-button-active:focus {
+  background-color: #0477BF !important;
+  border-color: #0477BF !important;
+  color: #ffffff !important;
+}
+
+.sort-button-active svg { 
+  color: #ffffff !important; 
 }
 
 /* Ensure all child elements in active sort button are white */
@@ -139,7 +152,7 @@
   border: 1px solid #d1d5db;
   border-radius: 8px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  z-index: 1000 !important; /* Much higher z-index */
+  z-index: 5000 !important;  /* higher than anything below */
   min-width: 250px;
 }
 
@@ -311,6 +324,17 @@
   outline: none;
   border-color: #0477BF;
   box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
+}
+
+/* Normalize default sort button look */
+.sort-button {
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.sort-button svg { 
+  color: #374151; 
 }
 
 .sort-button,
