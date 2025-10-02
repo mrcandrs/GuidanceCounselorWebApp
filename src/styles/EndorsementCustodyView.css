@@ -713,7 +713,6 @@
   display: flex;
   gap: 8px;
   position: relative;
-  z-index: 10;
 }
 
 .action-button {
