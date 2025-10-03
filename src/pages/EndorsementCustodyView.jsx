@@ -484,13 +484,14 @@ const getCurrentSortText = () => {
 
 // Check if any filters are active
 const hasActiveFilters = useMemo(() => {
-  return searchTerm || 
-         filters.dateFrom || 
-         filters.dateTo || 
-         filters.gradeLevel || 
-         filters.endorsedBy || 
-         filters.endorsedTo;
-}, [searchTerm, filters]);
+  return Boolean(
+    filters.dateFrom ||
+    filters.dateTo ||
+    filters.gradeLevel ||
+    filters.endorsedBy ||
+    filters.endorsedTo
+  );
+}, [filters]);
 
 // Get unique values for filter dropdowns
 const uniqueGradeLevels = useMemo(() => {
@@ -1109,7 +1110,11 @@ const uniqueEndorsedTo = useMemo(() => {
             >
               <Filter size={20} />
               Filter 
-              {hasActiveFilters && <span className="filter-badge">{Object.values(filters).filter(Boolean).length + (searchTerm ? 1 : 0)}</span>}
+              {hasActiveFilters && (
+                <span className="filter-badge">
+                  {Object.values(filters).filter(Boolean).length}
+                </span>
+              )}
             </button>
           </div>
         </div>
