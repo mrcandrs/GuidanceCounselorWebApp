@@ -169,6 +169,11 @@
   color: #1f2937;
 }
 
+/* ensure the portal menu is on top of native selects */
+.sort-dropdown-portal { 
+  z-index: 2147483647 !important; 
+}
+
 .current-sort {
   font-size: 12px;
   color: #6b7280;

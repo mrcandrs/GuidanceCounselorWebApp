@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react'; // Add useMemo
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronUp, ChevronDown, X, SortAsc } from 'lucide-react'; // Add Search, ChevronUp, ChevronDown, X, SortAsc
 import axios from 'axios';
 import jsPDF from 'jspdf';
@@ -226,6 +227,18 @@ const EndorsementCustodyView = () => {
     endorsedBy: '',
     endorsedTo: ''
   });
+
+  const sortBtnRef = useRef(null);
+  const [sortMenuPos, setSortMenuPos] = useState({ top: 0, left: 0, width: 250 });
+  useLayoutEffect(() => {
+    if (!showSortMenu || !sortBtnRef.current) return;
+    const r = sortBtnRef.current.getBoundingClientRect();
+    setSortMenuPos({
+      top: r.bottom + 4,
+      left: Math.max(8, r.right - 250),
+      width: 250
+    });
+  }, [showSortMenu]);
 
   // helper for selecting student
   const selectStudent = async (studentId) => {
@@ -1050,7 +1063,8 @@ const uniqueEndorsedTo = useMemo(() => {
 
             {/* Sort Dropdown */}
             <div className="sort-dropdown-container">
-              <button 
+              <button
+                ref={sortBtnRef}
                 className={`sort-button ${showSortMenu ? 'sort-button-active' : ''}`}
                 onClick={() => setShowSortMenu(!showSortMenu)}
               >
@@ -1059,8 +1073,10 @@ const uniqueEndorsedTo = useMemo(() => {
                 <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
               </button>
 
-              {showSortMenu && (
-                <div className="sort-dropdown">
+              {showSortMenu && createPortal (
+                <div className="sort-dropdown sort-dropdown-portal"
+                    style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width }}
+                >
                   <div className="sort-dropdown-header">
                     <span>Sort by</span>
                     <span className="current-sort">{getCurrentSortText()}</span>
@@ -1087,7 +1103,7 @@ const uniqueEndorsedTo = useMemo(() => {
                     </button>
                   ))}
                 </div>
-              )}
+              , document.body)}
             </div>
 
             {/* Filter Button */}
