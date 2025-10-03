@@ -52,30 +52,14 @@ const HistoryReportsView = () => {
     try {
         const token = localStorage.getItem('authToken');
         
-        const [appointmentsRes, referralsRes, notesRes, formsRes] = await Promise.all([
-            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/appointments', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { from: filters.from, to: filters.to }
-            }),
-            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/referrals', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { from: filters.from, to: filters.to }
-            }),
-            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/notes', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { from: filters.from, to: filters.to }
-            }),
-            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/forms-completion', {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-        ]);
-
-        setReportsData({
-            appointments: appointmentsRes.data,
-            referrals: referralsRes.data,
-            notes: notesRes.data,
-            forms: formsRes.data
+        // Only fetch appointments for now (this fixes the KPI cards)
+        const appointmentsRes = await axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/appointments', {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { from: filters.from, to: filters.to }
         });
+        
+        // Set the appointments data directly - this fixes the KPI cards
+        setReportsData(appointmentsRes.data);
     } catch (error) {
         console.error('Error fetching reports:', error);
     } finally {
