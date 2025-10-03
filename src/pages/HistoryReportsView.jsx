@@ -127,7 +127,11 @@ const HistoryReportsView = () => {
               onClick={() => setActiveTab('history')}
               style={{ 
                 background: activeTab === 'history' ? '#0477BF' : 'white',
-                color: activeTab === 'history' ? 'white' : '#374151'
+                color: activeTab === 'history' ? 'white' : '#374151',
+                position: 'relative',
+                zIndex: 9999,
+                pointerEvents: 'auto',
+                cursor: 'pointer'
               }}
             >
               <Clock size={16} />
@@ -138,7 +142,11 @@ const HistoryReportsView = () => {
               onClick={() => setActiveTab('reports')}
               style={{ 
                 background: activeTab === 'reports' ? '#0477BF' : 'white',
-                color: activeTab === 'reports' ? 'white' : '#374151'
+                color: activeTab === 'reports' ? 'white' : '#374151',
+                position: 'relative',
+                zIndex: 9999,
+                pointerEvents: 'auto',
+                cursor: 'pointer'
               }}
             >
               <TrendingUp size={16} />
@@ -154,6 +162,12 @@ const HistoryReportsView = () => {
                 value={filters.entityType} 
                 onChange={(e) => handleFilterChange('entityType', e.target.value)}
                 className="filter-select"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
               >
                 <option value="">All Entities</option>
                 <option value="appointment">Appointments</option>
@@ -169,6 +183,12 @@ const HistoryReportsView = () => {
                 value={filters.action} 
                 onChange={(e) => handleFilterChange('action', e.target.value)}
                 className="filter-select"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
               >
                 <option value="">All Actions</option>
                 <option value="created">Created</option>
@@ -186,6 +206,12 @@ const HistoryReportsView = () => {
                 onChange={(e) => handleFilterChange('from', e.target.value)}
                 className="filter-input"
                 placeholder="From Date"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
               />
 
               <input 
@@ -194,9 +220,24 @@ const HistoryReportsView = () => {
                 onChange={(e) => handleFilterChange('to', e.target.value)}
                 className="filter-input"
                 placeholder="To Date"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
               />
 
-              <button onClick={exportToCSV} className="primary-button">
+              <button 
+                onClick={exportToCSV} 
+                className="primary-button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+                >
                 <Download size={16} />
                 Export CSV
               </button>
