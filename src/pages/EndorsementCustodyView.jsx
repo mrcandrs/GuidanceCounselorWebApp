@@ -295,90 +295,86 @@ const EndorsementCustodyView = () => {
 
   // Search, Sort, and Filter Logic
   const filteredAndSortedForms = useMemo(() => {
-    let filtered = forms;
+  const term = (searchTerm || '').trim().toLowerCase();
+  let result = forms.slice();
 
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(form =>
-        form.student?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        form.student?.studentNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        form.endorsedBy?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        form.endorsedTo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        form.gradeYearLevel?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        form.section?.toLowerCase().includes(searchTerm.toLowerCase())
+  // 1) Apply filters first
+  if (filters.dateFrom) {
+    const from = new Date(filters.dateFrom);
+    result = result.filter(form => new Date(form.date) >= from);
+  }
+  if (filters.dateTo) {
+    const to = new Date(filters.dateTo);
+    result = result.filter(form => new Date(form.date) <= to);
+  }
+  if (filters.gradeLevel) {
+    const gl = filters.gradeLevel.toLowerCase();
+    result = result.filter(form => (form.gradeYearLevel || '').toLowerCase().includes(gl));
+  }
+  if (filters.endorsedBy) {
+    const eb = filters.endorsedBy.toLowerCase();
+    result = result.filter(form => (form.endorsedBy || '').toLowerCase().includes(eb));
+  }
+  if (filters.endorsedTo) {
+    const et = filters.endorsedTo.toLowerCase();
+    result = result.filter(form => (form.endorsedTo || '').toLowerCase().includes(et));
+  }
+
+  // 2) Apply search within the already-filtered set
+  if (term) {
+    result = result.filter(form => {
+      const fullName = (form.student?.fullName || '').toLowerCase();
+      const studNo = String(form.student?.studentNumber || '').toLowerCase();
+      const by = (form.endorsedBy || '').toLowerCase();
+      const to = (form.endorsedTo || '').toLowerCase();
+      const level = (form.gradeYearLevel || '').toLowerCase();
+      const section = (form.section || '').toLowerCase();
+      return (
+        fullName.includes(term) ||
+        studNo.includes(term) ||
+        by.includes(term) ||
+        to.includes(term) ||
+        level.includes(term) ||
+        section.includes(term)
       );
-    }
+    });
+  }
 
-    // Apply date range filter
-    if (filters.dateFrom) {
-      filtered = filtered.filter(form => new Date(form.date) >= new Date(filters.dateFrom));
-    }
-    if (filters.dateTo) {
-      filtered = filtered.filter(form => new Date(form.date) <= new Date(filters.dateTo));
-    }
+  // 3) Sort
+  if (sortConfig.key) {
+    result.sort((a, b) => {
+      let aValue, bValue;
+      switch (sortConfig.key) {
+        case 'student':
+          aValue = a.student?.fullName || '';
+          bValue = b.student?.fullName || '';
+          break;
+        case 'date':
+          aValue = new Date(a.date);
+          bValue = new Date(b.date);
+          break;
+        case 'gradeLevel':
+          aValue = a.gradeYearLevel || '';
+          bValue = b.gradeYearLevel || '';
+          break;
+        case 'endorsedBy':
+          aValue = a.endorsedBy || '';
+          bValue = b.endorsedBy || '';
+          break;
+        case 'endorsedTo':
+          aValue = a.endorsedTo || '';
+          bValue = b.endorsedTo || '';
+          break;
+        default:
+          return 0;
+      }
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
 
-    // Apply grade level filter
-    if (filters.gradeLevel) {
-      filtered = filtered.filter(form => 
-        form.gradeYearLevel?.toLowerCase().includes(filters.gradeLevel.toLowerCase())
-      );
-    }
-
-    // Apply endorsed by filter
-    if (filters.endorsedBy) {
-      filtered = filtered.filter(form => 
-        form.endorsedBy?.toLowerCase().includes(filters.endorsedBy.toLowerCase())
-      );
-    }
-
-    // Apply endorsed to filter
-    if (filters.endorsedTo) {
-      filtered = filtered.filter(form => 
-        form.endorsedTo?.toLowerCase().includes(filters.endorsedTo.toLowerCase())
-      );
-    }
-
-    // Apply sorting
-    if (sortConfig.key) {
-      filtered.sort((a, b) => {
-        let aValue, bValue;
-
-        switch (sortConfig.key) {
-          case 'student':
-            aValue = a.student?.fullName || '';
-            bValue = b.student?.fullName || '';
-            break;
-          case 'date':
-            aValue = new Date(a.date);
-            bValue = new Date(b.date);
-            break;
-          case 'gradeLevel':
-            aValue = a.gradeYearLevel || '';
-            bValue = b.gradeYearLevel || '';
-            break;
-          case 'endorsedBy':
-            aValue = a.endorsedBy || '';
-            bValue = b.endorsedBy || '';
-            break;
-          case 'endorsedTo':
-            aValue = a.endorsedTo || '';
-            bValue = b.endorsedTo || '';
-            break;
-          default:
-            return 0;
-        }
-
-        if (aValue < bValue) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    return filtered;
+    return result;
   }, [forms, searchTerm, filters, sortConfig]);
 
   // Fetch all forms
