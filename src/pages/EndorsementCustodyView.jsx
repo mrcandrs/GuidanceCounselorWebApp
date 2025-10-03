@@ -215,7 +215,7 @@ const EndorsementCustodyView = () => {
     endorsedBy: '',
     endorsedTo: ''
   });
-  // Search, Sort, and Filter States
+  //Search, sort and filter useStates()
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const [showFilters, setShowFilters] = useState(false);
@@ -1020,7 +1020,7 @@ const uniqueEndorsedTo = useMemo(() => {
     <div className="endorsement-custody-container">
       <h2 className="page-title">Endorsement and Custody Forms</h2>
       
-      <div className="endorsement-card">
+      <div className="endorsement-card endorsement-scrollable-form">
         <p className="page-description">Manage custody and endorsement forms for students.</p>
         
         <div className="card-header">

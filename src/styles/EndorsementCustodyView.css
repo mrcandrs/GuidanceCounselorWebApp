@@ -642,8 +642,8 @@
 /* Table Styles */
 .forms-table-container {
   overflow-x: auto;
-  overflow-y: auto;      /* enable vertical scroll for list */
-  max-height: 60vh;      /* adjust as you like (e.g., 65–70vh) */
+  /*overflow-y: auto;      /* enable vertical scroll for list
+  max-height: 60vh;      /* adjust as you like (e.g., 65–70vh)
   position: relative;    /* keeps z-index contexts sane */
   z-index: 0;
 }
