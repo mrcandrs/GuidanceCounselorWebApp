@@ -21,42 +21,67 @@ const HistoryReportsView = () => {
   const fetchHistory = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('authToken');
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value);
-      });
+        const token = localStorage.getItem('authToken');
+        const params = new URLSearchParams();
+        
+        if (filters.entityType) params.append('entityType', filters.entityType);
+        if (filters.action) params.append('action', filters.action);
+        if (filters.from) params.append('from', filters.from);
+        if (filters.to) params.append('to', filters.to);
+        if (filters.page) params.append('page', filters.page.toString());
+        if (filters.pageSize) params.append('pageSize', filters.pageSize.toString());
 
-      const response = await axios.get(`https://guidanceofficeapi-production.up.railway.app/api/history?${params}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setHistoryData(response.data.items || []);
+        // Change this URL to match your new controller:
+        const response = await axios.get(`https://guidanceofficeapi-production.up.railway.app/api/history?${params}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        setHistoryData(response.data.items || []);
+        // Handle pagination if you want
     } catch (error) {
-      console.error('Error fetching history:', error);
+        console.error('Error fetching history:', error);
+        alert('Failed to load history');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   // Fetch reports data
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('authToken');
-      const params = new URLSearchParams();
-      if (filters.from) params.append('from', filters.from);
-      if (filters.to) params.append('to', filters.to);
+        const token = localStorage.getItem('authToken');
+        
+        const [appointmentsRes, referralsRes, notesRes, formsRes] = await Promise.all([
+            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/appointments', {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { from: filters.from, to: filters.to }
+            }),
+            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/referrals', {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { from: filters.from, to: filters.to }
+            }),
+            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/notes', {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { from: filters.from, to: filters.to }
+            }),
+            axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/forms-completion', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+        ]);
 
-      const response = await axios.get(`https://guidanceofficeapi-production.up.railway.app/api/reports/appointments?${params}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setReportsData(response.data);
+        setReportsData({
+            appointments: appointmentsRes.data,
+            referrals: referralsRes.data,
+            notes: notesRes.data,
+            forms: formsRes.data
+        });
     } catch (error) {
-      console.error('Error fetching reports:', error);
+        console.error('Error fetching reports:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   useEffect(() => {
     if (activeTab === 'history') {
