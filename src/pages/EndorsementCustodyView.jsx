@@ -1126,7 +1126,7 @@ const uniqueEndorsedTo = useMemo(() => {
       className="filter-input"
       style={{
               position: 'relative',
-              zIndex: 9999,
+              zIndex: 999,
               pointerEvents: 'auto',
               cursor: 'pointer'
             }}
@@ -1142,7 +1142,7 @@ const uniqueEndorsedTo = useMemo(() => {
       className="filter-input"
       style={{
               position: 'relative',
-              zIndex: 9999,
+              zIndex: 999,
               pointerEvents: 'auto',
               cursor: 'pointer'
             }}
@@ -1157,7 +1157,7 @@ const uniqueEndorsedTo = useMemo(() => {
       className="filter-input"
       style={{
               position: 'relative',
-              zIndex: 9999,
+              zIndex: 999,
               pointerEvents: 'auto',
               cursor: 'pointer'
             }}
@@ -1177,7 +1177,7 @@ const uniqueEndorsedTo = useMemo(() => {
       className="filter-input"
       style={{
               position: 'relative',
-              zIndex: 9999,
+              zIndex: 999,
               pointerEvents: 'auto',
               cursor: 'pointer'
             }}
