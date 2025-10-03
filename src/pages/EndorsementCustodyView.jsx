@@ -1118,6 +1118,12 @@ const uniqueEndorsedTo = useMemo(() => {
       value={filters.dateFrom}
       onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
       className="filter-input"
+      style={{
+              position: 'relative',
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
     />
   </div>
   
@@ -1128,6 +1134,12 @@ const uniqueEndorsedTo = useMemo(() => {
       value={filters.dateTo}
       onChange={(e) => handleFilterChange('dateTo', e.target.value)}
       className="filter-input"
+      style={{
+              position: 'relative',
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
     />
   </div>
   
@@ -1137,6 +1149,12 @@ const uniqueEndorsedTo = useMemo(() => {
       value={filters.gradeLevel}
       onChange={(e) => handleFilterChange('gradeLevel', e.target.value)}
       className="filter-input"
+      style={{
+              position: 'relative',
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
     >
       <option value="">All Grade Levels</option>
       {uniqueGradeLevels.map(level => (
@@ -1151,6 +1169,12 @@ const uniqueEndorsedTo = useMemo(() => {
       value={filters.endorsedBy}
       onChange={(e) => handleFilterChange('endorsedBy', e.target.value)}
       className="filter-input"
+      style={{
+              position: 'relative',
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
     >
       <option value="">All Endorsers</option>
       {uniqueEndorsedBy.map(endorser => (
@@ -1165,6 +1189,12 @@ const uniqueEndorsedTo = useMemo(() => {
       value={filters.endorsedTo}
       onChange={(e) => handleFilterChange('endorsedTo', e.target.value)}
       className="filter-input"
+      style={{
+              position: 'relative',
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
     >
       <option value="">All Recipients</option>
       {uniqueEndorsedTo.map(recipient => (
