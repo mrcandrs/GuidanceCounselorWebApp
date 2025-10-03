@@ -10,6 +10,7 @@ import GuidanceNotesView from './GuidanceNotesView';
 import GuidancePassView from './GuidancePassView';
 import ReferralView from './ReferralView';
 import FileMaintenanceView from './FileMaintenanceView';
+import HistoryReportsView from './HistoryReportsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
@@ -328,7 +329,7 @@ useEffect(() => {
       case 'filemaintenance':
         return <FileMaintenanceView />;
       case 'reports':
-        return <GenericFormView title="History and Reports" description="View tracked history and detailed reports." />;
+        return <HistoryReportsView />;
       default:
         return <StudentsListView />;
     }
