@@ -1070,6 +1070,12 @@ const uniqueEndorsedTo = useMemo(() => {
                       key={`${option.key}-${option.direction}`}
                       className={`sort-option ${sortConfig.key === option.key && sortConfig.direction === option.direction ? 'sort-option-active' : ''}`}
                       onClick={() => handleSort(option.key, option.direction)}
+                      style={{
+                        position: 'relative',
+                        zIndex: 9999,
+                        pointerEvents: 'auto',
+                        cursor: 'pointer'
+                      }}
                     >
                       <span>{option.label}</span>
                       <span className="sort-direction">
