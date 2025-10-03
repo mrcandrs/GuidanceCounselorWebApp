@@ -29,6 +29,8 @@
   padding: 24px;
   min-width: 0;
   overflow: visible;
+  position: relative;
+  z-index: 1;
 }
 
 .card-header {
@@ -638,6 +640,7 @@
   overflow-y: auto;      /* enable vertical scroll for list */
   max-height: 60vh;      /* adjust as you like (e.g., 65–70vh) */
   position: relative;    /* keeps z-index contexts sane */
+  z-index: 0;
 }
 
 .forms-table {
@@ -985,7 +988,7 @@
   align-items: center !important;
   margin-bottom: 24px !important;
   position: relative !important;
-  z-index: 1 !important;
+  z-index: 10000 !important;
 }
 
 /* Reset any form interference if the button is inside a form */
