@@ -1180,6 +1180,99 @@ html, body {
 }
 
 /* History & Reports specific styles */
+/* History & Reports layout polish */
+.history-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.report-subtabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.filter-button.active {
+  background-color: #0477BF;
+  color: #fff;
+}
+
+.history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.history-pagination .pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-pagination select,
+.history-pagination button {
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+}
+
+/* Make date inputs consistent and not tiny */
+.filter-input[type="date"] {
+  min-width: 160px;
+}
+
+/* Keep table area tall enough, center empty state */
+.table-container {
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+.table-container > .empty-state,
+.table-container > .data-table {
+  margin-top: 0;
+}
+
+/* Table readability */
+.data-table th,
+.data-table td {
+  vertical-align: middle;
+  font-size: 14px;
+}
+.data-table td:first-child,
+.data-table th:first-child {
+  white-space: nowrap;
+}
+.data-table td:nth-child(5) {
+  width: 260px;            /* Details column */
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* Reports cards spacing */
+.cards-row .kpi-card,
+.cards-row .card {
+  min-height: 100px;
+}
+
+/* Better wrapping on small screens */
+@media (max-width: 768px) {
+  .history-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .history-pagination .pager {
+    justify-content: space-between;
+  }
+}
+
 .filter-select {
   padding: 8px 12px;
   border: 1px solid #d1d5db;
@@ -1215,6 +1308,8 @@ html, body {
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
 }
+
+
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
