@@ -22,6 +22,7 @@ const HistoryReportsView = () => {
   const [pageSize, setPageSize] = useState(20);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [reportTab, setReportTab] = useState('appointments'); // 'appointments' | 'referrals' | 'notes' | 'forms' | 'moods'
 
   // Fetch history data
 const fetchHistory = async () => {
@@ -55,23 +56,38 @@ const fetchHistory = async () => {
 
   // Fetch reports data
   const fetchReports = async () => {
-    setLoading(true);
-    try {
-        const token = localStorage.getItem('authToken');
-        
-        // Only fetch appointments for now (this fixes the KPI cards)
-        const appointmentsRes = await axios.get('https://guidanceofficeapi-production.up.railway.app/api/reports/appointments', {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { from: filters.from, to: filters.to }
-        });
-        
-        // Set the appointments data directly - this fixes the KPI cards
-        setReportsData(appointmentsRes.data);
-    } catch (error) {
-        console.error('Error fetching reports:', error);
-    } finally {
-        setLoading(false);
+  setLoading(true);
+  try {
+    const token = localStorage.getItem('authToken');
+    const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
+    const common = { headers: { Authorization: `Bearer ${token}` }, params: { from: filters.from, to: filters.to } };
+
+    if (reportTab === 'appointments') {
+      const { data } = await axios.get(`${API_BASE}/api/reports/appointments`, common);
+      setReportsData({ type: 'appointments', ...data });
+    } else if (reportTab === 'referrals') {
+      const { data } = await axios.get(`${API_BASE}/api/reports/referrals`, common);
+      setReportsData({ type: 'referrals', ...data });
+    } else if (reportTab === 'notes') {
+      const { data } = await axios.get(`${API_BASE}/api/reports/notes`, common);
+      setReportsData({ type: 'notes', ...data });
+    } else if (reportTab === 'forms') {
+      const { data } = await axios.get(`${API_BASE}/api/reports/forms-completion`, common);
+      setReportsData({ type: 'forms', ...data });
+    } else if (reportTab === 'moods') {
+      const [distribution, daily, monthly] = await Promise.all([
+        axios.get(`${API_BASE}/api/moodtracker/distribution`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_BASE}/api/moodtracker/daily-trends`, { headers: { Authorization: `Bearer ${token}` } }),
+        // month/year optional; you can compute current month/year or add UI controls later
+        axios.get(`${API_BASE}/api/moodtracker/monthly-reports`, { headers: { Authorization: `Bearer ${token}` }, params: { month: new Date().getMonth()+1, year: new Date().getFullYear() } }),
+      ]);
+      setReportsData({ type: 'moods', distribution: distribution.data, daily: daily.data, monthly: monthly.data });
     }
+  } catch (error) {
+    console.error('Error fetching reports:', error);
+  } finally {
+    setLoading(false);
+  }
 };
 
   // 3) Trigger refetch when filters or pagination change (History tab active)
@@ -85,6 +101,12 @@ useEffect(() => {
   fetchHistory();
   // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [activeTab, page, pageSize]);
+
+useEffect(() => {
+  if (activeTab !== 'reports') return;
+  fetchReports();
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [activeTab, reportTab, filters.from, filters.to]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
@@ -397,6 +419,21 @@ useEffect(() => {
 
         {activeTab === 'reports' && (
           <div>
+            {/* Report sub-tabs go here */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              {['appointments','referrals','notes','forms','moods'].map(rt => (
+                <button
+                  key={rt}
+                  className={`filter-button ${reportTab === rt ? 'active' : ''}`}
+                  onClick={() => setReportTab(rt)}
+                  style={{ background: reportTab === rt ? '#0477BF' : 'white', color: reportTab === rt ? 'white' : '#374151' }}
+                >
+                  {rt.charAt(0).toUpperCase() + rt.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Existing date inputs stay below */}
             <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
               <input 
                 type="date" 
@@ -415,123 +452,216 @@ useEffect(() => {
             </div>
 
             {loading ? (
-              <div className="empty-state">
-                <div className="loading-spinner"></div>
-                <p>Loading reports...</p>
-              </div>
-            ) : reportsData ? (
-              <div>
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                  gap: '20px', 
-                  marginBottom: '32px' 
-                }}>
-                  <div className="kpi-card">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                      <Calendar size={20} className="text-blue-500" />
-                      <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Appointments</h3>
-                    </div>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
-                      {reportsData.total}
-                    </div>
-                  </div>
-
-                  <div className="kpi-card">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                      <Clock size={20} className="text-yellow-500" />
-                      <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Pending</h3>
-                    </div>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
-                      {reportsData.pending}
-                    </div>
-                  </div>
-
-                  <div className="kpi-card">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                      <CheckCircle size={20} className="text-green-500" />
-                      <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Approved</h3>
-                    </div>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
-                      {reportsData.approved}
-                    </div>
-                  </div>
-
-                  <div className="kpi-card">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                      <XCircle size={20} className="text-red-500" />
-                      <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Rejected</h3>
-                    </div>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>
-                      {reportsData.rejected}
-                    </div>
-                  </div>
-
-                  <div className="kpi-card">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                      <CheckCircle size={20} className="text-green-600" />
-                      <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Completed</h3>
-                    </div>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#059669' }}>
-                      {reportsData.completed}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card">
-                  <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Appointments by Day</h3>
-                  {reportsData.byDay && reportsData.byDay.length > 0 ? (
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'end', 
-                      gap: '12px', 
-                      height: '200px', 
-                      padding: '20px 0',
-                      borderBottom: '1px solid #e5e7eb'
-                    }}>
-                      {reportsData.byDay.map((day, index) => {
-                        const maxCount = Math.max(...reportsData.byDay.map(d => d.count));
-                        const height = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
-                        
-                        return (
-                          <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
-                            <div style={{ 
-                              width: '100%', 
-                              background: '#0477BF', 
-                              borderRadius: '4px 4px 0 0', 
-                              minHeight: '4px',
-                              height: `${height}%`,
-                              transition: 'all 0.3s',
-                              cursor: 'pointer'
-                            }} title={`${day.count} appointments on ${new Date(day.date).toLocaleDateString()}`} />
-                            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
-                              {new Date(day.date).toLocaleDateString()}
-                            </div>
-                            <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
-                              {day.count}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="empty-state">
-                      <TrendingUp size={48} className="empty-icon" />
-                      <p>No appointment data available for the selected period.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="empty-state">
-                <TrendingUp size={48} className="empty-icon" />
-                <p>No reports data available.</p>
-              </div>
-            )}
+  <div className="empty-state">
+    <div className="loading-spinner"></div>
+    <p>Loading reports...</p>
+  </div>
+) : !reportsData ? (
+  <div className="empty-state">
+    <TrendingUp size={48} className="empty-icon" />
+    <p>No reports data available.</p>
+  </div>
+) : (
+  <>
+    {/* Appointments (keep your existing UI) */}
+    {reportsData?.type === 'appointments' && (
+      <div>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '20px', 
+          marginBottom: '32px' 
+        }}>
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <Calendar size={20} className="text-blue-500" />
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Appointments</h3>
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+              {reportsData.total}
+            </div>
           </div>
-        )}
+
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <Clock size={20} className="text-yellow-500" />
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Pending</h3>
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
+              {reportsData.pending}
+            </div>
+          </div>
+
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <CheckCircle size={20} className="text-green-500" />
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Approved</h3>
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+              {reportsData.approved}
+            </div>
+          </div>
+
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <XCircle size={20} className="text-red-500" />
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Rejected</h3>
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>
+              {reportsData.rejected}
+            </div>
+          </div>
+
+          <div className="kpi-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <CheckCircle size={20} className="text-green-600" />
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Completed</h3>
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#059669' }}>
+              {reportsData.completed}
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Appointments by Day</h3>
+          {reportsData.byDay && reportsData.byDay.length > 0 ? (
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'end', 
+              gap: '12px', 
+              height: '200px', 
+              padding: '20px 0',
+              borderBottom: '1px solid #e5e7eb'
+            }}>
+              {reportsData.byDay.map((day, index) => {
+                const maxCount = Math.max(...reportsData.byDay.map(d => d.count));
+                const height = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
+                
+                return (
+                  <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                    <div style={{ 
+                      width: '100%', 
+                      background: '#0477BF', 
+                      borderRadius: '4px 4px 0 0', 
+                      minHeight: '4px',
+                      height: `${height}%`,
+                      transition: 'all 0.3s',
+                      cursor: 'pointer'
+                    }} title={`${day.count} appointments on ${new Date(day.date).toLocaleDateString()}`} />
+                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                      {new Date(day.date).toLocaleDateString()}
+                    </div>
+                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                      {day.count}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <TrendingUp size={48} className="empty-icon" />
+              <p>No appointment data available for the selected period.</p>
+            </div>
+          )}
+        </div>
       </div>
+    )}
+
+    {/* Referrals */}
+    {reportsData?.type === 'referrals' && (
+      <div className="cards-row">
+        <div className="kpi-card">
+          <h3 className="card-title">Total Referrals</h3>
+          <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+        </div>
+        <div className="card" style={{ marginTop: 16 }}>
+          <h3 className="card-title">By Priority</h3>
+          {reportsData.byPriority?.map((x, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+              <span>{x.priority}</span><strong>{x.count}</strong>
+            </div>
+          ))}
+        </div>
+        <div className="card" style={{ marginTop: 16 }}>
+          <h3 className="card-title">By Category</h3>
+          {reportsData.byCategory?.map((x, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+              <span>{x.category}</span><strong>{x.count}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Notes */}
+    {reportsData?.type === 'notes' && (
+      <div className="cards-row">
+        <div className="kpi-card">
+          <h3 className="card-title">Total Notes</h3>
+          <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+        </div>
+        <div className="card" style={{ marginTop: 16 }}>
+          <h3 className="card-title">By Nature</h3>
+          {reportsData.byNature?.map((x, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+              <span>{x.type}</span><strong>{x.count}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Forms */}
+    {reportsData?.type === 'forms' && (
+      <div className="cards-row">
+        <div className="kpi-card"><h3 className="card-title">Total Students</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.totalStudents}</div></div>
+        <div className="kpi-card"><h3 className="card-title">Consent Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.consentForms}</div><div>{reportsData.consentCompletionRate.toFixed(1)}%</div></div>
+        <div className="kpi-card"><h3 className="card-title">Inventory Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.inventoryForms}</div><div>{reportsData.inventoryCompletionRate.toFixed(1)}%</div></div>
+        <div className="kpi-card"><h3 className="card-title">Career Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.careerForms}</div><div>{reportsData.careerCompletionRate.toFixed(1)}%</div></div>
+      </div>
+    )}
+
+    {/* Moods */}
+    {reportsData?.type === 'moods' && (
+      <div>
+        <div className="cards-row">
+          <div className="card">
+            <h3 className="card-title">Distribution</h3>
+            {reportsData.distribution?.map((x, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                <span>{x.mood}</span><strong>{x.count}</strong>
+              </div>
+            ))}
+          </div>
+          <div className="card">
+            <h3 className="card-title">Last 7 Days</h3>
+            {reportsData.daily?.map((d, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
+                <span>{d.date}</span>
+                <span>Mild {d.mild} • Moderate {d.moderate} • High {d.high}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card" style={{ marginTop: 16 }}>
+          <h3 className="card-title">Monthly (by week)</h3>
+          {reportsData.monthly?.map((w, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
+              <span>{w.week} ({w.weekStart}–{w.weekEnd})</span>
+              <span>Mild {w.mild} • Moderate {w.moderate} • High {w.high} • Total {w.totalEntries}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </>
+)}
+      </div>
+        )}
     </div>
+  </div>
   );
 };
 
