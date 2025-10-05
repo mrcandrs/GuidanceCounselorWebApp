@@ -426,7 +426,14 @@ useEffect(() => {
                   key={rt}
                   className={`filter-button ${reportTab === rt ? 'active' : ''}`}
                   onClick={() => setReportTab(rt)}
-                  style={{ background: reportTab === rt ? '#0477BF' : 'white', color: reportTab === rt ? 'white' : '#374151' }}
+                  style={{ 
+                    background: reportTab === rt ? '#0477BF' : 'white', 
+                    color: reportTab === rt ? 'white' : '#374151',
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
                 >
                   {rt.charAt(0).toUpperCase() + rt.slice(1)}
                 </button>
@@ -434,7 +441,16 @@ useEffect(() => {
             </div>
 
             {/* Existing date inputs stay below */}
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: '16px', 
+              marginBottom: '24px',
+              position: 'relative',
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+              }}
+              >
               <input 
                 type="date" 
                 value={filters.from} 
