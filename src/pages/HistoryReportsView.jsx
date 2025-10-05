@@ -495,7 +495,11 @@ const fetchHistory = async () => {
                                 marginTop: '8px',
                                 maxWidth: '200px',
                                 overflow: 'auto',
-                                whiteSpace: 'pre-wrap'
+                                whiteSpace: 'pre-wrap',
+                                position: 'relative',
+                                zIndex: 9999,
+                                pointerEvents: 'auto',
+                                cursor: 'pointer'
                               }}>
                                 {JSON.stringify(JSON.parse(item.detailsJson), null, 2)}
                               </pre>
