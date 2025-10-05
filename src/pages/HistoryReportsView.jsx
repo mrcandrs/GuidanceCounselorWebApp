@@ -199,7 +199,7 @@ useEffect(() => {
 
         {activeTab === 'history' && (
           <div>
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <div className="history-toolbar" style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
               <select 
                 value={filters.entityType} 
                 onChange={(e) => handleFilterChange('entityType', e.target.value)}
@@ -243,7 +243,16 @@ useEffect(() => {
               </select>
 
 
-              <select value={filters.actorType} onChange={e => setFilters(f => ({ ...f, actorType: e.target.value }))}>
+              <select 
+                className="filter-select" 
+                value={filters.actorType}
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }} 
+                onChange={e => setFilters(f => ({ ...f, actorType: e.target.value }))}>
                 <option value="">Actor Type (all)</option>
                 <option value="counselor">Counselor</option>
                 <option value="student">Student</option>
@@ -251,25 +260,49 @@ useEffect(() => {
                 <option value="admin">Admin</option>
               </select>
 
-              <select value={filters.outcome} onChange={e => setFilters(f => ({ ...f, outcome: e.target.value }))}>
+              <select 
+                className="filter-select" 
+                value={filters.outcome}
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }} 
+                onChange={e => setFilters(f => ({ ...f, outcome: e.target.value }))}>
                 <option value="">Outcome (all)</option>
                 <option value="Success">Success</option>
                 <option value="Failure">Failure</option>
               </select>
 
-              <select value={filters.channel} onChange={e => setFilters(f => ({ ...f, channel: e.target.value }))}>
+              <select 
+                className="filter-select" 
+                value={filters.channel}
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }} 
+                onChange={e => setFilters(f => ({ ...f, channel: e.target.value }))}>
                 <option value="">Channel (all)</option>
                 <option value="WebApp">WebApp</option>
                 <option value="Android">Android</option>
                 <option value="API">API</option>
               </select>
 
-              <input
-                type="text"
-                placeholder="Search summary/details"
+              <input 
+                className="filter-input" 
+                type="text" 
+                placeholder="Search summary/details" 
                 value={filters.search}
-                onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
-              />
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+                onChange={e => setFilters(f => ({ ...f, search: e.target.value }))} />
 
 
               <input 
