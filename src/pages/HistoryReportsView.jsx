@@ -639,7 +639,7 @@ useEffect(() => {
       </div>
     )}
 
-    {/* Moods */}
+    {/* Moods
     {reportsData?.type === 'moods' && (
       <div>
         <div className="cards-row">
@@ -671,7 +671,7 @@ useEffect(() => {
           ))}
         </div>
       </div>
-    )}
+    )}*/}
   </>
 )}
       </div>
