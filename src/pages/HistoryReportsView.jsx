@@ -91,22 +91,22 @@ const fetchHistory = async () => {
 };
 
   // 3) Trigger refetch when filters or pagination change (History tab active)
-useEffect(() => {
-  if (activeTab !== 'history') return;
-  setPage(1); // reset page when filters change
-}, [filters, activeTab]);
+  useEffect(() => {
+    if (activeTab !== 'history') return;
+    setPage(1); // reset page when filters change
+  }, [filters, activeTab]);
 
-useEffect(() => {
-  if (activeTab !== 'history') return;
-  fetchHistory();
+  useEffect(() => {
+    if (activeTab !== 'history') return;
+    fetchHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, page, pageSize]);
+
+  useEffect(() => {
+    if (activeTab !== 'reports') return;
+    fetchReports();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [activeTab, page, pageSize]);
-
-useEffect(() => {
-  if (activeTab !== 'reports') return;
-  fetchReports();
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [activeTab, reportTab, filters.from, filters.to]);
+  }, [activeTab, reportTab, filters.from, filters.to]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
@@ -132,6 +132,57 @@ useEffect(() => {
       a.download = `history_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
     }
+  };
+
+  const resetFilters = () => {
+  setFilters({ entityType:'', action:'', actorType:'', outcome:'', channel:'', from:'', to:'', search:'' });
+  setPage(1);
+};
+
+  const exportAllHistory = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      let p = 1, all = [], totalPagesLocal = 1;
+      do {
+        const { data } = await axios.get('/api/history', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            entityType: filters.entityType || undefined,
+            action: filters.action || undefined,
+            actorType: filters.actorType || undefined,
+            from: filters.from || undefined,
+            to: filters.to || undefined,
+            page: p,
+            pageSize: 1000
+          }
+        });
+        all = all.concat(data.items || []);
+        totalPagesLocal = data.totalPages || 1;
+        p += 1;
+      } while (p <= totalPagesLocal);
+
+      const csv = [
+        ['Date','Entity','Action','Actor','Details'].join(','),
+        ...all.map(item => [
+          new Date(item.createdAt).toLocaleString(),
+          `${item.entityType}${item.entityId ? ` #${item.entityId}` : ''}`,
+          item.action,
+          `${item.actorType}${item.actorId ? ` #${item.actorId}` : ''}`,
+          `"${item.detailsJson || ''}"`
+        ].join(','))
+      ].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `history_all_${Date.now()}.csv`; a.click();
+    } catch (e) {
+      console.error('export all failed', e);
+    }
+  };
+
+    const goToHistoryWith = (next) => {
+    setFilters(f => ({ ...f, ...next }));
+    setActiveTab('history');
+    setPage(1);
   };
 
   const getEntityIcon = (entityType) => {
@@ -346,6 +397,33 @@ useEffect(() => {
                 <Download size={16} />
                 Export CSV
               </button>
+
+              <button 
+                onClick={resetFilters} 
+                className="filter-button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+                >
+                Reset
+              </button>
+
+              <button 
+                onClick={exportAllHistory} 
+                className="primary-button"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+                >
+                <Download size={16}/> 
+              Export All
+              </button>
             </div>
 
             <div className="table-container">
@@ -532,17 +610,17 @@ useEffect(() => {
             </div>
 
             {loading ? (
-  <div className="empty-state">
-    <div className="loading-spinner"></div>
-    <p>Loading reports...</p>
-  </div>
-) : !reportsData ? (
-  <div className="empty-state">
-    <TrendingUp size={48} className="empty-icon" />
-    <p>No reports data available.</p>
-  </div>
-) : (
-  <>
+          <div className="empty-state">
+            <div className="loading-spinner"></div>
+            <p>Loading reports...</p>
+          </div>
+        ) : !reportsData ? (
+          <div className="empty-state">
+            <TrendingUp size={48} className="empty-icon" />
+            <p>No reports data available.</p>
+          </div>
+        ) : (
+        <>
     {/* Appointments (keep your existing UI) */}
     {reportsData?.type === 'appointments' && (
       <div>
@@ -552,7 +630,7 @@ useEffect(() => {
           gap: '20px', 
           marginBottom: '32px' 
         }}>
-          <div className="kpi-card">
+          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <Calendar size={20} className="text-blue-500" />
               <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Appointments</h3>
@@ -562,7 +640,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className="kpi-card">
+          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <Clock size={20} className="text-yellow-500" />
               <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Pending</h3>
@@ -572,7 +650,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className="kpi-card">
+          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment', action: 'approved' })} style={{ cursor: 'pointer' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <CheckCircle size={20} className="text-green-500" />
               <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Approved</h3>
@@ -582,7 +660,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className="kpi-card">
+          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment', action: 'rejected' })} style={{ cursor: 'pointer' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <XCircle size={20} className="text-red-500" />
               <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Rejected</h3>
@@ -592,7 +670,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className="kpi-card">
+          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <CheckCircle size={20} className="text-green-600" />
               <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Completed</h3>
@@ -620,15 +698,15 @@ useEffect(() => {
                 
                 return (
                   <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
-                    <div style={{ 
-                      width: '100%', 
-                      background: '#0477BF', 
-                      borderRadius: '4px 4px 0 0', 
-                      minHeight: '4px',
-                      height: `${height}%`,
-                      transition: 'all 0.3s',
-                      cursor: 'pointer'
-                    }} title={`${day.count} appointments on ${new Date(day.date).toLocaleDateString()}`} />
+                    <div
+                      onClick={() => goToHistoryWith({
+                        entityType: 'appointment',
+                        from: new Date(day.date).toISOString().slice(0,10),
+                        to: new Date(day.date).toISOString().slice(0,10)
+                      })}
+                      style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                      title={`${day.count} appointments on ${new Date(day.date).toLocaleDateString()}`}
+                    />
                     <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
                       {new Date(day.date).toLocaleDateString()}
                     </div>
@@ -652,7 +730,7 @@ useEffect(() => {
     {/* Referrals */}
     {reportsData?.type === 'referrals' && (
       <div className="cards-row">
-        <div className="kpi-card">
+        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'referral' })}>
           <h3 className="card-title">Total Referrals</h3>
           <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
         </div>
@@ -678,7 +756,7 @@ useEffect(() => {
     {/* Notes */}
     {reportsData?.type === 'notes' && (
       <div className="cards-row">
-        <div className="kpi-card">
+        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'note' })}>
           <h3 className="card-title">Total Notes</h3>
           <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
         </div>
@@ -697,9 +775,9 @@ useEffect(() => {
     {reportsData?.type === 'forms' && (
       <div className="cards-row">
         <div className="kpi-card"><h3 className="card-title">Total Students</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.totalStudents}</div></div>
-        <div className="kpi-card"><h3 className="card-title">Consent Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.consentForms}</div><div>{reportsData.consentCompletionRate.toFixed(1)}%</div></div>
-        <div className="kpi-card"><h3 className="card-title">Inventory Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.inventoryForms}</div><div>{reportsData.inventoryCompletionRate.toFixed(1)}%</div></div>
-        <div className="kpi-card"><h3 className="card-title">Career Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.careerForms}</div><div>{reportsData.careerCompletionRate.toFixed(1)}%</div></div>
+        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consent' })}><h3 className="card-title">Consent Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.consentForms}</div><div>{reportsData.consentCompletionRate.toFixed(1)}%</div></div>
+        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'inventory' })}><h3 className="card-title">Inventory Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.inventoryForms}</div><div>{reportsData.inventoryCompletionRate.toFixed(1)}%</div></div>
+        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'career' })}><h3 className="card-title">Career Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.careerForms}</div><div>{reportsData.careerCompletionRate.toFixed(1)}%</div></div>
       </div>
     )}
 
