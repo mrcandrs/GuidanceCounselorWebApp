@@ -9,41 +9,48 @@ const HistoryReportsView = () => {
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
-    entityType: '',
-    action: '',
-    from: '',
-    to: '',
-    page: 1,
-    pageSize: 20
+  entityType: '',
+  action: '',
+  actorType: '',
+  outcome: '',
+  channel: '',
+  from: '',
+  to: '',
+  search: ''
   });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Fetch history data
-  const fetchHistory = async () => {
+const fetchHistory = async () => {
+  try {
     setLoading(true);
-    try {
-        const token = localStorage.getItem('authToken');
-        const params = new URLSearchParams();
-        
-        if (filters.entityType) params.append('entityType', filters.entityType);
-        if (filters.action) params.append('action', filters.action);
-        if (filters.from) params.append('from', filters.from);
-        if (filters.to) params.append('to', filters.to);
-        if (filters.page) params.append('page', filters.page.toString());
-        if (filters.pageSize) params.append('pageSize', filters.pageSize.toString());
-
-        // Change this URL to match your new controller:
-        const response = await axios.get(`https://guidanceofficeapi-production.up.railway.app/api/history?${params}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        setHistoryData(response.data.items || []);
-        // Handle pagination if you want
-    } catch (error) {
-        console.error('Error fetching history:', error);
-        alert('Failed to load history');
-    } finally {
-        setLoading(false);
-    }
+    const token = localStorage.getItem('authToken');
+    const params = {
+      entityType: filters.entityType || undefined,
+      action: filters.action || undefined,
+      actorType: filters.actorType || undefined,
+      outcome: filters.outcome || undefined,
+      channel: filters.channel || undefined,
+      from: filters.from || undefined,
+      to: filters.to || undefined,
+      page,
+      pageSize
+    };
+    const res = await axios.get('/api/history', {
+      params,
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setHistoryData(res.data.items || []);
+    setTotalItems(res.data.totalItems || 0);
+    setTotalPages(res.data.totalPages || 1);
+  } catch (e) {
+    console.error('history fetch failed', e?.response?.data || e.message);
+  } finally {
+    setLoading(false);
+  }
 };
 
   // Fetch reports data
@@ -67,13 +74,17 @@ const HistoryReportsView = () => {
     }
 };
 
-  useEffect(() => {
-    if (activeTab === 'history') {
-      fetchHistory();
-    } else {
-      fetchReports();
-    }
-  }, [activeTab, filters]);
+  // 3) Trigger refetch when filters or pagination change (History tab active)
+useEffect(() => {
+  if (activeTab !== 'history') return;
+  setPage(1); // reset page when filters change
+}, [filters, activeTab]);
+
+useEffect(() => {
+  if (activeTab !== 'history') return;
+  fetchHistory();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [activeTab, page, pageSize]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
@@ -209,6 +220,36 @@ const HistoryReportsView = () => {
                 <option value="deactivated">Deactivated</option>
               </select>
 
+
+              <select value={filters.actorType} onChange={e => setFilters(f => ({ ...f, actorType: e.target.value }))}>
+                <option value="">Actor Type (all)</option>
+                <option value="counselor">Counselor</option>
+                <option value="student">Student</option>
+                <option value="system">System</option>
+                <option value="admin">Admin</option>
+              </select>
+
+              <select value={filters.outcome} onChange={e => setFilters(f => ({ ...f, outcome: e.target.value }))}>
+                <option value="">Outcome (all)</option>
+                <option value="Success">Success</option>
+                <option value="Failure">Failure</option>
+              </select>
+
+              <select value={filters.channel} onChange={e => setFilters(f => ({ ...f, channel: e.target.value }))}>
+                <option value="">Channel (all)</option>
+                <option value="WebApp">WebApp</option>
+                <option value="Android">Android</option>
+                <option value="API">API</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Search summary/details"
+                value={filters.search}
+                onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
+              />
+
+
               <input 
                 type="date" 
                 value={filters.from} 
@@ -335,6 +376,22 @@ const HistoryReportsView = () => {
                 </table>
               )}
             </div>
+
+
+            {/* Pagination (no. 5) goes here */}
+            <div className="history-pagination">
+              <div>Page {page} of {totalPages} • {totalItems} items</div>
+              <div className="pager">
+                <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</button>
+                <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</button>
+                <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+            </div>
+
           </div>
         )}
 
