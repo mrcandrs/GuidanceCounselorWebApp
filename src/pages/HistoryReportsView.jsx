@@ -437,9 +437,40 @@ useEffect(() => {
             <div className="history-pagination">
               <div>Page {page} of {totalPages} • {totalItems} items</div>
               <div className="pager">
-                <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</button>
-                <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</button>
-                <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}>
+                <button 
+                  disabled={page <= 1} 
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                  >
+                  Prev
+                  </button>
+                <button 
+                  disabled={page >= totalPages} 
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                  >
+                  Next
+                  </button>
+                <select 
+                  value={pageSize} 
+                  onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                  >
                   <option value={10}>10</option>
                   <option value={20}>20</option>
                   <option value={50}>50</option>
