@@ -88,17 +88,22 @@ const fetchHistory = async () => {
   }
 };
 
-  // 3) Trigger refetch when filters or pagination change (History tab active)
-  useEffect(() => {
-    if (activeTab !== 'history') return;
-    setPage(1); // reset page when filters change
-  }, [filters, activeTab]);
-
-  useEffect(() => {
-    if (activeTab !== 'history') return;
-    fetchHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, page, pageSize]);
+  // Replace both current effects with this single effect
+useEffect(() => {
+  if (activeTab !== 'history') return;
+  fetchHistory();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [
+  activeTab,
+  page,
+  pageSize,
+  filters.entityType,
+  filters.action,
+  filters.actorType,
+  filters.from,
+  filters.to,
+  filters.search
+]);
 
   useEffect(() => {
     if (activeTab !== 'reports') return;
