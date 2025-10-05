@@ -3,6 +3,8 @@ import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCi
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
+const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
+
 const HistoryReportsView = () => {
   const [activeTab, setActiveTab] = useState('history');
   const [historyData, setHistoryData] = useState([]);
@@ -30,20 +32,16 @@ const fetchHistory = async () => {
     setLoading(true);
     const token = localStorage.getItem('authToken');
     const params = {
-      entityType: filters.entityType || undefined,
-      action: filters.action || undefined,
-      actorType: filters.actorType || undefined,
-      outcome: filters.outcome || undefined,
-      channel: filters.channel || undefined,
-      from: filters.from || undefined,
-      to: filters.to || undefined,
-      page,
-      pageSize
-    };
-    const res = await axios.get('/api/history', {
-      params,
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    entityType: filters.entityType || undefined,
+    action: filters.action || undefined,
+    actorType: filters.actorType || undefined,
+    from: filters.from || undefined,
+    to: filters.to || undefined,
+    search: filters.search || undefined,   // add this
+    page,
+    pageSize
+  };
+  const res = await axios.get(`${API_BASE}/api/history`, { params, headers: { Authorization: `Bearer ${token}` } });
     setHistoryData(res.data.items || []);
     setTotalItems(res.data.totalItems || 0);
     setTotalPages(res.data.totalPages || 1);
@@ -144,18 +142,19 @@ const fetchHistory = async () => {
       const token = localStorage.getItem('authToken');
       let p = 1, all = [], totalPagesLocal = 1;
       do {
-        const { data } = await axios.get('/api/history', {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            entityType: filters.entityType || undefined,
-            action: filters.action || undefined,
-            actorType: filters.actorType || undefined,
-            from: filters.from || undefined,
-            to: filters.to || undefined,
-            page: p,
-            pageSize: 1000
-          }
-        });
+        const { data } = await axios.get(`${API_BASE}/api/history`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          entityType: filters.entityType || undefined,
+          action: filters.action || undefined,
+          actorType: filters.actorType || undefined,
+          from: filters.from || undefined,
+          to: filters.to || undefined,
+          search: filters.search || undefined, // add this
+          page: p,
+          pageSize: 1000
+        }
+      });
         all = all.concat(data.items || []);
         totalPagesLocal = data.totalPages || 1;
         p += 1;
