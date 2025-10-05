@@ -421,7 +421,7 @@ useEffect(() => {
           <div>
             {/* Report sub-tabs go here */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-              {['appointments','referrals','notes','forms','moods'].map(rt => (
+              {['appointments','referrals','notes','forms'].map(rt => (
                 <button
                   key={rt}
                   className={`filter-button ${reportTab === rt ? 'active' : ''}`}
