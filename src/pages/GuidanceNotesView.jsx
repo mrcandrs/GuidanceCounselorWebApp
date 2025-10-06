@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle, Search, ChevronDown, X, SortAsc } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import '../styles/GuidanceNotes.css';
 import Select from 'react-select';
 import axios from 'axios';
@@ -104,6 +105,168 @@ const GuidanceNotesView = () => {
     // Counselor info (auto-populated)
     counselorName: ''
   });
+  // Search/Sort/Filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: 'interviewDate', direction: 'desc' });
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [filters, setFilters] = useState({
+    dateFrom: '',
+    dateTo: '',
+    grade: '',
+    counselorName: ''
+  });
+
+  const sortBtnRef = useRef(null);
+  const [sortMenuPos, setSortMenuPos] = useState({ top: 0, left: 0, width: 250 });
+
+  useLayoutEffect(() => {
+    if (!showSortMenu || !sortBtnRef.current) return;
+    const r = sortBtnRef.current.getBoundingClientRect();
+    setSortMenuPos({
+      top: r.bottom + 4,
+      left: Math.max(8, r.right - 250),
+      width: 250
+    });
+  }, [showSortMenu]);
+
+  const sortOptions = [
+    { key: 'interviewDate', label: 'Interview Date', direction: 'desc' },
+    { key: 'student', label: 'Student Name', direction: 'asc' },
+    { key: 'grade', label: 'Grade/Section', direction: 'asc' },
+    { key: 'counselorName', label: 'Counselor Name', direction: 'asc' }
+  ];
+
+  const filteredAndSortedNotes = useMemo(() => {
+  const term = (searchTerm || '').trim().toLowerCase();
+  let result = notes.slice();
+
+  // 1) Filters
+  if (filters.dateFrom) {
+    const from = new Date(filters.dateFrom);
+    result = result.filter(n => new Date(n.interviewDate) >= from);
+  }
+  if (filters.dateTo) {
+    const to = new Date(filters.dateTo);
+    result = result.filter(n => new Date(n.interviewDate) <= to);
+  }
+  if (filters.grade) {
+    const g = filters.grade.toLowerCase();
+    result = result.filter(n => (n.gradeYearLevelSection || '').toLowerCase().includes(g));
+  }
+  if (filters.counselorName) {
+    const c = filters.counselorName.toLowerCase();
+    result = result.filter(n => (n.counselor?.name || '').toLowerCase().includes(c));
+  }
+
+  // 2) Search
+  if (term) {
+    result = result.filter(n => {
+      const fullName = (n.student?.fullName || '').toLowerCase();
+      const studNo = String(n.student?.studentNumber || '').toLowerCase();
+      const grade = (n.gradeYearLevelSection || '').toLowerCase();
+      const program = (n.program || '').toLowerCase();
+      const counselor = (n.counselor?.name || '').toLowerCase();
+      const nature = [
+        n.isAcademic && 'academic',
+        n.isBehavioral && 'behavioral',
+        n.isPersonal && 'personal',
+        n.isSocial && 'social',
+        n.isCareer && 'career',
+      ].filter(Boolean).join(' ').toLowerCase();
+      const situation = [
+        n.isIndividual && 'individual',
+        n.isGroup && 'group',
+        n.isClass && 'class',
+        n.isCounselorInitiated && 'counselor initiated',
+        n.isWalkIn && 'walk-in',
+        n.isFollowUp && 'follow-up',
+        n.isReferred && 'referred',
+      ].filter(Boolean).join(' ').toLowerCase();
+      return (
+        fullName.includes(term) ||
+        studNo.includes(term) ||
+        grade.includes(term) ||
+        program.includes(term) ||
+        counselor.includes(term) ||
+        nature.includes(term) ||
+        situation.includes(term)
+      );
+    });
+  }
+
+  // 3) Sort
+  if (sortConfig.key) {
+    result.sort((a, b) => {
+      let aValue, bValue;
+      switch (sortConfig.key) {
+        case 'student':
+          aValue = a.student?.fullName || '';
+          bValue = b.student?.fullName || '';
+          break;
+        case 'interviewDate':
+          aValue = new Date(a.interviewDate);
+          bValue = new Date(b.interviewDate);
+          break;
+        case 'grade':
+          aValue = a.gradeYearLevelSection || '';
+          bValue = b.gradeYearLevelSection || '';
+          break;
+        case 'counselorName':
+          aValue = a.counselor?.name || '';
+          bValue = b.counselor?.name || '';
+          break;
+        default:
+          return 0;
+      }
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  return result;
+}, [notes, searchTerm, filters, sortConfig]);
+
+  const handleSort = (key, direction = null) => {
+  setSortConfig(prev => ({
+    key,
+    direction: direction || (prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc')
+  }));
+  setShowSortMenu(false);
+};
+
+const handleFilterChange = (filterKey, value) => {
+  setFilters(prev => ({ ...prev, [filterKey]: value }));
+};
+
+const clearFilters = () => {
+  setFilters({ dateFrom: '', dateTo: '', grade: '', counselorName: '' });
+  setSearchTerm('');
+};
+
+const getCurrentSortText = () => {
+  const currentSort = sortOptions.find(opt => opt.key === sortConfig.key);
+  const directionText = sortConfig.direction === 'asc' ? 'A-Z' : 'Z-A';
+  if (sortConfig.key === 'interviewDate') {
+    return `${currentSort?.label} (${sortConfig.direction === 'asc' ? 'Oldest' : 'Newest'})`;
+  }
+  return `${currentSort?.label} (${directionText})`;
+};
+
+const hasActiveFilters = useMemo(() => {
+  return Boolean(filters.dateFrom || filters.dateTo || filters.grade || filters.counselorName);
+}, [filters]);
+
+const uniqueGrades = useMemo(() => {
+  const list = notes.map(n => n.gradeYearLevelSection).filter(Boolean);
+  return [...new Set(list)].sort();
+}, [notes]);
+
+const uniqueCounselors = useMemo(() => {
+  const list = notes.map(n => n.counselor?.name).filter(Boolean);
+  return [...new Set(list)].sort();
+}, [notes]);
 
   // Build options and a filter for name or student number
   const studentOptions = useMemo(() => students.map(s => ({
@@ -1288,20 +1451,164 @@ const validateForm = () => {
         <p className="page-description">Create and manage guidance and counseling notes for student sessions.</p>
         
         <div className="card-header">
-          <div className="header-actions">
+          <div className="header-left">
             <button 
               type="button"
               onClick={handleCreateNew}
               className="create-button"
+              style={{ pointerEvents: 'auto', zIndex: 999 }}
             >
               <Plus size={20} />
               Create New
             </button>
-            <button className="filter-button">
+            </div>
+
+            <div className="header-right">
+            {/* Search */}
+            <div className="search-box">
+              <Search size={20} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search students, grade, program, counselor..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+              {searchTerm && (
+                <button onClick={() => setSearchTerm('')} className="search-clear">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {/* Sort */}
+            <div className="sort-dropdown-container">
+              <button
+                ref={sortBtnRef}
+                className={`sort-button ${showSortMenu ? 'sort-button-active' : ''}`}
+                onClick={() => setShowSortMenu(!showSortMenu)}
+              >
+                <SortAsc size={20} />
+                Sort
+                <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
+              </button>
+
+              {showSortMenu && createPortal(
+                <div className="sort-dropdown sort-dropdown-portal"
+                     style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width }}>
+                  <div className="sort-dropdown-header">
+                    <span>Sort by</span>
+                    <span className="current-sort">{getCurrentSortText()}</span>
+                  </div>
+                  {sortOptions.map((option) => (
+                    <button
+                      key={`${option.key}-${option.direction}`}
+                      className={`sort-option ${sortConfig.key === option.key && sortConfig.direction === option.direction ? 'sort-option-active' : ''}`}
+                      onClick={() => handleSort(option.key, option.direction)}
+                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                    >
+                      <span>{option.label}</span>
+                      <span className="sort-direction">
+                        {option.key === 'interviewDate' 
+                          ? (option.direction === 'asc' ? 'Oldest First' : 'Newest First')
+                          : (option.direction === 'asc' ? 'A-Z' : 'Z-A')}
+                      </span>
+                    </button>
+                  ))}
+                </div>,
+                document.body
+              )}
+            </div>
+
+            {/* Filter */}
+            <button
+              className={`filter-button ${showFilters ? 'filter-button-active' : ''}`}
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter size={20} />
               Filter
+              {hasActiveFilters && (
+                <span className="filter-badge">
+                  {Object.values(filters).filter(Boolean).length}
+                </span>
+              )}
             </button>
           </div>
+        </div>
+
+        {showFilters && (
+          <div className="filter-panel">
+            <div className="filter-panel-header">
+              <h3>Filters</h3>
+              {hasActiveFilters && (
+                <button onClick={clearFilters} className="clear-filters-button">
+                  <X size={16} />
+                  Clear All
+                </button>
+              )}
+            </div>
+            
+            <div className="filter-grid">
+              <div className="filter-group">
+                <label className="filter-label">Date From</label>
+                <input
+                  type="date"
+                  value={filters.dateFrom}
+                  onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+                  className="filter-input"
+                  style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+                />
+              </div>
+            
+              <div className="filter-group">
+                <label className="filter-label">Date To</label>
+                <input
+                  type="date"
+                  value={filters.dateTo}
+                  onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+                  className="filter-input"
+                  style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+                />
+              </div>
+            
+              <div className="filter-group">
+                <label className="filter-label">Grade/Section</label>
+                <select
+                  value={filters.grade}
+                  onChange={(e) => handleFilterChange('grade', e.target.value)}
+                  className="filter-input"
+                  style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+                >
+                  <option value="">All</option>
+                  {uniqueGrades.map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+                
+              <div className="filter-group">
+                <label className="filter-label">Counselor Name</label>
+                <select
+                  value={filters.counselorName}
+                  onChange={(e) => handleFilterChange('counselorName', e.target.value)}
+                  className="filter-input"
+                  style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+                >
+                  <option value="">All</option>
+                  {uniqueCounselors.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="results-summary">
+          <p>
+            Showing {filteredAndSortedNotes.length} of {notes.length} notes
+            {hasActiveFilters && " (filtered)"}
+          </p>
         </div>
         
         {loading ? (
@@ -1328,7 +1635,7 @@ const validateForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {notes.map((note) => (
+                {filteredAndSortedNotes.map((note) => (
                   <tr key={note.noteId}>
                     <td>
                       <div className="student-info">
