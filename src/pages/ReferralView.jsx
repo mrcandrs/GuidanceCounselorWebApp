@@ -93,12 +93,9 @@ const ReferralView = () => {
 
   // helper: filter + sort by category
 const getVisibleReferrals = () => {
-  let list = [...referrals];
+  let list = referrals.filter(matchesSearch);
 
-  // Apply search filter first
-  list = list.filter(matchesSearch);
-
-  // Apply category filter
+  // Filter by category (priority only)
   switch (category) {
     case 'emergency':
       list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('emergency'));
@@ -107,34 +104,23 @@ const getVisibleReferrals = () => {
       list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('asap'));
       break;
     case 'scheduled':
-      list = list.filter(r => 
-        (r.priorityLevel || '').toLowerCase().includes('before') && 
-        !!r.priorityDate && 
-        !isPastDue(r)
-      );
+      list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && !isPastDue(r));
       break;
     case 'pastdue':
-      list = list.filter(r => 
-        (r.priorityLevel || '').toLowerCase().includes('before') && 
-        !!r.priorityDate && 
-        isPastDue(r)
-      );
+      list = list.filter(r => (r.priorityLevel || '').toLowerCase().includes('before') && !!r.priorityDate && isPastDue(r));
       break;
     case 'completed':
-      list = list.filter(r => hasSavedFeedback(r));
-      break;
+      // Completed tab always shows completed
+      list = list.filter(hasSavedFeedback);
+      return sortReferrals(list);
     case 'all':
     default:
-      // For 'all', filter by completion status based on showCompleted checkbox
-      if (showCompleted) {
-        list = list.filter(r => hasSavedFeedback(r));
-      } else {
-        list = list.filter(r => !hasSavedFeedback(r));
-      }
       break;
   }
 
-  // Apply sorting
+  // Apply completion toggle for all non-completed categories (including 'all')
+  list = showCompleted ? list.filter(hasSavedFeedback) : list.filter(r => !hasSavedFeedback(r));
+
   return sortReferrals(list);
 };
 
@@ -246,6 +232,13 @@ const getVisibleReferrals = () => {
     setSelected(referral); // fallback to list data
   }
 };
+
+
+  //helper for resetting right panel section when switching tabs
+  const handleSetCategory = (next) => {
+    setCategory(next);
+    setSelected(null); // reset “Referral Form Details” + “Feedback Slip”
+  };
 
   // Add this new function for background refresh
 const refreshList = async () => {
@@ -440,6 +433,7 @@ const visible = getVisibleReferrals();
                       pointerEvents: 'auto',
                       cursor: 'pointer'
                     }}
+                    disabled={category === 'completed'}
                   />
                   Show Completed Only
                 </label>
@@ -448,7 +442,7 @@ const visible = getVisibleReferrals();
           </div>
 
           <div className="referral-tabs">
-            <button className={`ref-tab ${category==='all'?'active':''}`} onClick={() => setCategory('all')}style={{
+            <button className={`ref-tab ${category==='all'?'active':''}`} onClick={() => handleSetCategory('all')}style={{
                       position: 'relative',
                       zIndex: 9999,
                       pointerEvents: 'auto',
@@ -456,25 +450,25 @@ const visible = getVisibleReferrals();
                     }}>
                       All
                       </button>
-            <button className={`ref-tab ${category==='emergency'?'active':''}`} onClick={() => setCategory('emergency')}style={{
+            <button className={`ref-tab ${category==='emergency'?'active':''}`} onClick={() => handleSetCategory('emergency')}style={{
                       position: 'relative',
                       zIndex: 9999,
                       pointerEvents: 'auto',
                       cursor: 'pointer'
                     }}>Emergency ({counts.emergency})</button>
-            <button className={`ref-tab ${category==='asap'?'active':''}`} onClick={() => setCategory('asap')}style={{
+            <button className={`ref-tab ${category==='asap'?'active':''}`} onClick={() => handleSetCategory('asap')}style={{
                       position: 'relative',
                       zIndex: 9999,
                       pointerEvents: 'auto',
                       cursor: 'pointer'
                     }}>ASAP ({counts.asap})</button>
-            <button className={`ref-tab ${category==='scheduled'?'active':''}`} onClick={() => setCategory('scheduled')}style={{
+            <button className={`ref-tab ${category==='scheduled'?'active':''}`} onClick={() => handleSetCategory('scheduled')}style={{
                       position: 'relative',
                       zIndex: 9999,
                       pointerEvents: 'auto',
                       cursor: 'pointer'
                     }}>Before date ({counts.scheduled})</button>
-            <button className={`ref-tab ${category==='pastdue'?'active':''}`} onClick={() => setCategory('pastdue')}style={{
+            <button className={`ref-tab ${category==='pastdue'?'active':''}`} onClick={() => handleSetCategory('pastdue')}style={{
                       position: 'relative',
                       zIndex: 9999,
                       pointerEvents: 'auto',
@@ -482,7 +476,7 @@ const visible = getVisibleReferrals();
                     }}>Past due ({counts.pastdue})</button>
             <button 
               className={`ref-tab ${category==='completed'?'active':''}`} 
-              onClick={() => setCategory('completed')}
+              onClick={() => handleSetCategory('completed')}
               style={{
                 position: 'relative',
                 zIndex: 9999,
