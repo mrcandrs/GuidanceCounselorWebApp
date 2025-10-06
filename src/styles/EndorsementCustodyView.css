@@ -419,6 +419,47 @@
   background-color: #e5e7eb;
 }
 
+/* Consistent search box sizing and padding */
+.endorsement-card .search-box { width: 320px; }
+@media (max-width: 640px) {
+  .endorsement-card .search-box { width: 100%; }
+}
+
+/* Prevent magnifying glass overlap with placeholder/text */
+.endorsement-card .search-icon {
+  left: 12px;
+}
+.endorsement-card .search-input {
+  padding-left: 48px; /* was 44px; add a bit more room for all zoom levels */
+  height: 40px;       /* ensure consistent control height */
+  line-height: 24px;
+}
+
+/* Keep header controls away from card edges */
+.endorsement-card .card-header {
+  padding-right: 8px;   /* add breathing room on the right */
+}
+.endorsement-card .header-right {
+  gap: 12px;
+  margin-right: 4px;    /* small buffer so controls don’t touch border */
+}
+
+/* Ensure sort dropdown sits above scrollable areas */
+.sort-dropdown-portal { z-index: 2147483647 !important; }
+
+/* Optional: when card has vertical scroll, avoid header crowding */
+.consultation-scrollable-form .card-header,
+.guidance-scrollable-form .card-header,
+.endorsement-scrollable-form .card-header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 5;
+  padding-top: 8px;    /* slight top space matches standard */
+  padding-bottom: 8px;
+}
+
+
 /* Loading and Empty States */
 .loading-state {
   text-align: center;
