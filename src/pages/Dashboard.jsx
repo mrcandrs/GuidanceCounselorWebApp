@@ -431,12 +431,12 @@ useEffect(() => {
           >
             <Menu size={20} />
           </button>
-            <div>
+            {/*<div>
               <h2 className="header-title">
                 {sidebarItems.find(item => item.id === activeTab)?.label || 'Dashboard'}
               </h2>
               <p className="header-subtitle">Manage student guidance and counseling</p>
-            </div>
+            </div>*/}
           </div>
             
             <div className="header-actions">
