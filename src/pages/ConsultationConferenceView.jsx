@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronDown, X, SortAsc } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import jsPDF from 'jspdf';
 import axios from 'axios';
 import Select from 'react-select';
@@ -219,6 +220,179 @@ const ConsultationConferenceView = () => {
     schoolpersonnel: '',
     parentcontactnumber: ''
   });
+  // Search, Sort, and Filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [filters, setFilters] = useState({
+    dateFrom: '',
+    dateTo: '',
+    gradeLevel: '',
+    counselorName: '',
+    parentGuardian: ''
+  });
+
+  const sortBtnRef = useRef(null);
+  const [sortMenuPos, setSortMenuPos] = useState({ top: 0, left: 0, width: 250 });
+
+  useLayoutEffect(() => {
+  if (!showSortMenu || !sortBtnRef.current) return;
+  const r = sortBtnRef.current.getBoundingClientRect();
+  setSortMenuPos({
+    top: r.bottom + 4,
+    left: Math.max(8, r.right - 250),
+    width: 250
+    });
+  }, [showSortMenu]);
+
+  const sortOptions = [
+    { key: 'date', label: 'Date & Time', direction: 'desc' },
+    { key: 'student', label: 'Student Name', direction: 'asc' },
+    { key: 'gradeLevel', label: 'Grade Level', direction: 'asc' },
+    { key: 'counselorName', label: 'Counselor Name', direction: 'asc' },
+    { key: 'parentGuardian', label: 'Parent/Guardian Name', direction: 'asc' }
+  ];
+
+  const filteredAndSortedForms = useMemo(() => {
+  const term = (searchTerm || '').trim().toLowerCase();
+  let result = forms.slice();
+
+  // 1) Filters
+  if (filters.dateFrom) {
+    const from = new Date(filters.dateFrom);
+    result = result.filter(f => new Date(f.date) >= from);
+  }
+  if (filters.dateTo) {
+    const to = new Date(filters.dateTo);
+    result = result.filter(f => new Date(f.date) <= to);
+  }
+  if (filters.gradeLevel) {
+    const gl = filters.gradeLevel.toLowerCase();
+    result = result.filter(f => (f.gradeYearLevel || '').toLowerCase().includes(gl));
+  }
+  if (filters.counselorName) {
+    const c = filters.counselorName.toLowerCase();
+    result = result.filter(f => (f.counselorName || '').toLowerCase().includes(c));
+  }
+  if (filters.parentGuardian) {
+    const p = filters.parentGuardian.toLowerCase();
+    result = result.filter(f => (f.parentGuardian || '').toLowerCase().includes(p));
+  }
+
+  // 2) Search
+  if (term) {
+    result = result.filter(f => {
+      const fullName = (f.student?.fullName || '').toLowerCase();
+      const studNo = String(f.student?.studentNumber || '').toLowerCase();
+      const level = (f.gradeYearLevel || '').toLowerCase();
+      const section = (f.section || '').toLowerCase();
+      const counselor = (f.counselorName || '').toLowerCase();
+      const parent = (f.parentGuardian || '').toLowerCase();
+      return (
+        fullName.includes(term) ||
+        studNo.includes(term) ||
+        level.includes(term) ||
+        section.includes(term) ||
+        counselor.includes(term) ||
+        parent.includes(term)
+      );
+    });
+  }
+
+  // 3) Sort
+  if (sortConfig.key) {
+    result.sort((a, b) => {
+      let aValue, bValue;
+      switch (sortConfig.key) {
+        case 'student':
+          aValue = a.student?.fullName || '';
+          bValue = b.student?.fullName || '';
+          break;
+        case 'date':
+          aValue = new Date(a.date);
+          bValue = new Date(b.date);
+          break;
+        case 'gradeLevel':
+          aValue = a.gradeYearLevel || '';
+          bValue = b.gradeYearLevel || '';
+          break;
+        case 'counselorName':
+          aValue = a.counselorName || '';
+          bValue = b.counselorName || '';
+          break;
+        case 'parentGuardian':
+          aValue = a.parentGuardian || '';
+          bValue = b.parentGuardian || '';
+          break;
+        default:
+          return 0;
+      }
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  return result;
+}, [forms, searchTerm, filters, sortConfig]);
+
+  const handleSort = (key, direction = null) => {
+  setSortConfig(prev => ({
+    key,
+    direction: direction || (prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc')
+  }));
+  setShowSortMenu(false);
+};
+
+const handleFilterChange = (filterKey, value) => {
+  setFilters(prev => ({ ...prev, [filterKey]: value }));
+};
+
+const clearFilters = () => {
+  setFilters({
+    dateFrom: '',
+    dateTo: '',
+    gradeLevel: '',
+    counselorName: '',
+    parentGuardian: ''
+  });
+  setSearchTerm('');
+};
+
+const getCurrentSortText = () => {
+  const currentSort = sortOptions.find(opt => opt.key === sortConfig.key);
+  const directionText = sortConfig.direction === 'asc' ? 'A-Z' : 'Z-A';
+  if (sortConfig.key === 'date') {
+    return `${currentSort?.label} (${sortConfig.direction === 'asc' ? 'Oldest' : 'Newest'})`;
+  }
+  return `${currentSort?.label} (${directionText})`;
+};
+
+const hasActiveFilters = useMemo(() => {
+  return Boolean(
+    filters.dateFrom ||
+    filters.dateTo ||
+    filters.gradeLevel ||
+    filters.counselorName ||
+    filters.parentGuardian
+  );
+}, [filters]);
+
+const uniqueGradeLevels = useMemo(() => {
+  const levels = forms.map(f => f.gradeYearLevel).filter(Boolean);
+  return [...new Set(levels)].sort();
+}, [forms]);
+
+const uniqueCounselorNames = useMemo(() => {
+  const cs = forms.map(f => f.counselorName).filter(Boolean);
+  return [...new Set(cs)].sort();
+}, [forms]);
+
+const uniqueParentGuardians = useMemo(() => {
+  const ps = forms.map(f => f.parentGuardian).filter(Boolean);
+  return [...new Set(ps)].sort();
+}, [forms]);
 
   // helper for selecting student
   const selectStudent = async (studentId) => {
@@ -841,7 +1015,7 @@ const ConsultationConferenceView = () => {
         <p className="page-description">Create and manage consultation and conference forms.</p>
         
         <div className="card-header">
-          <div className="header-actions">
+          <div className="header-left">
             <button 
               type="button"
               onClick={(e) => {
@@ -855,12 +1029,170 @@ const ConsultationConferenceView = () => {
               <Plus size={20} />
               Create New
             </button>
-            <button className="filter-button">
-              <Filter size={20} />
-              Filter
-            </button>
           </div>
+
+          <div className="header-right">
+          {/* Search */}
+          <div className="search-box">
+            <Search size={20} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search students, counselor, parents..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            {searchTerm && (
+              <button onClick={() => setSearchTerm('')} className="search-clear">
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
+          {/* Sort */}
+          <div className="sort-dropdown-container">
+            <button
+              ref={sortBtnRef}
+              className={`sort-button ${showSortMenu ? 'sort-button-active' : ''}`}
+              onClick={() => setShowSortMenu(!showSortMenu)}
+            >
+              <SortAsc size={20} />
+              Sort
+              <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
+            </button>
+
+            {showSortMenu && createPortal(
+              <div className="sort-dropdown sort-dropdown-portal"
+                   style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width }}>
+                <div className="sort-dropdown-header">
+                  <span>Sort by</span>
+                  <span className="current-sort">{getCurrentSortText()}</span>
+                </div>
+                {sortOptions.map((option) => (
+                  <button
+                    key={`${option.key}-${option.direction}`}
+                    className={`sort-option ${sortConfig.key === option.key && sortConfig.direction === option.direction ? 'sort-option-active' : ''}`}
+                    onClick={() => handleSort(option.key, option.direction)}
+                    style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                  >
+                    <span>{option.label}</span>
+                    <span className="sort-direction">
+                      {option.key === 'date' 
+                        ? (option.direction === 'asc' ? 'Oldest First' : 'Newest First')
+                        : (option.direction === 'asc' ? 'A-Z' : 'Z-A')}
+                    </span>
+                  </button>
+                ))}
+              </div>,
+              document.body
+            )}
+          </div>
+
+          {/* Filter */}
+          <button
+            className={`filter-button ${showFilters ? 'filter-button-active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter size={20} />
+            Filter
+            {hasActiveFilters && (
+              <span className="filter-badge">
+                {Object.values(filters).filter(Boolean).length}
+              </span>
+            )}
+          </button>
         </div>
+      </div>
+
+      {showFilters && (
+  <div className="filter-panel">
+    <div className="filter-panel-header">
+      <h3>Filters</h3>
+      {hasActiveFilters && (
+        <button onClick={clearFilters} className="clear-filters-button">
+          <X size={16} />
+          Clear All
+        </button>
+      )}
+    </div>
+
+    <div className="filter-grid">
+      <div className="filter-group">
+        <label className="filter-label">Date From</label>
+        <input
+          type="date"
+          value={filters.dateFrom}
+          onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+          className="filter-input"
+          style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+        />
+      </div>
+
+      <div className="filter-group">
+        <label className="filter-label">Date To</label>
+        <input
+          type="date"
+          value={filters.dateTo}
+          onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+          className="filter-input"
+          style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+        />
+      </div>
+
+      <div className="filter-group">
+        <label className="filter-label">Grade Level</label>
+        <select
+          value={filters.gradeLevel}
+          onChange={(e) => handleFilterChange('gradeLevel', e.target.value)}
+          className="filter-input"
+          style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+        >
+          <option value="">All Grade Levels</option>
+          {uniqueGradeLevels.map(level => (
+            <option key={level} value={level}>{level}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="filter-group">
+        <label className="filter-label">Counselor Name</label>
+        <select
+          value={filters.counselorName}
+          onChange={(e) => handleFilterChange('counselorName', e.target.value)}
+          className="filter-input"
+          style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+        >
+          <option value="">All Counselors</option>
+          {uniqueCounselorNames.map(name => (
+            <option key={name} value={name}>{name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="filter-group">
+        <label className="filter-label">Parent/Guardian</label>
+        <select
+          value={filters.parentGuardian}
+          onChange={(e) => handleFilterChange('parentGuardian', e.target.value)}
+          className="filter-input"
+          style={{ position: 'relative', zIndex: 999, pointerEvents: 'auto', cursor: 'pointer' }}
+        >
+          <option value="">All Parents/Guardians</option>
+          {uniqueParentGuardians.map(pg => (
+            <option key={pg} value={pg}>{pg}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+  </div>
+)}
+
+<div className="results-summary">
+  <p>
+    Showing {filteredAndSortedForms.length} of {forms.length} forms
+    {hasActiveFilters && " (filtered)"}
+  </p>
+</div>
         
         {loading ? (
           <div className="loading-state">
@@ -886,7 +1218,7 @@ const ConsultationConferenceView = () => {
                 </tr>
               </thead>
               <tbody>
-                {forms.map((form) => (
+                {filteredAndSortedForms.map((form) => (
                   <tr key={form.consultationId}>
                     <td>
                       <div className="student-info">
