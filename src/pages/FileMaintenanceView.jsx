@@ -397,9 +397,8 @@ const FileMaintenanceView = () => {
               style={{
                 position: 'relative',
                 cursor: 'pointer',
-                background: active === t.id ? '#dbeafe' : undefined,
-                borderColor: active === t.id ? '#bfdbfe' : undefined
               }}
+              aria-pressed={active === t.id}
             >
               {t.label}
             </button>
