@@ -1636,7 +1636,21 @@ const validateForm = () => {
               </thead>
               <tbody>
                 {filteredAndSortedNotes.map((note) => (
-                  <tr key={note.noteId}>
+                  <tr 
+                    key={note.noteId}
+                    className="clickable-row"
+                    onClick={() => handleView(form)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleView(form);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View form for ${form.student?.fullName || 'student'}`}
+                    title="View"
+                  >
                     <td>
                       <div className="student-info">
                         <div className="student-avatar">

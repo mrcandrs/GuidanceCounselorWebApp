@@ -716,6 +716,14 @@
   font-size: 14px;
 }
 
+.forms-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
+.forms-table tbody tr.clickable-row:active {
+  background-color: #eef2ff;
+}
+
 .forms-table thead {
   background-color: #f9fafb;
 }
