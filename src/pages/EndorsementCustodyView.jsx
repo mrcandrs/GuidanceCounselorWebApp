@@ -138,61 +138,61 @@ const handleDownloadPDF = (formData) => {
   doc.save(fileName);
 };
 
-// Utility function to format dates in Manila timezone
-const formatManilaDateTime = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('en-PH', {
-    timeZone: 'Asia/Manila',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
-};
+  // Utility function to format dates in Manila timezone
+  const formatManilaDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-PH', {
+      timeZone: 'Asia/Manila',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
 
-const formatManilaDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-PH', {
-    timeZone: 'Asia/Manila',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
+  const formatManilaDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-PH', {
+      timeZone: 'Asia/Manila',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
-// Utility function to get current date in Manila timezone for input fields
-const getCurrentManilaDate = () => {
-  const now = new Date();
-  const manilaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
-  const year = manilaTime.getFullYear();
-  const month = String(manilaTime.getMonth() + 1).padStart(2, '0');
-  const day = String(manilaTime.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+  // Utility function to get current date in Manila timezone for input fields
+  const getCurrentManilaDate = () => {
+    const now = new Date();
+    const manilaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+    const year = manilaTime.getFullYear();
+    const month = String(manilaTime.getMonth() + 1).padStart(2, '0');
+    const day = String(manilaTime.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-// Utility function to get current time in Manila timezone for input fields
-const getCurrentManilaTime = () => {
-  const now = new Date();
-  const manilaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
-  const hours = String(manilaTime.getHours()).padStart(2, '0');
-  const minutes = String(manilaTime.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-};
+  // Utility function to get current time in Manila timezone for input fields
+  const getCurrentManilaTime = () => {
+    const now = new Date();
+    const manilaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+    const hours = String(manilaTime.getHours()).padStart(2, '0');
+    const minutes = String(manilaTime.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
-// Utility function to format time for display
-const formatTime = (timeString) => {
-  if (!timeString) return '-';
-  const [hours, minutes] = timeString.split(':');
-  const date = new Date();
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date.toLocaleTimeString('en-PH', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
-};
+  // Utility function to format time for display
+  const formatTime = (timeString) => {
+    if (!timeString) return '-';
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    return date.toLocaleTimeString('en-PH', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
 
 const EndorsementCustodyView = () => {
   const [forms, setForms] = useState([]);
