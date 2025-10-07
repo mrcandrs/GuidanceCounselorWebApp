@@ -37,6 +37,27 @@ html, body {
   color: white;
 }
 
+/* Prevent caret and text selection around the sidebar logo/header */
+.sidebar-header,
+.sidebar-header * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  caret-color: transparent;
+}
+
+/* Remove focus outline specifically for non-interactive elements in header */
+.sidebar-header img:focus,
+.sidebar-header div:focus {
+  outline: none;
+}
+
+/* Avoid blue tap highlight on touch devices */
+.sidebar-header {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .sidebar-title {
   font-size: 20px;
   font-weight: bold;

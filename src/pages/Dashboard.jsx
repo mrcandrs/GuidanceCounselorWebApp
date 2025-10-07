@@ -340,17 +340,13 @@ useEffect(() => {
       {/* Sidebar */}
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <div style={{ textAlign: 'center',}}>
-            <img 
-              src="/sti-tarlac-logo.png" 
-              alt="STI Tarlac Logo" 
-              style={{ 
-                width: '150px', 
-                height: '150px', 
-                objectFit: 'contain',
-                cursor: 'pointer'
-              }}
+          <div style={{ textAlign: 'center', userSelect: 'none', caretColor: 'transparent'}}>
+            <img
+              src="/sti-tarlac-logo.png"
+              alt="STI Tarlac Logo"
+              style={{ width: '150px', height: '150px', objectFit: 'contain', cursor: 'pointer', userSelect: 'none' }}
               onClick={() => handleTabChange('students')}
+              draggable={false}
             />
           </div>
           <h1 className="sidebar-title">Guidance and Counseling Office</h1>
