@@ -58,6 +58,25 @@ const GuidanceDashboard = () => {
   const [alerts, setAlerts] = useState([]);
   const [notifications, setNotifications] = useState([]);
 
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000); // tick every second
+    return () => clearInterval(id);
+  }, []);
+
+  const currentDate = now.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+  const currentTime = now.toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+
   // persisted read keys
   const [readKeys, setReadKeys] = useState(() => {
     try {
@@ -642,9 +661,13 @@ useEffect(() => {
                   </div>
                 )}
               </div>
+              <div className="header-datetime">
+                <span className="header-date">{currentDate}</span>
+                <span className="header-time">{currentTime}</span>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
         {/* Content */}
         <main className="content">

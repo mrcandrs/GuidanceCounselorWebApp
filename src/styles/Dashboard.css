@@ -412,6 +412,26 @@ html, body {
   position: fixed;
 }
 
+.header-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 220px;
+  color: #374151;
+  font-size: 12px;
+}
+
+.header-date {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.header-time {
+  font-variant-numeric: tabular-nums;
+  color: #6b7280;
+}
+
 .header-avatar {
   width: 32px;
   height: 32px;
