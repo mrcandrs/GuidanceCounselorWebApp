@@ -384,7 +384,7 @@ html, body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 .notification-button {
@@ -417,7 +417,7 @@ html, body {
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
-  min-width: 220px;
+  min-width: auto;
   color: #374151;
   font-size: 12px;
 }
