@@ -1639,16 +1639,16 @@ const validateForm = () => {
                   <tr 
                     key={note.noteId}
                     className="clickable-row"
-                    onClick={() => handleView(form)}
+                    onClick={() => handleView(note)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        handleView(form);
+                        handleView(note);
                       }
                     }}
                     tabIndex={0}
                     role="button"
-                    aria-label={`View form for ${form.student?.fullName || 'student'}`}
+                    aria-label={`View form for ${note.student?.fullName || 'student'}`}
                     title="View"
                   >
                     <td>
