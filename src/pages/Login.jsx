@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import useSessionTimeout from '../hooks/useSessionTimeout';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -11,6 +12,8 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [isCapsOn, setIsCapsOn] = useState(false);
   const navigate = useNavigate();
+  // Reset session timeout on successful login
+  const { resetTimeout } = useSessionTimeout(30, 5);
   const passwordInputRef = useRef(null);
 
   // prefill remembered email
@@ -50,6 +53,7 @@ const Login = () => {
       localStorage.removeItem('rememberedEmail');
     }
 
+    resetTimeout();
     navigate('/dashboard');
   } catch (err) {
     const msg = err?.response?.status === 401

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Calendar, ClipboardList, Menu, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X } from 'lucide-react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, Menu, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X, Clock, AlertTriangle } from 'lucide-react';
+import useSessionTimeout from '../hooks/useSessionTimeout';
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
 import MoodInsightsView from './MoodInsightsView';
@@ -17,6 +18,8 @@ import axios from "axios";
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  // Session timeout configuration (1 minute timeout, 30 seconds warning)
+  const { isWarning, timeLeft, isActive, extendSession, forceLogout } = useSessionTimeout(1, 0.5);
   
   // Map URL paths to tab IDs
   const pathToTabMap = {
@@ -140,6 +143,17 @@ useEffect(() => {
       window.removeEventListener('storage', onStorage);
     };
   }, []);
+
+
+  // Handle session timeout - redirect to login when session expires
+  useEffect(() => {
+    if (!isActive) {
+      // Clear token and redirect to login
+      localStorage.removeItem('authToken');
+      setCounselor({ name: '', email: '' });
+      navigate('/', { replace: true });
+    }
+  }, [isActive, navigate]);
 
   // create a stable key that doesn't fluctuate with counts
   const getNotificationKey = (n) => {
@@ -356,6 +370,40 @@ useEffect(() => {
 
   return (
     <div className="dashboard-container">
+
+
+  {/* Session Timeout Warning Modal */}
+  {isWarning && (
+    <div className="modal-overlay session-timeout-modal">
+      <div className="modal session-timeout-warning">
+        <div className="session-timeout-header">
+          <AlertTriangle className="session-timeout-icon" size={32} />
+          <h3>Session Timeout Warning</h3>
+        </div>
+        <div className="session-timeout-content">
+          <p>Your session will expire in <strong>{timeLeft}</strong> due to inactivity.</p>
+          <p>Click "Stay Logged In" to continue your session, or you will be automatically logged out.</p>
+        </div>
+        <div className="session-timeout-actions">
+          <button 
+            className="session-timeout-extend" 
+            onClick={extendSession}
+          >
+            <Clock size={16} />
+            Stay Logged In
+          </button>
+          <button 
+            className="session-timeout-logout" 
+            onClick={forceLogout}
+          >
+            <LogOut size={16} />
+            Logout Now
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+   
       {/* Sidebar */}
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">

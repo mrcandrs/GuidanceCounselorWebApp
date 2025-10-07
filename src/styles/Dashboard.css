@@ -973,6 +973,127 @@ html, body {
   margin: 0;
 }
 
+/* Session Timeout Modal Styles */
+.session-timeout-modal {
+  z-index: 10002; /* Higher than other modals */
+}
+
+.session-timeout-warning {
+  max-width: 480px;
+  text-align: center;
+  border: 2px solid #f59e0b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.session-timeout-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.session-timeout-icon {
+  color: #f59e0b;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.session-timeout-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.session-timeout-content {
+  margin-bottom: 24px;
+}
+
+.session-timeout-content p {
+  margin: 0 0 12px 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.session-timeout-content strong {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.session-timeout-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.session-timeout-extend {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.session-timeout-extend:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(16, 185, 129, 0.4);
+}
+
+.session-timeout-logout {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.session-timeout-logout:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+/* Responsive design for timeout modal */
+@media (max-width: 640px) {
+  .session-timeout-warning {
+    margin: 16px;
+    max-width: none;
+  }
+  
+  .session-timeout-actions {
+    flex-direction: column;
+  }
+  
+  .session-timeout-extend,
+  .session-timeout-logout {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .grid-cols-3 {
