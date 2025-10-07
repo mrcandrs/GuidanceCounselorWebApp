@@ -656,15 +656,16 @@ useEffect(() => {
                           Mark all as read
                         </button>
                       )}
-                    </div>
-
+                    </div> 
                   </div>
                 )}
               </div>
+
+            {/* Add this here */}
               <div className="header-datetime">
                 <span className="header-date">{currentDate}</span>
                 <span className="header-time">{currentTime}</span>
-            </div>
+              </div>
           </div>
         </div>
       </header>
