@@ -58,6 +58,21 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Hide caret/selection for non-interactive elements in the sidebar */
+.sidebar :not(button):not(a):not(input):not(textarea):not(select) {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  caret-color: transparent;
+}
+
+/* Ensure only interactive elements can show focus outlines */
+.sidebar img:focus,
+.sidebar div:focus {
+  outline: none;
+}
+
 .sidebar-title {
   font-size: 20px;
   font-weight: bold;
