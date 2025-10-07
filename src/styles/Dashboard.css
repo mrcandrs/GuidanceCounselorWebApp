@@ -512,6 +512,18 @@ html, body {
   background-color: #e5e7eb;
 }
 
+.filter-button.active {
+  background-color: #0477BF;
+  color: #fff;
+}
+
+.filter-button.active:hover,
+.filter-button.active:focus,
+.filter-button.active:focus-visible {
+  background-color: #0477BF;
+  color: #fff;
+}
+
 .approve-button {
   background-color: #10b981;
   color: white;
