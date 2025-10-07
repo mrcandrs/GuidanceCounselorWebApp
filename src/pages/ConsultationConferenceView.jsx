@@ -1219,7 +1219,21 @@ const uniqueParentGuardians = useMemo(() => {
               </thead>
               <tbody>
                 {filteredAndSortedForms.map((form) => (
-                  <tr key={form.consultationId}>
+                  <tr 
+                    key={form.consultationId}
+                    className="clickable-row"
+                    onClick={() => handleView(form)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleView(form);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View form for ${form.student?.fullName || 'student'}`}
+                    title="View"
+                    >
                     <td>
                       <div className="student-info">
                         <div className="student-avatar">
