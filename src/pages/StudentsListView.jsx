@@ -165,7 +165,21 @@ const StudentsTableView = ({
             </thead>
             <tbody>
               {filteredStudents.map((student) => (
-                <tr key={student.id} className="table-row">
+                <tr 
+                  key={student.id} 
+                  className="table-row"
+                  onClick={() => handleView(student)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleView(student);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View form for ${student.student?.fullName || 'student'}`}
+                    title="View"
+                    >
                   <td className="table-cell">
                     <div className="student-info">
                       <div className="student-avatar">

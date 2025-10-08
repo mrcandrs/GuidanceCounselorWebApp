@@ -904,6 +904,14 @@ html, body {
   margin-bottom: 16px;
 }
 
+.table-header tbody tr.clickable-row {
+  cursor: pointer;
+}
+
+.table-header tbody tr.clickable-row:active {
+  background-color: #eef2ff;
+}
+
 .label {
   display: block;
   font-size: 14px;
