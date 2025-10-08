@@ -9,6 +9,7 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
   const warningTimeoutRef = useRef(null);
   const intervalRef = useRef(null);
   const lastActivityRef = useRef(Date.now());
+  const isWarningRef = useRef(false); // Add this ref
 
   // Convert minutes to milliseconds
   const timeoutMs = timeoutMinutes * 60 * 1000;
@@ -18,6 +19,7 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
   const resetTimeout = useCallback(() => {
     lastActivityRef.current = Date.now();
     setIsWarning(false);
+    isWarningRef.current = false; // Update the ref
     setTimeLeft(null);
     setIsActive(true);
 
@@ -35,6 +37,7 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
     // Set warning timeout
     warningTimeoutRef.current = setTimeout(() => {
       setIsWarning(true);
+      isWarningRef.current = true; // Update the ref
       setTimeLeft(warningMinutes * 60); // Convert to seconds for display
       
       // Start countdown interval
@@ -66,6 +69,7 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
   const forceLogout = useCallback(() => {
     setIsActive(false);
     setIsWarning(false);
+    isWarningRef.current = false; // Update the ref
     setTimeLeft(null);
   }, []);
 
@@ -82,7 +86,7 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
 
     const handleActivity = () => {
       // Don't extend session if warning modal is visible
-      if (isActive && !isWarning) {
+      if (isActive && !isWarningRef.current) { // Use the ref instead
         extendSession();
       }
     };
@@ -111,7 +115,7 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, isWarning, extendSession, resetTimeout]);
+  }, [isActive, extendSession, resetTimeout]); // Remove isWarning from dependencies
 
   // Format time left for display
   const formatTimeLeft = useCallback((seconds) => {
