@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, Edit, Trash2, Users, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Search, Filter, Eye, Trash2, Users, ArrowLeft } from 'lucide-react';
 import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
@@ -80,7 +80,14 @@ const StudentsTableView = ({
   handleDelete,
   handleView,
   erroredAvatars,
-  setErroredAvatars
+  setErroredAvatars,
+  showFilters, 
+  setShowFilters, 
+  filters, 
+  setFilters, 
+  sortConfig, 
+  setSortConfig, 
+  hasActiveFilters
 }) => (
   <div className="page-container">
     <div className="page-header">
@@ -117,7 +124,7 @@ const StudentsTableView = ({
     <div className="card student-scrollable-form">
       <div className="search-container">
         <div className="search-input-container">
-          {/*<Search className="search-icon" size={20} />*/}
+          <Search className="search-icon" size={20} />
           <input
             type="text"
             placeholder={`Search ${selectedCourse?.code === 'ALL' ? 'all students' : selectedCourse?.code + ' students'}...`}
@@ -126,12 +133,151 @@ const StudentsTableView = ({
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className="filter-button" type="button">
-          <Filter size={20} />
-          Filter
-        </button>
+
+        <div style={{ display:'flex', gap:8 }}>
+      <select
+        value={`${sortConfig.key}:${sortConfig.direction}`}
+        onChange={(e) => {
+          const [key, direction] = e.target.value.split(':');
+          setSortConfig({ key, direction });
+        }}
+        className="filter-select"
+        title="Sort"
+      >
+        <option value="name:asc">Name (A–Z)</option>
+        <option value="name:desc">Name (Z–A)</option>
+        <option value="studentno:asc">Student No. (A–Z)</option>
+        <option value="studentno:desc">Student No. (Z–A)</option>
+        <option value="program:asc">Program (A–Z)</option>
+        <option value="program:desc">Program (Z–A)</option>
+        <option value="mood:asc">Mood (A–Z)</option>
+        <option value="mood:desc">Mood (Z–A)</option>
+        <option value="registeredAt:desc">Registered (Newest)</option>
+        <option value="registeredAt:asc">Registered (Oldest)</option>
+        <option value="lastLogin:desc">Last Login (Newest)</option>
+        <option value="lastLogin:asc">Last Login (Oldest)</option>
+      </select>
+
+      <button
+        className={`filter-button ${showFilters ? 'active' : ''}`}
+        type="button"
+        onClick={() => setShowFilters(!showFilters)}
+        title="Filter"
+      >
+        <Filter size={20} />
+        Filter {hasActiveFilters ? '•' : ''}
+      </button>
+    </div>
+  </div>
+
+  {showFilters && (
+    <div className="filter-panel" style={{ marginTop: -8, marginBottom: 8 }}>
+      <div className="filter-grid">
+        <div className="filter-group">
+          <label className="filter-label">Mood</label>
+          <select
+            className="filter-input"
+            value={filters.mood}
+            onChange={e => setFilters(f => ({ ...f, mood: e.target.value }))}
+          >
+            <option value="all">All</option>
+            <option value="MILD">Mild</option>
+            <option value="MODERATE">Moderate</option>
+            <option value="HIGH">High</option>
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">Status</label>
+          <select
+            className="filter-input"
+            value={filters.status}
+            onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
+          >
+            <option value="all">All</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">Program</label>
+          <input
+            className="filter-input"
+            placeholder="e.g., BSIT"
+            value={filters.program}
+            onChange={e => setFilters(f => ({ ...f, program: e.target.value }))}
+          />
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">Section</label>
+          <input
+            className="filter-input"
+            placeholder="e.g., 4B"
+            value={filters.section}
+            onChange={e => setFilters(f => ({ ...f, section: e.target.value }))}
+          />
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">Registered From</label>
+          <input
+            type="date"
+            className="filter-input"
+            value={filters.regFrom}
+            onChange={e => setFilters(f => ({ ...f, regFrom: e.target.value }))}
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Registered To</label>
+          <input
+            type="date"
+            className="filter-input"
+            value={filters.regTo}
+            onChange={e => setFilters(f => ({ ...f, regTo: e.target.value }))}
+          />
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">Last Login From</label>
+          <input
+            type="date"
+            className="filter-input"
+            value={filters.loginFrom}
+            onChange={e => setFilters(f => ({ ...f, loginFrom: e.target.value }))}
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Last Login To</label>
+          <input
+            type="date"
+            className="filter-input"
+            value={filters.loginTo}
+            onChange={e => setFilters(f => ({ ...f, loginTo: e.target.value }))}
+          />
+        </div>
       </div>
 
+      <div style={{ display:'flex', gap:8, marginTop:12 }}>
+        <button
+          className="filter-button"
+          type="button"
+          onClick={() => setFilters({
+            mood:'all', status:'all', program:'', section:'',
+            regFrom:'', regTo:'', loginFrom:'', loginTo:''
+          })}
+        >
+          Reset
+        </button>
+        <div style={{ color:'#6b7280', marginLeft:'auto' }}>
+          {filteredStudents.length} of {displayedStudents.length} match
+        </div>
+      </div>
+    </div>
+  )}
+
+    
       {isLoading ? (
         <div style={{ 
           textAlign: 'center', 
@@ -293,6 +439,65 @@ const StudentsListView = () => {
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
   const [viewingStudentId, setViewingStudentId] = useState(null);
   const [erroredAvatars, setErroredAvatars] = useState({});
+
+   // ADD HERE (state + derived list)
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    mood: 'all',
+    status: 'all',
+    program: '',
+    section: '',
+    regFrom: '',
+    regTo: '',
+    loginFrom: '',
+    loginTo: ''
+  });
+  const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
+  const hasActiveFilters = Object.entries(filters).some(([k, v]) =>
+    ['mood','status'].includes(k) ? v !== 'all' : v
+  );
+
+  const filteredStudents = useMemo(() => {
+    let list = [...displayedStudents];
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      list = list.filter(s =>
+        (s.name||'').toLowerCase().includes(q) ||
+        (s.studentno||'').toLowerCase().includes(q) ||
+        (s.program||'').toLowerCase().includes(q) ||
+        (s.section||'').toLowerCase().includes(q) ||
+        (s.lastMood||'').toLowerCase().includes(q) ||
+        String(s.id||'').includes(q)
+      );
+    }
+    if (filters.mood !== 'all') list = list.filter(s => (s.lastMood||'').toUpperCase() === filters.mood);
+    if (filters.status !== 'all') list = list.filter(s => (s.status||'').toLowerCase() === filters.status.toLowerCase());
+    if (filters.program) list = list.filter(s => (s.program||'').toLowerCase().includes(filters.program.toLowerCase()));
+    if (filters.section) list = list.filter(s => (s.section||'').toLowerCase().includes(filters.section.toLowerCase()));
+    const inRange = (d, from, to) => {
+      if (!d) return false;
+      const dt = new Date(d);
+      if (from && dt < new Date(from)) return false;
+      if (to && dt > new Date(to)) return false;
+      return true;
+    };
+    if (filters.regFrom || filters.regTo) list = list.filter(s => inRange(s.dateregistered, filters.regFrom, filters.regTo));
+    if (filters.loginFrom || filters.loginTo) list = list.filter(s => s.lastlogin ? inRange(s.lastlogin, filters.loginFrom, filters.loginTo) : false);
+
+    const cmp = (a,b,dir) => dir==='asc' ? (a<b?-1:a>b?1:0) : (a>b?-1:a<b?1:0);
+    list.sort((a,b) => {
+      switch (sortConfig.key) {
+        case 'name':         return cmp((a.name||'').toLowerCase(), (b.name||'').toLowerCase(), sortConfig.direction);
+        case 'studentno':    return cmp((a.studentno||'').toLowerCase(), (b.studentno||'').toLowerCase(), sortConfig.direction);
+        case 'program':      return cmp((a.program||'').toLowerCase(), (b.program||'').toLowerCase(), sortConfig.direction);
+        case 'mood':         return cmp((a.lastMood||'').toLowerCase(), (b.lastMood||'').toLowerCase(), sortConfig.direction);
+        case 'registeredAt': return cmp(new Date(a.dateregistered||0).getTime(), new Date(b.dateregistered||0).getTime(), sortConfig.direction);
+        case 'lastLogin':    return cmp(new Date(a.lastlogin||0).getTime(), new Date(b.lastlogin||0).getTime(), sortConfig.direction);
+        default:             return 0;
+      }
+    });
+    return list;
+  }, [displayedStudents, searchTerm, filters, sortConfig]);
 
 const handleView = (studentId) => {
   setViewingStudentId(studentId);
@@ -515,7 +720,7 @@ const handleDelete = async (studentId) => {
   }, [allStudents, selectedCourse]);
 
   // Filter students by search term
-  const filteredStudents = displayedStudents.filter((student) => {
+  /*const filteredStudents = displayedStudents.filter((student) => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
     return (
@@ -526,7 +731,7 @@ const handleDelete = async (studentId) => {
       (student.lastMood && student.lastMood.toLowerCase().includes(searchLower)) ||
       (student.id && student.id.toString().includes(searchLower))
     );
-  });
+  });*/
 
     if (viewingStudentId) {
   return <StudentDetailsView studentId={viewingStudentId} onBack={handleBackFromDetails} />;
@@ -547,6 +752,13 @@ const handleDelete = async (studentId) => {
       handleView={handleView}
       erroredAvatars={erroredAvatars}
       setErroredAvatars={setErroredAvatars}
+      showFilters={showFilters}
+      setShowFilters={setShowFilters}
+      filters={filters}
+      setFilters={setFilters}
+      sortConfig={sortConfig}
+      setSortConfig={setSortConfig}
+      hasActiveFilters={hasActiveFilters}
     />
   ) : (
     <CourseSelectionView 
