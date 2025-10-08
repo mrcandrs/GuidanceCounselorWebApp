@@ -233,8 +233,11 @@ const HistoryReportsView = () => {
     }
   };
 
-  // Check if any filters are active
-  const hasActiveFilters = Object.values(filters).some(value => value !== '');
+  // Check if any filters are active - Fixed logic
+  const hasActiveFilters = Object.values(filters).some(value => value !== '' && value !== 'all');
+
+  // Count only truly active filters (excluding empty strings and 'all')
+  const activeFilterCount = Object.values(filters).filter(value => value !== '' && value !== 'all').length;
 
   return (
     <div className="page-container">
@@ -297,6 +300,7 @@ const HistoryReportsView = () => {
                     className="search-input"
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
+                    style={{ paddingLeft: '48px'}}
                   />
                   {filters.search && (
                     <button
@@ -443,7 +447,7 @@ const HistoryReportsView = () => {
                         borderTop: '1px solid #e5e7eb'
                       }}>
                         <div style={{ color: '#6b7280', fontSize: '14px' }}>
-                          {hasActiveFilters ? `${Object.values(filters).filter(v => v !== '').length} filter(s) applied` : 'No filters applied'}
+                          {activeFilterCount > 0 ? `${activeFilterCount} filter(s) applied` : 'No filters applied'}
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <button 

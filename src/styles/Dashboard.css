@@ -650,7 +650,7 @@ html, body {
 
 .search-input {
   width: 100%;
-  padding: 8px 8px 8px 48px;
+  padding: 8px 8px 8px 48px !important;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
@@ -663,11 +663,14 @@ html, body {
   box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
 }
 
+/* Ensure search icon is properly positioned */
 .search-icon {
   position: absolute;
   left: 16px;
-  top: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #9ca3af;
+  pointer-events: none; /* Prevent icon from interfering with input */
 }
 
 /* Enhanced search clear button */
