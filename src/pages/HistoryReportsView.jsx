@@ -383,7 +383,7 @@ const HistoryReportsView = () => {
                         </div>
 
                         {/* Outcome Filter */}
-                        <div className="filter-group">
+                        {/*<div className="filter-group">
                           <label className="filter-label">Operation Result</label>
                           <select 
                             value={filters.outcome}
@@ -394,10 +394,10 @@ const HistoryReportsView = () => {
                             <option value="Success">✅ Success</option>
                             <option value="Failure">❌ Failure</option>
                           </select>
-                        </div>
+                        </div>*/}
 
                         {/* Channel Filter */}
-                        <div className="filter-group">
+                        {/*<div className="filter-group">
                           <label className="filter-label">Access Channel</label>
                           <select 
                             value={filters.channel}
@@ -409,7 +409,7 @@ const HistoryReportsView = () => {
                             <option value="Android">📱 Android App</option>
                             <option value="API">🔌 API</option>
                           </select>
-                        </div>
+                        </div>*/}
 
                         {/* Date Range Filters */}
                         <div className="filter-group">
