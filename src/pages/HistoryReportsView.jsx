@@ -239,6 +239,10 @@ const HistoryReportsView = () => {
   // Count only truly active filters (excluding empty strings and 'all')
   const activeFilterCount = Object.values(filters).filter(value => value !== '' && value !== 'all').length;
 
+  // Debug: Add this to see what's being counted
+  console.log('All filter values:', filters);
+  console.log('Active filter count:', activeFilterCount);
+
   return (
     <div className="page-container">
       <div className="card">
