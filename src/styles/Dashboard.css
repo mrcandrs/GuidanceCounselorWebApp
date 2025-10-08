@@ -670,7 +670,7 @@ html, body {
   color: #9ca3af;
 }
 
-/* Search clear button */
+/* Enhanced search clear button */
 .search-clear {
   position: absolute;
   right: 12px;
@@ -1558,9 +1558,14 @@ html, body {
   margin-bottom: 12px;
 }
 
+/* Filter button active state */
 .filter-button.active {
-  background-color: #0477BF;
-  color: #fff;
+  background-color: #0477BF !important;
+  color: white !important;
+}
+
+.filter-button.active:hover {
+  background-color: #0369a1 !important;
 }
 
 .history-pagination {
@@ -1590,6 +1595,8 @@ html, body {
 .filter-input[type="date"] {
   min-width: 160px;
 }
+
+
 
 /* Keep table area tall enough, center empty state */
 .table-container {
@@ -1635,6 +1642,29 @@ html, body {
   }
 }
 
+/* Enhanced Filter Panel Styles */
+.filter-panel {
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
 .filter-select {
   padding: 8px 12px;
   border: 1px solid #d1d5db;
@@ -1642,6 +1672,13 @@ html, body {
   background: white;
   font-size: 14px;
   min-width: 150px;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #0477BF;
+  box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
 }
 
 .filter-input {
@@ -1651,6 +1688,13 @@ html, body {
   background: white;
   font-size: 14px;
   min-width: 150px;
+  transition: border-color 0.2s;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #0477BF;
+  box-shadow: 0 0 0 3px rgba(4, 119, 191, 0.1);
 }
 
 .kpi-card {
@@ -1738,6 +1782,15 @@ html, body {
   
   .course-code {
     font-size: 14px;
+  }
+
+  .filter-panel > div {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-select,
+  .filter-input {
+    min-width: 100%;
   }
 }
 

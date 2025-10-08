@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
@@ -11,104 +11,101 @@ const HistoryReportsView = () => {
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
-  entityType: '',
-  action: '',
-  actorType: '',
-  outcome: '',
-  channel: '',
-  from: '',
-  to: '',
-  search: ''
+    entityType: '',
+    action: '',
+    actorType: '',
+    outcome: '',
+    channel: '',
+    from: '',
+    to: '',
+    search: ''
   });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [reportTab, setReportTab] = useState('appointments'); // 'appointments' | 'referrals' | 'notes' | 'forms' | 'moods'
+  const [reportTab, setReportTab] = useState('appointments');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Fetch history data
-const fetchHistory = async () => {
-  try {
-    setLoading(true);
-    const token = localStorage.getItem('authToken');
-    const params = {
-    entityType: filters.entityType || undefined,
-    action: filters.action || undefined,
-    actorType: filters.actorType || undefined,
-    from: filters.from || undefined,
-    to: filters.to || undefined,
-    search: filters.search || undefined,   // add this
-    page,
-    pageSize
+  const fetchHistory = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('authToken');
+      const params = {
+        entityType: filters.entityType || undefined,
+        action: filters.action || undefined,
+        actorType: filters.actorType || undefined,
+        from: filters.from || undefined,
+        to: filters.to || undefined,
+        search: filters.search || undefined,
+        page,
+        pageSize
+      };
+      const res = await axios.get(`${API_BASE}/api/history`, { params, headers: { Authorization: `Bearer ${token}` } });
+      setHistoryData(res.data.items || []);
+      setTotalItems(res.data.totalItems || 0);
+      setTotalPages(res.data.totalPages || 1);
+    } catch (e) {
+      console.error('history fetch failed', e?.response?.data || e.message);
+    } finally {
+      setLoading(false);
+    }
   };
-  const res = await axios.get(`${API_BASE}/api/history`, { params, headers: { Authorization: `Bearer ${token}` } });
-    setHistoryData(res.data.items || []);
-    setTotalItems(res.data.totalItems || 0);
-    setTotalPages(res.data.totalPages || 1);
-  } catch (e) {
-    console.error('history fetch failed', e?.response?.data || e.message);
-  } finally {
-    setLoading(false);
-  }
-};
 
   // Fetch reports data
   const fetchReports = async () => {
-  setLoading(true);
-  try {
-    const token = localStorage.getItem('authToken');
-    const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
-    const common = { headers: { Authorization: `Bearer ${token}` }, params: { from: filters.from, to: filters.to } };
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
+      const common = { headers: { Authorization: `Bearer ${token}` }, params: { from: filters.from, to: filters.to } };
 
-    if (reportTab === 'appointments') {
-      const { data } = await axios.get(`${API_BASE}/api/reports/appointments`, common);
-      setReportsData({ type: 'appointments', ...data });
-    } else if (reportTab === 'referrals') {
-      const { data } = await axios.get(`${API_BASE}/api/reports/referrals`, common);
-      setReportsData({ type: 'referrals', ...data });
-    } else if (reportTab === 'notes') {
-      const { data } = await axios.get(`${API_BASE}/api/reports/notes`, common);
-      setReportsData({ type: 'notes', ...data });
-    } else if (reportTab === 'forms') {
-      const { data } = await axios.get(`${API_BASE}/api/reports/forms-completion`, common);
-      setReportsData({ type: 'forms', ...data });
-    } else if (reportTab === 'moods') {
-      const [distribution, daily, monthly] = await Promise.all([
-        axios.get(`${API_BASE}/api/moodtracker/distribution`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${API_BASE}/api/moodtracker/daily-trends`, { headers: { Authorization: `Bearer ${token}` } }),
-        // month/year optional; you can compute current month/year or add UI controls later
-        axios.get(`${API_BASE}/api/moodtracker/monthly-reports`, { headers: { Authorization: `Bearer ${token}` }, params: { month: new Date().getMonth()+1, year: new Date().getFullYear() } }),
-      ]);
-      setReportsData({ type: 'moods', distribution: distribution.data, daily: daily.data, monthly: monthly.data });
+      if (reportTab === 'appointments') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/appointments`, common);
+        setReportsData({ type: 'appointments', ...data });
+      } else if (reportTab === 'referrals') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/referrals`, common);
+        setReportsData({ type: 'referrals', ...data });
+      } else if (reportTab === 'notes') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/notes`, common);
+        setReportsData({ type: 'notes', ...data });
+      } else if (reportTab === 'forms') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/forms-completion`, common);
+        setReportsData({ type: 'forms', ...data });
+      } else if (reportTab === 'moods') {
+        const [distribution, daily, monthly] = await Promise.all([
+          axios.get(`${API_BASE}/api/moodtracker/distribution`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API_BASE}/api/moodtracker/daily-trends`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API_BASE}/api/moodtracker/monthly-reports`, { headers: { Authorization: `Bearer ${token}` }, params: { month: new Date().getMonth()+1, year: new Date().getFullYear() } }),
+        ]);
+        setReportsData({ type: 'moods', distribution: distribution.data, daily: daily.data, monthly: monthly.data });
+      }
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error('Error fetching reports:', error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-  // Replace both current effects with this single effect
-useEffect(() => {
-  if (activeTab !== 'history') return;
-  fetchHistory();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [
-  activeTab,
-  page,
-  pageSize,
-  filters.entityType,
-  filters.action,
-  filters.actorType,
-  filters.from,
-  filters.to,
-  filters.search
-]);
+  useEffect(() => {
+    if (activeTab !== 'history') return;
+    fetchHistory();
+  }, [
+    activeTab,
+    page,
+    pageSize,
+    filters.entityType,
+    filters.action,
+    filters.actorType,
+    filters.from,
+    filters.to,
+    filters.search
+  ]);
 
   useEffect(() => {
     if (activeTab !== 'reports') return;
     fetchReports();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, reportTab, filters.from, filters.to]);
 
   const handleFilterChange = (key, value) => {
@@ -138,9 +135,9 @@ useEffect(() => {
   };
 
   const resetFilters = () => {
-  setFilters({ entityType:'', action:'', actorType:'', outcome:'', channel:'', from:'', to:'', search:'' });
-  setPage(1);
-};
+    setFilters({ entityType:'', action:'', actorType:'', outcome:'', channel:'', from:'', to:'', search:'' });
+    setPage(1);
+  };
 
   const exportAllHistory = async () => {
     try {
@@ -148,18 +145,18 @@ useEffect(() => {
       let p = 1, all = [], totalPagesLocal = 1;
       do {
         const { data } = await axios.get(`${API_BASE}/api/history`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: {
-          entityType: filters.entityType || undefined,
-          action: filters.action || undefined,
-          actorType: filters.actorType || undefined,
-          from: filters.from || undefined,
-          to: filters.to || undefined,
-          search: filters.search || undefined, // add this
-          page: p,
-          pageSize: 1000
-        }
-      });
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            entityType: filters.entityType || undefined,
+            action: filters.action || undefined,
+            actorType: filters.actorType || undefined,
+            from: filters.from || undefined,
+            to: filters.to || undefined,
+            search: filters.search || undefined,
+            page: p,
+            pageSize: 1000
+          }
+        });
         all = all.concat(data.items || []);
         totalPagesLocal = data.totalPages || 1;
         p += 1;
@@ -183,7 +180,7 @@ useEffect(() => {
     }
   };
 
-    const goToHistoryWith = (next) => {
+  const goToHistoryWith = (next) => {
     setFilters(f => ({ ...f, ...next }));
     setActiveTab('history');
     setPage(1);
@@ -212,6 +209,9 @@ useEffect(() => {
       default: return <AlertCircle size={16} className="text-gray-500" />;
     }
   };
+
+  // Check if any filters are active
+  const hasActiveFilters = Object.values(filters).some(value => value !== '');
 
   return (
     <div className="page-container">
@@ -254,187 +254,223 @@ useEffect(() => {
 
         {activeTab === 'history' && (
           <div>
-            <div className="history-toolbar" style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-              <select 
-                value={filters.entityType} 
-                onChange={(e) => handleFilterChange('entityType', e.target.value)}
-                className="filter-select"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
-              >
-                <option value="">All Entities</option>
-                <option value="appointment">Appointments</option>
-                <option value="referral">Referrals</option>
-                <option value="note">Notes</option>
-                <option value="consultation">Consultations</option>
-                <option value="endorsement">Endorsements</option>
-                <option value="timeslot">Time Slots</option>
-                <option value="guidancepass">Guidance Passes</option>
-              </select>
-
-              <select 
-                value={filters.action} 
-                onChange={(e) => handleFilterChange('action', e.target.value)}
-                className="filter-select"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
-              >
-                <option value="">All Actions</option>
-                <option value="created">Created</option>
-                <option value="updated">Updated</option>
-                <option value="deleted">Deleted</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="activated">Activated</option>
-                <option value="deactivated">Deactivated</option>
-              </select>
-
-
-              <select 
-                className="filter-select" 
-                value={filters.actorType}
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }} 
-                onChange={e => setFilters(f => ({ ...f, actorType: e.target.value }))}>
-                <option value="">Actor Type (all)</option>
-                <option value="counselor">Counselor</option>
-                <option value="student">Student</option>
-                <option value="system">System</option>
-                <option value="admin">Admin</option>
-              </select>
-
-              <select 
-                className="filter-select" 
-                value={filters.outcome}
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }} 
-                onChange={e => setFilters(f => ({ ...f, outcome: e.target.value }))}>
-                <option value="">Outcome (all)</option>
-                <option value="Success">Success</option>
-                <option value="Failure">Failure</option>
-              </select>
-
-              <select 
-                className="filter-select" 
-                value={filters.channel}
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }} 
-                onChange={e => setFilters(f => ({ ...f, channel: e.target.value }))}>
-                <option value="">Channel (all)</option>
-                <option value="WebApp">WebApp</option>
-                <option value="Android">Android</option>
-                <option value="API">API</option>
-              </select>
-
-              <input 
-                className="filter-input" 
-                type="text" 
-                placeholder="Search summary/details" 
-                value={filters.search}
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
-                onChange={e => setFilters(f => ({ ...f, search: e.target.value }))} />
-
-
-              <input 
-                type="date" 
-                value={filters.from} 
-                onChange={(e) => handleFilterChange('from', e.target.value)}
-                className="filter-input"
-                placeholder="From Date"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
-              />
-
-              <input 
-                type="date" 
-                value={filters.to} 
-                onChange={(e) => handleFilterChange('to', e.target.value)}
-                className="filter-input"
-                placeholder="To Date"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
-              />
-
-              <button 
-                onClick={exportToCSV} 
-                className="primary-button"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
+            {/* Improved Filter Interface */}
+            <div className="history-toolbar" style={{ marginBottom: '24px' }}>
+              {/* Search Bar */}
+              <div className="search-container" style={{ marginBottom: '16px' }}>
+                <div className="search-input-container" style={{ maxWidth: '400px' }}>
+                  <Search className="search-icon" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search history records..."
+                    className="search-input"
+                    value={filters.search}
+                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                  />
+                  {filters.search && (
+                    <button
+                      onClick={() => handleFilterChange('search', '')}
+                      className="search-clear"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+                
+                <button
+                  className={`filter-button ${showFilters ? 'active' : ''}`}
+                  onClick={() => setShowFilters(!showFilters)}
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
                 >
-                <Download size={16} />
-                Export CSV
-              </button>
+                  <Filter size={16} />
+                  Filters {hasActiveFilters ? '•' : ''}
+                </button>
+              </div>
 
-              <button 
-                onClick={resetFilters} 
-                className="filter-button"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
-                >
-                Reset
-              </button>
+              {/* Collapsible Filter Panel */}
+              {showFilters && (
+                <div className="filter-panel" style={{ 
+                  background: '#f8f9fa', 
+                  padding: '20px', 
+                  borderRadius: '8px', 
+                  border: '1px solid #e5e7eb',
+                  marginBottom: '16px'
+                }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                    {/* Entity Type Filter */}
+                    <div className="filter-group">
+                      <label className="filter-label">Record Type</label>
+                      <select 
+                        value={filters.entityType} 
+                        onChange={(e) => handleFilterChange('entityType', e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">All Record Types</option>
+                        <option value="appointment">📅 Appointments</option>
+                        <option value="referral">👥 Referrals</option>
+                        <option value="note">📝 Notes</option>
+                        <option value="consultation">💬 Consultations</option>
+                        <option value="endorsement">📋 Endorsements</option>
+                        <option value="timeslot">⏰ Time Slots</option>
+                        <option value="guidancepass">🎫 Guidance Passes</option>
+                      </select>
+                    </div>
 
-              <button 
-                onClick={exportAllHistory} 
-                className="primary-button"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  pointerEvents: 'auto',
-                  cursor: 'pointer'
-                }}
+                    {/* Action Filter */}
+                    <div className="filter-group">
+                      <label className="filter-label">Action Performed</label>
+                      <select 
+                        value={filters.action} 
+                        onChange={(e) => handleFilterChange('action', e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">All Actions</option>
+                        <option value="created">✅ Created</option>
+                        <option value="updated">✏️ Updated</option>
+                        <option value="deleted">🗑️ Deleted</option>
+                        <option value="approved">👍 Approved</option>
+                        <option value="rejected">👎 Rejected</option>
+                        <option value="activated">🟢 Activated</option>
+                        <option value="deactivated">🔴 Deactivated</option>
+                      </select>
+                    </div>
+
+                    {/* Actor Type Filter */}
+                    <div className="filter-group">
+                      <label className="filter-label">Who Performed Action</label>
+                      <select 
+                        value={filters.actorType}
+                        onChange={e => handleFilterChange('actorType', e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">All Users</option>
+                        <option value="counselor">👨‍💼 Counselor</option>
+                        <option value="student">🎓 Student</option>
+                        <option value="system">🤖 System</option>
+                        <option value="admin">👑 Admin</option>
+                      </select>
+                    </div>
+
+                    {/* Outcome Filter */}
+                    <div className="filter-group">
+                      <label className="filter-label">Operation Result</label>
+                      <select 
+                        value={filters.outcome}
+                        onChange={e => handleFilterChange('outcome', e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">All Results</option>
+                        <option value="Success">✅ Success</option>
+                        <option value="Failure">❌ Failure</option>
+                      </select>
+                    </div>
+
+                    {/* Channel Filter */}
+                    <div className="filter-group">
+                      <label className="filter-label">Access Channel</label>
+                      <select 
+                        value={filters.channel}
+                        onChange={e => handleFilterChange('channel', e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">All Channels</option>
+                        <option value="WebApp">💻 Web Application</option>
+                        <option value="Android">📱 Android App</option>
+                        <option value="API">🔌 API</option>
+                      </select>
+                    </div>
+
+                    {/* Date Range Filters */}
+                    <div className="filter-group">
+                      <label className="filter-label">From Date</label>
+                      <input 
+                        type="date" 
+                        value={filters.from} 
+                        onChange={(e) => handleFilterChange('from', e.target.value)}
+                        className="filter-input"
+                      />
+                    </div>
+
+                    <div className="filter-group">
+                      <label className="filter-label">To Date</label>
+                      <input 
+                        type="date" 
+                        value={filters.to} 
+                        onChange={(e) => handleFilterChange('to', e.target.value)}
+                        className="filter-input"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Filter Actions */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    marginTop: '16px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid #e5e7eb'
+                  }}>
+                    <div style={{ color: '#6b7280', fontSize: '14px' }}>
+                      {hasActiveFilters ? `${Object.values(filters).filter(v => v !== '').length} filter(s) applied` : 'No filters applied'}
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={resetFilters} 
+                        className="filter-button"
+                        style={{ fontSize: '14px' }}
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={exportToCSV} 
+                  className="primary-button"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
                 >
-                <Download size={16}/> 
-              Export All
-              </button>
+                  <Download size={16} />
+                  Export Current Page
+                </button>
+
+                <button 
+                  onClick={exportAllHistory} 
+                  className="primary-button"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer',
+                    background: '#10b981'
+                  }}
+                >
+                  <Download size={16} />
+                  Export All Records
+                </button>
+              </div>
             </div>
 
+            {/* Results Table */}
             <div className="table-container">
               {loading ? (
                 <div className="empty-state">
                   <div className="loading-spinner"></div>
-                  <p>Loading history...</p>
+                  <p>Loading history records...</p>
                 </div>
               ) : historyData.length === 0 ? (
                 <div className="empty-state">
@@ -446,9 +482,9 @@ useEffect(() => {
                   <thead>
                     <tr>
                       <th>Date/Time</th>
-                      <th>Entity</th>
+                      <th>Record Type</th>
                       <th>Action</th>
-                      <th>Actor</th>
+                      <th>Performed By</th>
                       <th>Details</th>
                     </tr>
                   </thead>
@@ -498,9 +534,9 @@ useEffect(() => {
                                 zIndex: 9999,
                                 pointerEvents: 'auto',
                                 cursor: 'pointer'
-                                }}
-                                >
-                                View Details</summary>
+                              }}>
+                                View Details
+                              </summary>
                               <pre style={{ 
                                 background: '#f8f9fa', 
                                 padding: '8px', 
@@ -523,10 +559,9 @@ useEffect(() => {
               )}
             </div>
 
-
-            {/* Pagination (no. 5) goes here */}
+            {/* Pagination */}
             <div className="history-pagination">
-              <div>Page {page} of {totalPages} • {totalItems} items</div>
+              <div>Page {page} of {totalPages} • {totalItems} records</div>
               <div className="pager">
                 <button 
                   disabled={page <= 1} 
@@ -537,9 +572,9 @@ useEffect(() => {
                     pointerEvents: 'auto',
                     cursor: 'pointer'
                   }}
-                  >
-                  Prev
-                  </button>
+                >
+                  Previous
+                </button>
                 <button 
                   disabled={page >= totalPages} 
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
@@ -549,9 +584,9 @@ useEffect(() => {
                     pointerEvents: 'auto',
                     cursor: 'pointer'
                   }}
-                  >
+                >
                   Next
-                  </button>
+                </button>
                 <select 
                   value={pageSize} 
                   onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
@@ -561,20 +596,19 @@ useEffect(() => {
                     pointerEvents: 'auto',
                     cursor: 'pointer'
                   }}
-                  >
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
+                >
+                  <option value={10}>10 per page</option>
+                  <option value={20}>20 per page</option>
+                  <option value={50}>50 per page</option>
                 </select>
               </div>
             </div>
-
           </div>
         )}
 
         {activeTab === 'reports' && (
           <div>
-            {/* Report sub-tabs go here */}
+            {/* Report sub-tabs */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               {['appointments','referrals','notes','forms'].map(rt => (
                 <button
@@ -595,7 +629,7 @@ useEffect(() => {
               ))}
             </div>
 
-            {/* Existing date inputs stay below */}
+            {/* Date range for reports */}
             <div style={{ 
               display: 'flex', 
               gap: '16px', 
@@ -604,8 +638,7 @@ useEffect(() => {
               zIndex: 9999,
               pointerEvents: 'auto',
               cursor: 'pointer'
-              }}
-              >
+            }}>
               <input 
                 type="date" 
                 value={filters.from} 
@@ -623,216 +656,180 @@ useEffect(() => {
             </div>
 
             {loading ? (
-          <div className="empty-state">
-            <div className="loading-spinner"></div>
-            <p>Loading reports...</p>
-          </div>
-        ) : !reportsData ? (
-          <div className="empty-state">
-            <TrendingUp size={48} className="empty-icon" />
-            <p>No reports data available.</p>
-          </div>
-        ) : (
-        <>
-    {/* Appointments (keep your existing UI) */}
-    {reportsData?.type === 'appointments' && (
-      <div>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '20px', 
-          marginBottom: '32px' 
-        }}>
-          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <Calendar size={20} className="text-blue-500" />
-              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Appointments</h3>
-            </div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
-              {reportsData.total}
-            </div>
-          </div>
+              <div className="empty-state">
+                <div className="loading-spinner"></div>
+                <p>Loading reports...</p>
+              </div>
+            ) : !reportsData ? (
+              <div className="empty-state">
+                <TrendingUp size={48} className="empty-icon" />
+                <p>No reports data available.</p>
+              </div>
+            ) : (
+              <>
+                {/* Appointments Report */}
+                {reportsData?.type === 'appointments' && (
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Calendar size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Appointments</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total}
+                        </div>
+                      </div>
 
-          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <Clock size={20} className="text-yellow-500" />
-              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Pending</h3>
-            </div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
-              {reportsData.pending}
-            </div>
-          </div>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Clock size={20} className="text-yellow-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Pending</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
+                          {reportsData.pending}
+                        </div>
+                      </div>
 
-          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment', action: 'approved' })} style={{ cursor: 'pointer' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <CheckCircle size={20} className="text-green-500" />
-              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Approved</h3>
-            </div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
-              {reportsData.approved}
-            </div>
-          </div>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment', action: 'approved' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <CheckCircle size={20} className="text-green-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Approved</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+                          {reportsData.approved}
+                        </div>
+                      </div>
 
-          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment', action: 'rejected' })} style={{ cursor: 'pointer' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <XCircle size={20} className="text-red-500" />
-              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Rejected</h3>
-            </div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>
-              {reportsData.rejected}
-            </div>
-          </div>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment', action: 'rejected' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <XCircle size={20} className="text-red-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Rejected</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>
+                          {reportsData.rejected}
+                        </div>
+                      </div>
 
-          <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <CheckCircle size={20} className="text-green-600" />
-              <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Completed</h3>
-            </div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#059669' }}>
-              {reportsData.completed}
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Appointments by Day</h3>
-          {reportsData.byDay && reportsData.byDay.length > 0 ? (
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'end', 
-              gap: '12px', 
-              height: '200px', 
-              padding: '20px 0',
-              borderBottom: '1px solid #e5e7eb'
-            }}>
-              {reportsData.byDay.map((day, index) => {
-                const maxCount = Math.max(...reportsData.byDay.map(d => d.count));
-                const height = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
-                
-                return (
-                  <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
-                    <div
-                      onClick={() => goToHistoryWith({
-                        entityType: 'appointment',
-                        from: new Date(day.date).toISOString().slice(0,10),
-                        to: new Date(day.date).toISOString().slice(0,10)
-                      })}
-                      style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
-                      title={`${day.count} appointments on ${new Date(day.date).toLocaleDateString()}`}
-                    />
-                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
-                      {new Date(day.date).toLocaleDateString()}
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'appointment' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <CheckCircle size={20} className="text-green-600" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Completed</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#059669' }}>
+                          {reportsData.completed}
+                        </div>
+                      </div>
                     </div>
-                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
-                      {day.count}
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Appointments by Day</h3>
+                      {reportsData.byDay && reportsData.byDay.length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {reportsData.byDay.map((day, index) => {
+                            const maxCount = Math.max(...reportsData.byDay.map(d => d.count));
+                            const height = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({
+                                    entityType: 'appointment',
+                                    from: new Date(day.date).toISOString().slice(0,10),
+                                    to: new Date(day.date).toISOString().slice(0,10)
+                                  })}
+                                  style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${day.count} appointments on ${new Date(day.date).toLocaleDateString()}`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {new Date(day.date).toLocaleDateString()}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {day.count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <TrendingUp size={48} className="empty-icon" />
+                          <p>No appointment data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <TrendingUp size={48} className="empty-icon" />
-              <p>No appointment data available for the selected period.</p>
-            </div>
-          )}
-        </div>
-      </div>
-    )}
+                )}
 
-    {/* Referrals */}
-    {reportsData?.type === 'referrals' && (
-      <div className="cards-row">
-        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'referral' })}>
-          <h3 className="card-title">Total Referrals</h3>
-          <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-        </div>
-        <div className="card" style={{ marginTop: 16 }}>
-          <h3 className="card-title">By Priority</h3>
-          {reportsData.byPriority?.map((x, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-              <span>{x.priority}</span><strong>{x.count}</strong>
-            </div>
-          ))}
-        </div>
-        <div className="card" style={{ marginTop: 16 }}>
-          <h3 className="card-title">By Category</h3>
-          {reportsData.byCategory?.map((x, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-              <span>{x.category}</span><strong>{x.count}</strong>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
+                {/* Other report types remain the same */}
+                {reportsData?.type === 'referrals' && (
+                  <div className="cards-row">
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'referral' })}>
+                      <h3 className="card-title">Total Referrals</h3>
+                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+                    </div>
+                    <div className="card" style={{ marginTop: 16 }}>
+                      <h3 className="card-title">By Priority</h3>
+                      {reportsData.byPriority?.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                          <span>{x.priority}</span><strong>{x.count}</strong>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="card" style={{ marginTop: 16 }}>
+                      <h3 className="card-title">By Category</h3>
+                      {reportsData.byCategory?.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                          <span>{x.category}</span><strong>{x.count}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-    {/* Notes */}
-    {reportsData?.type === 'notes' && (
-      <div className="cards-row">
-        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'note' })}>
-          <h3 className="card-title">Total Notes</h3>
-          <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-        </div>
-        <div className="card" style={{ marginTop: 16 }}>
-          <h3 className="card-title">By Nature</h3>
-          {reportsData.byNature?.map((x, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-              <span>{x.type}</span><strong>{x.count}</strong>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
+                {reportsData?.type === 'notes' && (
+                  <div className="cards-row">
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'note' })}>
+                      <h3 className="card-title">Total Notes</h3>
+                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+                    </div>
+                    <div className="card" style={{ marginTop: 16 }}>
+                      <h3 className="card-title">By Nature</h3>
+                      {reportsData.byNature?.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                          <span>{x.type}</span><strong>{x.count}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-    {/* Forms */}
-    {reportsData?.type === 'forms' && (
-      <div className="cards-row">
-        <div className="kpi-card"><h3 className="card-title">Total Students</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.totalStudents}</div></div>
-        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consent' })}><h3 className="card-title">Consent Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.consentForms}</div><div>{reportsData.consentCompletionRate.toFixed(1)}%</div></div>
-        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'inventory' })}><h3 className="card-title">Inventory Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.inventoryForms}</div><div>{reportsData.inventoryCompletionRate.toFixed(1)}%</div></div>
-        <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'career' })}><h3 className="card-title">Career Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.careerForms}</div><div>{reportsData.careerCompletionRate.toFixed(1)}%</div></div>
-      </div>
-    )}
-
-    {/* Moods
-    {reportsData?.type === 'moods' && (
-      <div>
-        <div className="cards-row">
-          <div className="card">
-            <h3 className="card-title">Distribution</h3>
-            {reportsData.distribution?.map((x, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                <span>{x.mood}</span><strong>{x.count}</strong>
-              </div>
-            ))}
+                {reportsData?.type === 'forms' && (
+                  <div className="cards-row">
+                    <div className="kpi-card"><h3 className="card-title">Total Students</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.totalStudents}</div></div>
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consent' })}><h3 className="card-title">Consent Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.consentForms}</div><div>{reportsData.consentCompletionRate.toFixed(1)}%</div></div>
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'inventory' })}><h3 className="card-title">Inventory Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.inventoryForms}</div><div>{reportsData.inventoryCompletionRate.toFixed(1)}%</div></div>
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'career' })}><h3 className="card-title">Career Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.careerForms}</div><div>{reportsData.careerCompletionRate.toFixed(1)}%</div></div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-          <div className="card">
-            <h3 className="card-title">Last 7 Days</h3>
-            {reportsData.daily?.map((d, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
-                <span>{d.date}</span>
-                <span>Mild {d.mild} • Moderate {d.moderate} • High {d.high}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="card" style={{ marginTop: 16 }}>
-          <h3 className="card-title">Monthly (by week)</h3>
-          {reportsData.monthly?.map((w, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
-              <span>{w.week} ({w.weekStart}–{w.weekEnd})</span>
-              <span>Mild {w.mild} • Moderate {w.moderate} • High {w.high} • Total {w.totalEntries}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}*/}
-  </>
-)}
-      </div>
         )}
+      </div>
     </div>
-  </div>
   );
 };
 
