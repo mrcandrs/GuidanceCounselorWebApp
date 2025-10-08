@@ -233,11 +233,18 @@ const HistoryReportsView = () => {
     }
   };
 
-  // Check if any filters are active - Fixed logic
-  const hasActiveFilters = Object.values(filters).some(value => value !== '' && value !== 'all');
+  const activeFilterCount = [
+  filters.entityType,
+  filters.action,
+  filters.actorType,
+  filters.outcome,
+  filters.channel,
+  filters.from,
+  filters.to,
+  filters.search
+].filter(value => value !== '' && value !== 'all' && value !== undefined).length;
 
-  // Count only truly active filters (excluding empty strings and 'all')
-  const activeFilterCount = Object.values(filters).filter(value => value !== '' && value !== 'all').length;
+  const hasActiveFilters = activeFilterCount > 0;
 
   // Debug: Add this to see what's being counted
   console.log('All filter values:', filters);
