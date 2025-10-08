@@ -650,7 +650,7 @@ html, body {
 
 .search-input {
   width: 100%;
-  padding: 8px 8px 8px 40px;
+  padding: 8px 8px 8px 48px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
@@ -665,7 +665,7 @@ html, body {
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 16px;
   top: 8px;
   color: #9ca3af;
 }

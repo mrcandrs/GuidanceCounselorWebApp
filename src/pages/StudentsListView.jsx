@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Eye, Trash2, Users, ArrowLeft } from 'lucide-react';
+import { Search, Filter, Eye, Trash2, Users, ArrowLeft, SortAsc } from 'lucide-react';
 import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
@@ -144,6 +144,7 @@ const StudentsTableView = ({
         className="filter-select"
         title="Sort"
       >
+        <option value="" disabled><SortAsc size={20} />Sort</option>
         <option value="name:asc">Name (A–Z)</option>
         <option value="name:desc">Name (Z–A)</option>
         <option value="studentno:asc">Student No. (A–Z)</option>
