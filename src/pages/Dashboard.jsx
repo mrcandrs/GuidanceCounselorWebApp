@@ -99,9 +99,17 @@ const GuidanceDashboard = () => {
     }
   });
 
-useEffect(() => {
-  localStorage.setItem('sidebarCollapsed', JSON.stringify(isCollapsed));
-}, [isCollapsed]);
+  const [autoCollapsed, setAutoCollapsed] = useState(false); 
+
+  useEffect(() => {
+   const update = () => {
+     // collapse when viewport is narrow or when zoom reduces CSS px
+     setAutoCollapsed(window.innerWidth < 1200);
+   };
+   update();
+   window.addEventListener('resize', update);
+   return () => window.removeEventListener('resize', update);
+ }, []);
 
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -405,7 +413,7 @@ useEffect(() => {
   )}
    
       {/* Sidebar */}
-      <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+      <div className={`sidebar ${(isCollapsed || autoCollapsed) ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
           <div style={{ textAlign: 'center', userSelect: 'none', caretColor: 'transparent'}}>
             <img

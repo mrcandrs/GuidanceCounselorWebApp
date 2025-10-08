@@ -103,6 +103,20 @@ html, body {
   width: 80px;
 }
 
+/* Smoothly adapt before collapsing */
+@media (max-width: 1400px) {
+  .sidebar:not(.collapsed) { width: 220px; }
+}
+@media (max-width: 1280px) {
+  .sidebar:not(.collapsed) { width: 200px; }
+}
+/* When very tight, treat like collapsed labels */
+@media (max-width: 1200px) {
+  .sidebar:not(.collapsed) .nav-button { padding: 12px 16px; }
+  .sidebar:not(.collapsed) .nav-label { display: none; }
+  .sidebar:not(.collapsed) .nav-button { justify-content: center; gap: 0; }
+}
+
 /* Header area in collapsed state */
 .sidebar.collapsed .sidebar-header {
   padding: 16px;
