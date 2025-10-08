@@ -386,35 +386,6 @@ const HistoryReportsView = () => {
                           </select>
                         </div>
 
-                        {/* Outcome Filter */}
-                        {/*<div className="filter-group">
-                          <label className="filter-label">Operation Result</label>
-                          <select 
-                            value={filters.outcome}
-                            onChange={e => handleFilterChange('outcome', e.target.value)}
-                            className="filter-select"
-                          >
-                            <option value="">All Results</option>
-                            <option value="Success">✅ Success</option>
-                            <option value="Failure">❌ Failure</option>
-                          </select>
-                        </div>*/}
-
-                        {/* Channel Filter */}
-                        {/*<div className="filter-group">
-                          <label className="filter-label">Access Channel</label>
-                          <select 
-                            value={filters.channel}
-                            onChange={e => handleFilterChange('channel', e.target.value)}
-                            className="filter-select"
-                          >
-                            <option value="">All Channels</option>
-                            <option value="WebApp">💻 Web Application</option>
-                            <option value="Android">📱 Android App</option>
-                            <option value="API">🔌 API</option>
-                          </select>
-                        </div>*/}
-
                         {/* Date Range Filters */}
                         <div className="filter-group">
                           <label className="filter-label">From Date</label>
