@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
@@ -26,6 +26,9 @@ const HistoryReportsView = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [reportTab, setReportTab] = useState('appointments');
   const [showFilters, setShowFilters] = useState(false);
+
+  // Ref for the filter panel to detect clicks outside
+  const filterPanelRef = useRef(null);
 
   // Fetch history data
   const fetchHistory = async () => {
@@ -108,6 +111,25 @@ const HistoryReportsView = () => {
     fetchReports();
   }, [activeTab, reportTab, filters.from, filters.to]);
 
+  // Effect to handle clicks outside the filter panel
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterPanelRef.current && !filterPanelRef.current.contains(event.target)) {
+        setShowFilters(false);
+      }
+    };
+
+    if (showFilters) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showFilters]);
+
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
   };
@@ -137,6 +159,7 @@ const HistoryReportsView = () => {
   const resetFilters = () => {
     setFilters({ entityType:'', action:'', actorType:'', outcome:'', channel:'', from:'', to:'', search:'' });
     setPage(1);
+    setShowFilters(false); // Close filter panel on reset
   };
 
   const exportAllHistory = async () => {
@@ -254,10 +277,18 @@ const HistoryReportsView = () => {
 
         {activeTab === 'history' && (
           <div>
-            {/* Improved Filter Interface */}
-            <div className="history-toolbar" style={{ marginBottom: '24px' }}>
-              {/* Search Bar */}
-              <div className="search-container" style={{ marginBottom: '16px' }}>
+            {/* Fixed Filter Interface - All elements on same line */}
+            <div className="history-toolbar" style={{ 
+              marginBottom: '24px', 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              flexWrap: 'wrap',
+              gap: '16px'
+            }}>
+              {/* Left side: Search and Filter Button */}
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Search Bar */}
                 <div className="search-input-container" style={{ maxWidth: '400px' }}>
                   <Search className="search-icon" size={20} />
                   <input
@@ -277,162 +308,159 @@ const HistoryReportsView = () => {
                   )}
                 </div>
                 
-                <button
-                  className={`filter-button ${showFilters ? 'active' : ''}`}
-                  onClick={() => setShowFilters(!showFilters)}
-                  style={{
-                    position: 'relative',
-                    zIndex: 9999,
-                    pointerEvents: 'auto',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Filter size={16} />
-                  Filters {hasActiveFilters ? '•' : ''}
-                </button>
+                {/* Filter button and dropdown wrapper */}
+                <div style={{ position: 'relative' }} ref={filterPanelRef}>
+                  <button
+                    className={`filter-button ${showFilters ? 'active' : ''}`}
+                    onClick={() => setShowFilters(!showFilters)}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Filter size={16} />
+                    Filters {hasActiveFilters ? '•' : ''}
+                  </button>
+
+                  {/* Filter Panel Dropdown - Now absolutely positioned */}
+                  {showFilters && (
+                    <div className="filter-panel-dropdown">
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                        {/* Entity Type Filter */}
+                        <div className="filter-group">
+                          <label className="filter-label">Record Type</label>
+                          <select 
+                            value={filters.entityType} 
+                            onChange={(e) => handleFilterChange('entityType', e.target.value)}
+                            className="filter-select"
+                          >
+                            <option value="">All Record Types</option>
+                            <option value="appointment">📅 Appointments</option>
+                            <option value="referral">👥 Referrals</option>
+                            <option value="note">📝 Notes</option>
+                            <option value="consultation">💬 Consultations</option>
+                            <option value="endorsement">📋 Endorsements</option>
+                            <option value="timeslot">⏰ Time Slots</option>
+                            <option value="guidancepass">🎫 Guidance Passes</option>
+                          </select>
+                        </div>
+
+                        {/* Action Filter */}
+                        <div className="filter-group">
+                          <label className="filter-label">Action Performed</label>
+                          <select 
+                            value={filters.action} 
+                            onChange={(e) => handleFilterChange('action', e.target.value)}
+                            className="filter-select"
+                          >
+                            <option value="">All Actions</option>
+                            <option value="created">✅ Created</option>
+                            <option value="updated">✏️ Updated</option>
+                            <option value="deleted">🗑️ Deleted</option>
+                            <option value="approved">👍 Approved</option>
+                            <option value="rejected">👎 Rejected</option>
+                            <option value="activated">🟢 Activated</option>
+                            <option value="deactivated">🔴 Deactivated</option>
+                          </select>
+                        </div>
+
+                        {/* Actor Type Filter */}
+                        <div className="filter-group">
+                          <label className="filter-label">Who Performed Action</label>
+                          <select 
+                            value={filters.actorType}
+                            onChange={e => handleFilterChange('actorType', e.target.value)}
+                            className="filter-select"
+                          >
+                            <option value="">All Users</option>
+                            <option value="counselor">👨‍💼 Counselor</option>
+                            <option value="student">🎓 Student</option>
+                            <option value="system">🤖 System</option>
+                            <option value="admin">👑 Admin</option>
+                          </select>
+                        </div>
+
+                        {/* Outcome Filter */}
+                        <div className="filter-group">
+                          <label className="filter-label">Operation Result</label>
+                          <select 
+                            value={filters.outcome}
+                            onChange={e => handleFilterChange('outcome', e.target.value)}
+                            className="filter-select"
+                          >
+                            <option value="">All Results</option>
+                            <option value="Success">✅ Success</option>
+                            <option value="Failure">❌ Failure</option>
+                          </select>
+                        </div>
+
+                        {/* Channel Filter */}
+                        <div className="filter-group">
+                          <label className="filter-label">Access Channel</label>
+                          <select 
+                            value={filters.channel}
+                            onChange={e => handleFilterChange('channel', e.target.value)}
+                            className="filter-select"
+                          >
+                            <option value="">All Channels</option>
+                            <option value="WebApp">💻 Web Application</option>
+                            <option value="Android">📱 Android App</option>
+                            <option value="API">🔌 API</option>
+                          </select>
+                        </div>
+
+                        {/* Date Range Filters */}
+                        <div className="filter-group">
+                          <label className="filter-label">From Date</label>
+                          <input 
+                            type="date" 
+                            value={filters.from} 
+                            onChange={(e) => handleFilterChange('from', e.target.value)}
+                            className="filter-input"
+                          />
+                        </div>
+
+                        <div className="filter-group">
+                          <label className="filter-label">To Date</label>
+                          <input 
+                            type="date" 
+                            value={filters.to} 
+                            onChange={(e) => handleFilterChange('to', e.target.value)}
+                            className="filter-input"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Filter Actions */}
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        marginTop: '16px',
+                        paddingTop: '16px',
+                        borderTop: '1px solid #e5e7eb'
+                      }}>
+                        <div style={{ color: '#6b7280', fontSize: '14px' }}>
+                          {hasActiveFilters ? `${Object.values(filters).filter(v => v !== '').length} filter(s) applied` : 'No filters applied'}
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button 
+                            onClick={resetFilters} 
+                            className="filter-button"
+                            style={{ fontSize: '14px' }}
+                          >
+                            Clear All
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Collapsible Filter Panel */}
-              {showFilters && (
-                <div className="filter-panel" style={{ 
-                  background: '#f8f9fa', 
-                  padding: '20px', 
-                  borderRadius: '8px', 
-                  border: '1px solid #e5e7eb',
-                  marginBottom: '16px'
-                }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                    {/* Entity Type Filter */}
-                    <div className="filter-group">
-                      <label className="filter-label">Record Type</label>
-                      <select 
-                        value={filters.entityType} 
-                        onChange={(e) => handleFilterChange('entityType', e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Record Types</option>
-                        <option value="appointment">📅 Appointments</option>
-                        <option value="referral">👥 Referrals</option>
-                        <option value="note">📝 Notes</option>
-                        <option value="consultation">💬 Consultations</option>
-                        <option value="endorsement">📋 Endorsements</option>
-                        <option value="timeslot">⏰ Time Slots</option>
-                        <option value="guidancepass">🎫 Guidance Passes</option>
-                      </select>
-                    </div>
-
-                    {/* Action Filter */}
-                    <div className="filter-group">
-                      <label className="filter-label">Action Performed</label>
-                      <select 
-                        value={filters.action} 
-                        onChange={(e) => handleFilterChange('action', e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Actions</option>
-                        <option value="created">✅ Created</option>
-                        <option value="updated">✏️ Updated</option>
-                        <option value="deleted">🗑️ Deleted</option>
-                        <option value="approved">👍 Approved</option>
-                        <option value="rejected">👎 Rejected</option>
-                        <option value="activated">🟢 Activated</option>
-                        <option value="deactivated">🔴 Deactivated</option>
-                      </select>
-                    </div>
-
-                    {/* Actor Type Filter */}
-                    <div className="filter-group">
-                      <label className="filter-label">Who Performed Action</label>
-                      <select 
-                        value={filters.actorType}
-                        onChange={e => handleFilterChange('actorType', e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Users</option>
-                        <option value="counselor">👨‍💼 Counselor</option>
-                        <option value="student">🎓 Student</option>
-                        <option value="system">🤖 System</option>
-                        <option value="admin">👑 Admin</option>
-                      </select>
-                    </div>
-
-                    {/* Outcome Filter */}
-                    <div className="filter-group">
-                      <label className="filter-label">Operation Result</label>
-                      <select 
-                        value={filters.outcome}
-                        onChange={e => handleFilterChange('outcome', e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Results</option>
-                        <option value="Success">✅ Success</option>
-                        <option value="Failure">❌ Failure</option>
-                      </select>
-                    </div>
-
-                    {/* Channel Filter */}
-                    <div className="filter-group">
-                      <label className="filter-label">Access Channel</label>
-                      <select 
-                        value={filters.channel}
-                        onChange={e => handleFilterChange('channel', e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Channels</option>
-                        <option value="WebApp">💻 Web Application</option>
-                        <option value="Android">📱 Android App</option>
-                        <option value="API">🔌 API</option>
-                      </select>
-                    </div>
-
-                    {/* Date Range Filters */}
-                    <div className="filter-group">
-                      <label className="filter-label">From Date</label>
-                      <input 
-                        type="date" 
-                        value={filters.from} 
-                        onChange={(e) => handleFilterChange('from', e.target.value)}
-                        className="filter-input"
-                      />
-                    </div>
-
-                    <div className="filter-group">
-                      <label className="filter-label">To Date</label>
-                      <input 
-                        type="date" 
-                        value={filters.to} 
-                        onChange={(e) => handleFilterChange('to', e.target.value)}
-                        className="filter-input"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Filter Actions */}
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    marginTop: '16px',
-                    paddingTop: '16px',
-                    borderTop: '1px solid #e5e7eb'
-                  }}>
-                    <div style={{ color: '#6b7280', fontSize: '14px' }}>
-                      {hasActiveFilters ? `${Object.values(filters).filter(v => v !== '').length} filter(s) applied` : 'No filters applied'}
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button 
-                        onClick={resetFilters} 
-                        className="filter-button"
-                        style={{ fontSize: '14px' }}
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons */}
+              {/* Right side: Export Buttons - Now aligned with search and filter */}
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <button 
                   onClick={exportToCSV} 
@@ -606,6 +634,7 @@ const HistoryReportsView = () => {
           </div>
         )}
 
+        {/* Reports section remains the same */}
         {activeTab === 'reports' && (
           <div>
             {/* Report sub-tabs */}
