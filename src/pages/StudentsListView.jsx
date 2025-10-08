@@ -167,17 +167,17 @@ const StudentsTableView = ({
               {filteredStudents.map((student) => (
                 <tr 
                   key={student.id} 
-                  className="table-row"
-                  onClick={() => handleView(student)}
+                  className="table-row clickable-row"
+                  onClick={() => handleView(student.id)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        handleView(student);
+                        handleView(student.id);
                       }
                     }}
                     tabIndex={0}
                     role="button"
-                    aria-label={`View form for ${student.student?.fullName || 'student'}`}
+                    aria-label={`View details for ${student.name || 'student'}`}
                     title="View"
                     >
                   <td className="table-cell">
