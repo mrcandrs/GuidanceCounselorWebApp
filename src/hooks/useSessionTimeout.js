@@ -81,7 +81,8 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
     ];
 
     const handleActivity = () => {
-      if (isActive) {
+      // Don't extend session if warning modal is visible
+      if (isActive && !isWarning) {
         extendSession();
       }
     };
@@ -110,7 +111,7 @@ const useSessionTimeout = (timeoutMinutes = 30, warningMinutes = 5) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, extendSession, resetTimeout]);
+  }, [isActive, isWarning, extendSession, resetTimeout]);
 
   // Format time left for display
   const formatTimeLeft = useCallback((seconds) => {
