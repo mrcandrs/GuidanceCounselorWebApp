@@ -75,7 +75,7 @@ const Login = () => {
     style={{
       minHeight: '100vh',
       width: '100%',
-      background: `linear-gradient(135deg, rgba(4,119,191,.8) 0%, rgba(3,90,140,.9) 50%, rgba(4,119,191,.8) 100%), url(${bgUrl})`,
+      background: `linear-gradient(135deg, rgba(4,119,191,.55) 0%, rgba(3,90,140,.7) 50%, rgba(4,119,191,.8) 100%), url(${bgUrl})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',
