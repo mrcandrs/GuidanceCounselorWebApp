@@ -246,7 +246,7 @@ const HistoryReportsView = () => {
 
   const hasActiveFilters = activeFilterCount > 0;
 
-  // Debug: Add this to see what's being counted
+  // Add this to see what's being counted
   console.log('All filter values:', filters);
   console.log('Active filter count:', activeFilterCount);
 
