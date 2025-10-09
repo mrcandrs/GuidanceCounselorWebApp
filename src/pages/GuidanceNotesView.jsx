@@ -1448,7 +1448,7 @@ const validateForm = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
         <h2 className="page-title" style={{ margin: 0 }}>Guidance/Counseling Notes</h2>
         <span className="confidential-badge">Confidential</span>
-    </div>
+    </div> 
       
       <div className="endorsement-card guidance-scrollable-form">
         <p className="page-description">Create and manage guidance and counseling notes for student sessions.</p>
