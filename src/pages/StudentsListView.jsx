@@ -5,11 +5,17 @@ import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
-// Move CourseSelectionView OUTSIDE of the main component
-const CourseSelectionView = ({ courses, handleCourseSelect }) => (
+const CourseSelectionView = ({ courses, handleCourseSelect, loading }) => (
   <div className="page-container">
     <div className="page-header">
       <h2 className="page-title">Students List</h2>
+      <button 
+        className="primary-button" 
+        onClick={fetchCourses}
+        disabled={coursesLoading}
+      >
+      {coursesLoading ? 'Loading...' : 'Refresh Courses'}
+      </button>
     </div>
 
     <div className="card student-scrollable-form">
@@ -31,39 +37,50 @@ const CourseSelectionView = ({ courses, handleCourseSelect }) => (
         </p>
       </div>
 
-      <div className="course-grid">
-        {courses.map((course) => {
-          const IconComponent = course.icon;
-          return (
-            <div
-              key={course.id}
-              className="course-card"
-              onClick={() => handleCourseSelect(course)}
-              style={{ 
-                borderColor: course.color,
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              <div className="course-card-header">
-                <div 
-                  className="course-icon"
-                  style={{ backgroundColor: course.color }}
-                >
-                  <IconComponent size={24} color="white" />
+      {loading ? (
+        <div style={{ 
+          textAlign: 'center', 
+          padding: '48px 0',
+          color: '#6b7280'
+        }}>
+          <div className="loading-spinner"></div>
+          <p>Loading courses...</p>
+        </div>
+      ) : (
+        <div className="course-grid">
+          {courses.map((course) => {
+            const IconComponent = course.icon;
+            return (
+              <div
+                key={course.id}
+                className="course-card"
+                onClick={() => handleCourseSelect(course)}
+                style={{ 
+                  borderColor: course.color,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <div className="course-card-header">
+                  <div 
+                    className="course-icon"
+                    style={{ backgroundColor: course.color }}
+                  >
+                    <IconComponent size={24} color="white" />
+                  </div>
+                  <div className="course-code" style={{ color: course.color }}>
+                    {course.code}
+                  </div>
                 </div>
-                <div className="course-code" style={{ color: course.color }}>
-                  {course.code}
+                <div className="course-info">
+                  <h4 className="course-name">{course.name}</h4>
+                  <p className="course-description">{course.description}</p>
                 </div>
               </div>
-              <div className="course-info">
-                <h4 className="course-name">{course.name}</h4>
-                <p className="course-description">{course.description}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   </div>
 );
@@ -523,6 +540,9 @@ const StudentsListView = () => {
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
   const [viewingStudentId, setViewingStudentId] = useState(null);
   const [erroredAvatars, setErroredAvatars] = useState({});
+  // Dynamic course configuration - fetch from API
+  const [courses, setCourses] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
 
   // Filter and sort state
   const [showFilters, setShowFilters] = useState(false);
@@ -592,74 +612,84 @@ const StudentsListView = () => {
     setViewingStudentId(null);
   };
 
-  // Course configuration
-  const courses = [
-    { 
-      id: 'all', 
-      name: 'All Students', 
-      code: 'ALL',
-      description: 'View all registered students',
-      color: '#0477BF',
-      icon: Users,
-      matchValues: ['ALL']
-    },
-    { 
-      id: 'bsit', 
-      name: 'Information Technology', 
-      code: 'BSIT',
-      description: 'Bachelor of Science in Information Technology',
-      color: '#ef4444',
-      icon: Users,
-      matchValues: [
-        'BSIT', 
-        'Bachelor of Science in Information Technology', 
-        'Information Technology',
-        'Bachelor of Science in Information Technology (BSIT)'
-      ]
-    },
-    { 
-      id: 'bscs', 
-      name: 'Computer Science', 
-      code: 'BSCS',
-      description: 'Bachelor of Science in Computer Science',
-      color: '#8b5cf6',
-      icon: Users,
-      matchValues: [
-        'BSCS', 
-        'Bachelor of Science in Computer Science', 
-        'Computer Science',
-        'Bachelor of Science in Computer Science (BSCS)'
-      ]
-    },
-    { 
-      id: 'bshm', 
-      name: 'Hospitality Management', 
-      code: 'BSHM',
-      description: 'Bachelor of Science in Hospitality Management',
-      color: '#f59e0b',
-      icon: Users,
-      matchValues: [
-        'BSHM', 
-        'Bachelor of Science in Hospitality Management', 
-        'Hospitality Management',
-        'Bachelor of Science in Hospitality Management (BSHM)'
-      ]
-    },
-    { 
-      id: 'bstm', 
-      name: 'Tourism Management', 
-      code: 'BSTM',
-      description: 'Bachelor of Science in Tourism Management',
-      color: '#10b981',
-      icon: Users,
-      matchValues: [
-        'BSTM', 
-        'Bachelor of Science in Tourism Management', 
-        'Tourism Management',
-        'Bachelor of Science in Tourism Management (BSTM)'
-      ]
+    // Fetch courses from API
+  const fetchCourses = async () => {
+    setCoursesLoading(true);
+    try {
+      const response = await axios.get(
+        "https://guidanceofficeapi-production.up.railway.app/api/maintenance/dictionaries",
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      const data = response.data;
+
+      // Build courses array from API data
+      const dynamicCourses = [
+        { 
+          id: 'all', 
+          name: 'All Students', 
+          code: 'ALL',
+          description: 'View all registered students',
+          color: '#0477BF',
+          icon: Users,
+          matchValues: ['ALL']
+        }
+      ];
+
+      // Add programs from API
+      if (data.programs && Array.isArray(data.programs)) {
+        const colors = ['#ef4444', '#8b5cf6', '#f59e0b', '#10b981', '#06b6d4', '#84cc16', '#f97316', '#ec4899'];
+
+        data.programs.forEach((program, index) => {
+          dynamicCourses.push({
+            id: program.code.toLowerCase(),
+            name: program.name,
+            code: program.code,
+            description: program.name,
+            color: colors[index % colors.length],
+            icon: Users,
+            matchValues: [
+              program.code,
+              program.name,
+              program.name + ' (' + program.code + ')'
+            ]
+          });
+        });
+      }
+
+      setCourses(dynamicCourses);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      // Fallback to default courses if API fails
+      setCourses([
+        { 
+          id: 'all', 
+          name: 'All Students', 
+          code: 'ALL',
+          description: 'View all registered students',
+          color: '#0477BF',
+          icon: Users,
+          matchValues: ['ALL']
+        },
+        { 
+          id: 'bsit', 
+          name: 'Information Technology', 
+          code: 'BSIT',
+          description: 'Bachelor of Science in Information Technology',
+          color: '#ef4444',
+          icon: Users,
+          matchValues: ['BSIT', 'Bachelor of Science in Information Technology', 'Information Technology']
+        }
+      ]);
+    } finally {
+      setCoursesLoading(false);
     }
-  ];
+  };
+
+  // Fetch courses on component mount
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
@@ -832,6 +862,7 @@ const StudentsListView = () => {
     <CourseSelectionView 
       courses={courses}
       handleCourseSelect={handleCourseSelect}
+      loading={coursesLoading}
     />
   );
 };
