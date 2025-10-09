@@ -1009,7 +1009,10 @@ const uniqueParentGuardians = useMemo(() => {
 
   return (
     <div className="endorsement-custody-container">
-      <h2 className="page-title">Consultation/Conference Forms</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+        <h2 className="page-title" style={{ margin: 0 }}>Consultation/Conference Forms</h2>
+        <span className="confidential-badge">Confidential</span>
+      </div>
       
       <div className="endorsement-card consultation-scrollable-form">
         <p className="page-description">Create and manage consultation and conference forms.</p>
