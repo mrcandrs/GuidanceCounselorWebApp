@@ -73,8 +73,13 @@ const Login = () => {
     <div
     className="login-wrapper"
     style={{
-      minHeight: '100vh',
-      width: '100%',
+      position: 'fixed',
+      inset: 0,              // top:0 right:0 bottom:0 left:0
+      width: '100vw',
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       background: `linear-gradient(135deg, rgba(4,119,191,.55) 0%, rgba(3,90,140,.7) 50%, rgba(4,119,191,.8) 100%), url(${bgUrl})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
