@@ -422,7 +422,7 @@ html, body {
 
 /* Fix notification dropdown z-index */
 .notification-dropdown {
-  z-index: 10000;
+  z-index: 11000;
   position: fixed;
 }
 

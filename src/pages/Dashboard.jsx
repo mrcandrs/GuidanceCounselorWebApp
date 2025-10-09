@@ -545,7 +545,7 @@ const GuidanceDashboard = () => {
                     position: 'absolute',
                     top: '100%',
                     right: 0,
-                    zIndex: 1000,
+                    zIndex: 11000,
                     background: 'white',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
