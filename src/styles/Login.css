@@ -24,7 +24,7 @@
     font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: 
         linear-gradient(135deg, rgba(4, 119, 191, 0.8) 0%, rgba(3, 90, 140, 0.9) 50%, rgba(4, 119, 191, 0.8) 100%),
-        url('/sti-college-building.jpg');
+        url('./sti-college-building.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
