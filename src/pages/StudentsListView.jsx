@@ -5,16 +5,16 @@ import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
 
-const CourseSelectionView = ({ courses, handleCourseSelect, loading }) => (
+const CourseSelectionView = ({ courses, handleCourseSelect, loading, fetchCourses}) => (
   <div className="page-container">
     <div className="page-header">
       <h2 className="page-title">Students List</h2>
       <button 
         className="primary-button" 
         onClick={fetchCourses}
-        disabled={coursesLoading}
+        disabled={loading}
       >
-      {coursesLoading ? 'Loading...' : 'Refresh Courses'}
+      {loading ? 'Loading...' : 'Refresh Courses'}
       </button>
     </div>
 
@@ -863,6 +863,7 @@ const StudentsListView = () => {
       courses={courses}
       handleCourseSelect={handleCourseSelect}
       loading={coursesLoading}
+      fetchCourses={fetchCourses}
     />
   );
 };
