@@ -5,6 +5,10 @@ import useSessionTimeout from '../hooks/useSessionTimeout';
 import '../styles/Login.css';
 
 const Login = () => {
+  const bgUrl = (typeof window !== 'undefined')
+    ? `${window.location.origin}/sti-college-building.jpg`
+    : '';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -66,7 +70,18 @@ const Login = () => {
 };
 
   return (
-    <div className="login-wrapper">
+    <div
+    className="login-wrapper"
+    style={{
+      minHeight: '100vh',
+      width: '100%',
+      background: `linear-gradient(135deg, rgba(4,119,191,.8) 0%, rgba(3,90,140,.9) 50%, rgba(4,119,191,.8) 100%), url(${bgUrl})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      backgroundRepeat: 'no-repeat'
+    }}
+  >
     <div className="floating-shapes">
         <div className="shape"></div>
         <div className="shape"></div>
