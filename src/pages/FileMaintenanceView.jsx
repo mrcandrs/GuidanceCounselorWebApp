@@ -87,6 +87,7 @@ const ResourceManager = ({
   const [validationErrors, setValidationErrors] = useState({});
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingItem, setViewingItem] = useState(null);
+  const [relationshipData, setRelationshipData] = useState({});
 
   const headers = fetchAuthHeaders();
 
@@ -106,8 +107,36 @@ const ResourceManager = ({
 
   useEffect(() => {
     load();
+    loadRelationships();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endpoint]);
+
+  // Load relationship data for dropdowns
+  const loadRelationships = async () => {
+    if (!relationships || relationships.length === 0) return;
+    
+    try {
+      const relationshipPromises = relationships.map(async (rel) => {
+        const { data } = await axios.get(`${apiBase}${rel.endpoint}`, { headers });
+        return {
+          key: rel.key,
+          options: data.map(item => ({
+            value: item[rel.valueField],
+            label: `${item[rel.valueField]} - ${item[rel.labelField]}`
+          }))
+        };
+      });
+      
+      const results = await Promise.all(relationshipPromises);
+      const relationshipMap = {};
+      results.forEach(result => {
+        relationshipMap[result.key] = result.options;
+      });
+      setRelationshipData(relationshipMap);
+    } catch (error) {
+      console.error('Failed to load relationships:', error);
+    }
+  };
 
   // Enhanced filtering and sorting
   const filtered = useMemo(() => {
@@ -568,7 +597,7 @@ const ResourceManager = ({
                       onChange={e => setForm(prev => ({ ...prev, [col.key]: e.target.value }))}
                     >
                       <option value="">Select...</option>
-                      {(col.options || []).map(opt => (
+                      {(relationshipData[col.key] || col.options || []).map(opt => (
                         <option key={String(opt.value)} value={opt.value}>
                           {opt.label}
                         </option>
@@ -715,10 +744,9 @@ const FileMaintenanceView = () => {
       columns: [
         { key: 'code', label: 'Code', placeholder: 'BSIT' },
         { key: 'name', label: 'Name', placeholder: 'Bachelor of Science in Information Technology' },
-        { key: 'description', label: 'Description', placeholder: 'Program description', type: 'textarea' },
         { key: 'isActive', label: 'Active', type: 'checkbox' }
       ],
-      defaults: { code: '', name: '', description: '', isActive: true },
+      defaults: { code: '', name: '', isActive: true },
       validation: {
         code: { required: true, minLength: 2, maxLength: 10, unique: true, label: 'Code' },
         name: { required: true, minLength: 5, maxLength: 100, label: 'Name' }
@@ -746,7 +774,15 @@ const FileMaintenanceView = () => {
         name: { required: true, minLength: 1, maxLength: 10, label: 'Section' },
         yearLevel: { required: true, label: 'Year Level' }
       },
-      bulkImport: true
+      bulkImport: true,
+      relationships: [
+        {
+          key: 'programCode',
+          endpoint: '/api/maintenance/programs',
+          valueField: 'code',
+          labelField: 'name'
+        }
+      ]
     },
     {
       id: 'reasons',
