@@ -3,6 +3,18 @@
   box-sizing: border-box;
 }
 
+/* Toast Animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /*FINALLY FIXED THE WIDTH!!!!*/
 html, body {
   margin: 0;

@@ -3,6 +3,56 @@ import { Plus, Edit, Trash2, Save, X, Filter, RefreshCw, Upload, Download, Copy,
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
+// Toast Notification Component
+const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, duration);
+    return () => clearTimeout(timer);
+  }, [onClose, duration]);
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '300px',
+        animation: 'slideInRight 0.3s ease-out'
+      }}
+    >
+      {type === 'success' && <CheckCircle size={20} />}
+      {type === 'error' && <AlertTriangle size={20} />}
+      <span style={{ flex: 1 }}>{message}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
+
 const apiBase = 'https://guidanceofficeapi-production.up.railway.app';
 
 const fetchAuthHeaders = () => {
@@ -88,8 +138,18 @@ const ResourceManager = ({
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingItem, setViewingItem] = useState(null);
   const [relationshipData, setRelationshipData] = useState({});
+  const [toast, setToast] = useState(null);
 
   const headers = fetchAuthHeaders();
+
+  // Toast helper function
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+  };
+
+  const hideToast = () => {
+    setToast(null);
+  };
 
   const load = async () => {
     setLoading(true);
@@ -224,18 +284,15 @@ const ResourceManager = ({
         const id =
           editing.id ?? editing[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
         await axios.put(`${apiBase}${endpoint}/${id}`, payload, { headers });
-        setSuccess('Record updated successfully.');
+        showToast(`${title} updated successfully!`);
       } else {
         await axios.post(`${apiBase}${endpoint}`, payload, { headers });
-        setSuccess('Record created successfully.');
+        showToast(`${title} created successfully!`);
       }
       setShowEditor(false);
       setEditing(null);
       setForm(defaults);
       await load();
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(''), 3000);
     } catch (e) {
       console.error(e);
       setError(e?.response?.data?.message || 'Save failed.');
@@ -252,8 +309,7 @@ const ResourceManager = ({
       const id = item.id ?? item[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
       await axios.delete(`${apiBase}${endpoint}/${id}`, { headers });
       await load();
-      setSuccess('Record deleted successfully.');
-      setTimeout(() => setSuccess(''), 3000);
+      showToast(`${title} deleted successfully!`);
     } catch (e) {
       console.error(e);
       setError(e?.response?.data?.message || 'Delete failed.');
@@ -276,8 +332,7 @@ const ResourceManager = ({
       );
       setSelectedItems([]);
       await load();
-      setSuccess(`${selectedItems.length} records deleted successfully.`);
-      setTimeout(() => setSuccess(''), 3000);
+      showToast(`${selectedItems.length} ${title} records deleted successfully!`);
     } catch (e) {
       console.error(e);
       setError('Bulk delete failed.');
@@ -298,8 +353,7 @@ const ResourceManager = ({
       );
       setSelectedItems([]);
       await load();
-      setSuccess(`${selectedItems.length} records updated successfully.`);
-      setTimeout(() => setSuccess(''), 3000);
+      showToast(`${selectedItems.length} ${title} records updated successfully!`);
     } catch (e) {
       console.error(e);
       setError('Bulk update failed.');
@@ -343,8 +397,7 @@ const ResourceManager = ({
       setShowImportModal(false);
       setImportFile(null);
       await load();
-      setSuccess('Records imported successfully.');
-      setTimeout(() => setSuccess(''), 3000);
+      showToast(`${title} records imported successfully!`);
     } catch (e) {
       console.error(e);
       setError(e?.response?.data?.message || 'Import failed.');
@@ -429,12 +482,6 @@ const ResourceManager = ({
         </div>
       )}
 
-      {success && (
-        <div className="alert-card alert-green" style={{ marginBottom: 12 }}>
-          <CheckCircle size={16} />
-          <p className="alert-text-green">{success}</p>
-        </div>
-      )}
 
       {/* Bulk Actions */}
       {selectedItems.length > 0 && (
@@ -729,6 +776,15 @@ const ResourceManager = ({
             </button>
           </div>
         </Modal>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
       )}
     </div>
   );
