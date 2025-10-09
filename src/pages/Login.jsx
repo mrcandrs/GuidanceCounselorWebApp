@@ -66,7 +66,19 @@ const Login = () => {
 };
 
   return (
-    <div className="login-wrapper">
+    <div 
+    className="login-wrapper"
+    style={{
+      background: `
+        linear-gradient(135deg, rgba(4, 119, 191, 0.8) 0%, rgba(3, 90, 140, 0.9) 50%, rgba(4, 119, 191, 0.8) 100%),
+        url('/sti-college-building.jpg')
+      `,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      backgroundRepeat: 'no-repeat'
+    }}
+  >
     <div className="floating-shapes">
         <div className="shape"></div>
         <div className="shape"></div>
