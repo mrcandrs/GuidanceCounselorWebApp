@@ -645,7 +645,6 @@ const StudentsListView = () => {
             id: program.code.toLowerCase(),
             name: program.name,
             code: program.code,
-            description: program.name,
             color: colors[index % colors.length],
             icon: Users,
             matchValues: [
@@ -675,7 +674,6 @@ const StudentsListView = () => {
           id: 'bsit', 
           name: 'Information Technology', 
           code: 'BSIT',
-          description: 'Bachelor of Science in Information Technology',
           color: '#ef4444',
           icon: Users,
           matchValues: ['BSIT', 'Bachelor of Science in Information Technology', 'Information Technology']
