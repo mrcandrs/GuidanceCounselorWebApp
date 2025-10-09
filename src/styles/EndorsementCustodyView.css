@@ -16,6 +16,20 @@
   margin: 0;
 }
 
+/* Confidential Badge Styles */
+.confidential-badge {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+  background-color: #ef4444;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+}
+
 .page-description {
   color: #6b7280;
   margin-bottom: 24px;

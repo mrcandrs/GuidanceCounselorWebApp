@@ -1015,7 +1015,10 @@ const uniqueEndorsedTo = useMemo(() => {
 
   return (
     <div className="endorsement-custody-container">
-      <h2 className="page-title">Endorsement and Custody Forms</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+      <h2 className="page-title" style={{ margin: 0 }}>Endorsement and Custody Forms</h2>
+      <span className="confidential-badge">Confidential</span>
+    </div>
       
       <div className="endorsement-card endorsement-scrollable-form">
         <p className="page-description">Manage custody and endorsement forms for students.</p>

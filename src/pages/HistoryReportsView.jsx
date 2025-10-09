@@ -263,7 +263,7 @@ const HistoryReportsView = () => {
                 background: activeTab === 'history' ? '#0477BF' : 'white',
                 color: activeTab === 'history' ? 'white' : '#374151',
                 position: 'relative',
-                zIndex: 10001,
+                zIndex: 9999,
                 pointerEvents: 'auto',
                 cursor: 'pointer'
               }}
@@ -278,7 +278,7 @@ const HistoryReportsView = () => {
                 background: activeTab === 'reports' ? '#0477BF' : 'white',
                 color: activeTab === 'reports' ? 'white' : '#374151',
                 position: 'relative',
-                zIndex: 10001,
+                zIndex: 9999,
                 pointerEvents: 'auto',
                 cursor: 'pointer'
               }}
