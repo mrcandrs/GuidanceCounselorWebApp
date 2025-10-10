@@ -805,7 +805,7 @@ const HistoryReportsView = () => {
           <div>
             {/* Report sub-tabs */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidance Passes','forms','moods'].map(rt => (
+              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidancepasses','forms','moods'].map(rt => (
                 <button
                   key={rt}
                   className={`filter-button ${reportTab === rt ? 'active' : ''}`}
