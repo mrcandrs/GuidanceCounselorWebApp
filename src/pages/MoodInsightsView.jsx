@@ -222,6 +222,7 @@ const MoodInsightsView = () => {
   };
 
   // Map distribution into displayable array with colors
+  // Note: The API should return current mood counts, not total historical counts
   const moodData = distribution.map(item => ({
     mood: item.mood,
     count: item.count,
@@ -240,62 +241,60 @@ const MoodInsightsView = () => {
 
   return (
     <div className="page-container" style={{ width: '100%', minWidth: 0 }}>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-        <h2 className="page-title" style={{ margin: 0 }}>Student Mood Insights</h2>
-        
-        {/* Search Student by Student Number - Moved to top right */}
-        <div className="card" style={{ minWidth: 0, width: '400px' }}>
-          <h3 className="card-title" style={{ marginBottom: 12, fontSize: '16px' }}>Search Student by Student Number</h3>
-          <div className="search-input-container" style={{ maxWidth: '100%' }}>
-            <Search size={20} className="search-icon" />
-            <input
-              type="text"
-              placeholder="Enter student number…"
-              className="search-input"
-              value={studentSearch}
-              onChange={(e) => setStudentSearch(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-            />
-            {studentSearch && (
-              <button className="search-clear" onClick={() => { setStudentSearch(''); setSearchResults([]); }}>
-                <X size={16} />
-              </button>
-            )}
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <button className="filter-button" onClick={handleSearch} disabled={studentsLoading}>
-              {studentsLoading ? 'Searching…' : 'Search'}
-            </button>
-          </div>
+      <h2 className="page-title">Student Mood Insights</h2>
 
-          {searchResults.length > 0 && (
-            <div style={{ marginTop: 16, maxHeight: '300px', overflowY: 'auto' }}>
-              <div style={{ marginBottom: 8, color: '#6b7280', fontSize: 14 }}>
-                Showing {searchResults.length} result{searchResults.length > 1 ? 's' : ''}
-              </div>
-              <table className="table">
-                <thead className="table-header">
-                  <tr>
-                    <th className="table-header-cell">Student</th>
-                    <th className="table-header-cell">Student No.</th>
-                    <th className="table-header-cell">Program and Year</th>
-                    <th className="table-header-cell">Last Mood Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {searchResults.map((s, i) => (
-                    <tr key={`${s.id || i}`} className="table-row">
-                      <td className="table-cell">{s.name || 'N/A'}</td>
-                      <td className="table-cell">{s.studentno || 'N/A'}</td>
-                      <td className="table-cell">{s.program || 'N/A'} - {s.section || 'N/A'}</td>
-                      <td className="table-cell"><span className={badgeClassForMood(s.lastMood)}>{s.lastMood || 'N/A'}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      {/* Search Student by Student Number - Moved above cards */}
+      <div className="card" style={{ marginBottom: '24px' }}>
+        <h3 className="card-title" style={{ marginBottom: 12 }}>Search Student by Student Number</h3>
+        <div className="search-input-container" style={{ maxWidth: '420px' }}>
+          <Search size={20} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Enter student number…"
+            className="search-input"
+            value={studentSearch}
+            onChange={(e) => setStudentSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
+          />
+          {studentSearch && (
+            <button className="search-clear" onClick={() => { setStudentSearch(''); setSearchResults([]); }}>
+              <X size={16} />
+            </button>
           )}
         </div>
+        <div style={{ marginTop: 12 }}>
+          <button className="filter-button" onClick={handleSearch} disabled={studentsLoading}>
+            {studentsLoading ? 'Searching…' : 'Search'}
+          </button>
+        </div>
+
+        {searchResults.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <div style={{ marginBottom: 8, color: '#6b7280', fontSize: 14 }}>
+              Showing {searchResults.length} result{searchResults.length > 1 ? 's' : ''}
+            </div>
+            <table className="table">
+              <thead className="table-header">
+                <tr>
+                  <th className="table-header-cell">Student</th>
+                  <th className="table-header-cell">Student No.</th>
+                  <th className="table-header-cell">Program and Year</th>
+                  <th className="table-header-cell">Last Mood Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchResults.map((s, i) => (
+                  <tr key={`${s.id || i}`} className="table-row">
+                    <td className="table-cell">{s.name || 'N/A'}</td>
+                    <td className="table-cell">{s.studentno || 'N/A'}</td>
+                    <td className="table-cell">{s.program || 'N/A'} - {s.section || 'N/A'}</td>
+                    <td className="table-cell"><span className={badgeClassForMood(s.lastMood)}>{s.lastMood || 'N/A'}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="cards-row">
@@ -453,19 +452,19 @@ const MoodInsightsView = () => {
       {/* Mood Drilldown Modal */}
       {showMoodModal && (
         <div className="modal-overlay">
-          <div className="modal" style={{ width: 620, textAlign: 'left' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="modal" style={{ width: 620, maxHeight: '80vh', textAlign: 'left', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ margin: 0 }}>Students with mood: {selectedMood}</h3>
               <button className="filter-button" onClick={() => setShowMoodModal(false)}>
                 <X size={16} />
                 Close
               </button>
             </div>
-            <div style={{ marginTop: 12 }}>
+            <div style={{ flex: 1, overflowY: 'auto' }}>
               {studentsLoading ? (
                 <div style={{ padding: 20 }}>Loading students…</div>
               ) : (
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <div style={{ overflowX: 'auto' }}>
                   <table className="table">
                     <thead className="table-header">
                       <tr>
