@@ -4,16 +4,26 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Ba
 import '../styles/Dashboard.css';
 import axios from "axios";
 
-//Mood colors aligned with StudentsListView badges
+// Mood colors for charts (unchanged)
 const colorForMood = (mood) => {
   switch (mood) {
-      case "MILD": return "#10b981"; // mood-mild
-      case "MODERATE": return "#f59e0b"; // mood-moderate
-      case "HIGH": return "#ef4444"; // mood-high
+      case "MILD": return "#34C759";
+      case "MODERATE": return "#009951";
+      case "HIGH": return "#1B5E20";
       case "N/A": return "#64748b";
       default: return "#999";
     }
   };
+
+// Badge class to match StudentsListView badges
+const badgeClassForMood = (mood) => {
+  switch (mood) {
+    case 'MILD': return 'mood-badge mood-mild';
+    case 'MODERATE': return 'mood-badge mood-moderate';
+    case 'HIGH': return 'mood-badge mood-high';
+    default: return 'mood-badge mood-neutral';
+  }
+};
 
   //Chart component for mood trends
   const MoodTrendChart = ({ data }) => {
@@ -200,11 +210,8 @@ const MoodInsightsView = () => {
           ) : (
             <div>
               {moodData.map((m, index) => (
-                <div key={index} className="mood-item" style={{display:'flex', justifyContent:'space-between', padding: '8px 0'}}>
-                  <div style={{display:'flex', alignItems:'center', gap:8}}>
-                    <div className="mood-dot" style={{width:12, height:12, borderRadius:6, backgroundColor:m.color}} />
-                    <span style={{fontSize:14, fontWeight:500}}>{m.mood}</span>
-                  </div>
+                <div key={index} className="mood-item" style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding: '8px 0'}}>
+                  <span className={badgeClassForMood(m.mood)}>{m.mood}</span>
                   <span style={{ fontSize: 14, color: '#6b7280' }}>{m.count} students</span>
                 </div>
               ))}
