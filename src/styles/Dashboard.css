@@ -473,7 +473,6 @@ html, body {
 .content {
   flex: 1;
   padding: 24px;
-  overflow-y: auto;
   width: 100%; /* Add this */
   max-width: 100%; /* Add this */
 }
