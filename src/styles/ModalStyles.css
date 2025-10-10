@@ -215,7 +215,7 @@
   cursor: not-allowed;
 }
 
-.delete-button {
+.settings-modal .delete-button {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -230,11 +230,11 @@
   transition: all 0.2s;
 }
 
-.delete-button:hover:not(:disabled) {
+.settings-modal .delete-button:hover:not(:disabled) {
   background: #dc2626;
 }
 
-.delete-button:disabled {
+.settings-modal .delete-button:disabled {
   background: #9ca3af;
   cursor: not-allowed;
 }

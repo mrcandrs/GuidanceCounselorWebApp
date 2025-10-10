@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { X, User, Mail, Lock, Camera, Save, Eye, EyeOff, Trash2 } from 'lucide-react';
 import axios from 'axios';
+import '../styles/ModalStyles.css';
 
 const SettingsModal = ({ isOpen, onClose, counselor, onUpdate }) => {
   const [activeTab, setActiveTab] = useState('profile');

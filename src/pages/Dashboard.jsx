@@ -17,7 +17,6 @@ import SettingsModal from '../components/SettingsModal';
 import UserProfileModal from '../components/UserProfileModal';
 import axios from 'axios';
 import '../styles/Dashboard.css';
-import '../styles/ModalStyles.css';
 
 const GuidanceDashboard = () => {
   const navigate = useNavigate();

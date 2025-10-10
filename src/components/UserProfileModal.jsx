@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, User, Mail, Calendar, Shield, Clock } from 'lucide-react';
+import '../styles/ModalStyles.css';
 
 const UserProfileModal = ({ isOpen, onClose, counselor }) => {
   if (!isOpen || !counselor) return null;
