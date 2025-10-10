@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, Filter, Eye, Trash2, Users, ArrowLeft, SortAsc, ChevronDown, X } from 'lucide-react';
+import { Search, Filter, Eye, Trash2, Users, ArrowLeft, SortAsc, ChevronDown, X, RefreshCw } from 'lucide-react';
 import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
@@ -13,8 +13,12 @@ const CourseSelectionView = ({ courses, handleCourseSelect, loading, fetchCourse
         className="primary-button" 
         onClick={fetchCourses}
         disabled={loading}
+        title="Refresh Courses"
+        aria-label="Refresh Courses"
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
       >
-      {loading ? 'Loading...' : 'Refresh Courses'}
+        <RefreshCw size={16} />
+        {loading ? 'Loading...' : 'Refresh Courses'}
       </button>
     </div>
 

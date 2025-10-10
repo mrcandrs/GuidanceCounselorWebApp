@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Download, Eye, Calendar, Clock, User, CheckCircle, X } from 'lucide-react';
+import { FileText, Download, Eye, Calendar, Clock, User, CheckCircle, X, RefreshCw } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
@@ -174,9 +174,13 @@ const GuidancePassView = () => {
             position: 'relative',
             zIndex: 9999,
             pointerEvents: 'auto',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8
           }}
           >
+            <RefreshCw size={16} />
             Refresh
           </button>
         </div>

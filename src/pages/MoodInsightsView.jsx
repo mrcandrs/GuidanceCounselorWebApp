@@ -4,12 +4,12 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Ba
 import '../styles/Dashboard.css';
 import axios from "axios";
 
-//Mood colors
+//Mood colors aligned with StudentsListView badges
 const colorForMood = (mood) => {
   switch (mood) {
-      case "MILD": return "#34C759";
-      case "MODERATE": return "#009951";
-      case "HIGH": return "#1B5E20";
+      case "MILD": return "#10b981"; // mood-mild
+      case "MODERATE": return "#f59e0b"; // mood-moderate
+      case "HIGH": return "#ef4444"; // mood-high
       case "N/A": return "#64748b";
       default: return "#999";
     }

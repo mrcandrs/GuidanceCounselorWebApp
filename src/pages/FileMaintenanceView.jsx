@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Plus, Edit, Trash2, Save, X, Filter, RefreshCw, Upload, Download, Copy, AlertTriangle, CheckCircle, Eye, Search, SortAsc, SortDesc } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Filter, RefreshCw, Download, Copy, AlertTriangle, CheckCircle, Eye, Search, SortAsc, SortDesc } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
@@ -160,8 +160,7 @@ const ResourceManager = ({
   const [sortDirection, setSortDirection] = useState('asc');
   const [selectedItems, setSelectedItems] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
-  const [showImportModal, setShowImportModal] = useState(false);
-  const [importFile, setImportFile] = useState(null);
+  // Import removed
   const [validationErrors, setValidationErrors] = useState({});
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingItem, setViewingItem] = useState(null);
@@ -405,31 +404,7 @@ const ResourceManager = ({
     window.URL.revokeObjectURL(url);
   };
 
-  // Import functionality
-  const handleImport = async () => {
-    if (!importFile) return;
-    
-    setBusy(true);
-    setError('');
-    try {
-      const formData = new FormData();
-      formData.append('file', importFile);
-      
-      await axios.post(`${apiBase}${endpoint}/import`, formData, { 
-        headers: { ...headers, 'Content-Type': 'multipart/form-data' }
-      });
-      
-      setShowImportModal(false);
-      setImportFile(null);
-      await load();
-      showToast(`${title} records imported successfully!`);
-    } catch (e) {
-      console.error(e);
-      setError(e?.response?.data?.message || 'Import failed.');
-    } finally {
-      setBusy(false);
-    }
-  };
+  // Import removed
 
   // View functionality
   const handleView = (item) => {
@@ -491,12 +466,7 @@ const ResourceManager = ({
             <Download size={16} />
             Export
           </button>
-          {bulkImport && (
-            <button className="filter-button" type="button" onClick={() => setShowImportModal(true)} title="Import">
-              <Upload size={16} />
-              Import
-            </button>
-          )}
+          {/* Import removed */}
         </div>
       </div>
 
@@ -721,45 +691,7 @@ const ResourceManager = ({
         </Modal>
       )}
 
-      {/* Import Modal */}
-      {showImportModal && (
-        <Modal
-          title="Import Records"
-          onClose={() => setShowImportModal(false)}
-        >
-          <div style={{ display: 'grid', gap: 12 }}>
-            <div className="form-group">
-              <label className="label">CSV File</label>
-              <input
-                type="file"
-                accept=".csv"
-                onChange={(e) => setImportFile(e.target.files[0])}
-                className="input"
-              />
-              <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-                Upload a CSV file with the same columns as the table. First row should contain headers.
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-            <button 
-              className="primary-button full-width" 
-              onClick={handleImport} 
-              disabled={busy || !importFile}
-            >
-              <Upload size={16} />
-              {busy ? 'Importing...' : 'Import'}
-            </button>
-            <button 
-              className="filter-button full-width" 
-              onClick={() => setShowImportModal(false)} 
-              disabled={busy}
-            >
-              Cancel
-            </button>
-          </div>
-        </Modal>
-      )}
+      {/* Import removed */}
 
       {/* View Modal */}
       {showViewModal && viewingItem && (
