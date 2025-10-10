@@ -16,7 +16,7 @@ const generateDeviceId = () => {
     const fingerprint = [
       navigator.userAgent,
       navigator.language,
-      screen.width + 'x' + screen.height,
+      window.screen.width + 'x' + window.screen.height,
       new Date().getTimezoneOffset(),
       canvas.toDataURL()
     ].join('|');

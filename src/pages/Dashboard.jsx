@@ -13,6 +13,7 @@ import ReferralView from './ReferralView';
 import FileMaintenanceView from './FileMaintenanceView';
 import HistoryReportsView from './HistoryReportsView';
 import { SessionValidator, clearSessionInfo } from '../utils/sessionManager';
+import axios from 'axios';
 
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
@@ -93,6 +94,11 @@ const GuidanceDashboard = () => {
       return new Set();
     }
   });
+
+  const persistReadKeys = (nextSet) => {
+    setReadKeys(new Set(nextSet));
+    localStorage.setItem('readNotificationKeys', JSON.stringify(Array.from(nextSet)));
+  };
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     try {
