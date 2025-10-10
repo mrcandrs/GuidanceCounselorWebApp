@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Calendar, ChevronDown } from 'lucide-react';
+import { TrendingUp, Calendar, ChevronDown, Search, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import '../styles/Dashboard.css';
 import axios from "axios";
@@ -114,6 +114,13 @@ const MoodInsightsView = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
   const [showMonthDropdown, setShowMonthDropdown] = useState(false);
+  // Students with mood (for search and mood drilldown)
+  const [students, setStudents] = useState([]);
+  const [studentsLoading, setStudentsLoading] = useState(false);
+  const [studentSearch, setStudentSearch] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showMoodModal, setShowMoodModal] = useState(false);
+  const [selectedMood, setSelectedMood] = useState(null);
 
   // Generate months for dropdown
   const months = [
@@ -177,6 +184,43 @@ const MoodInsightsView = () => {
     }
   };
 
+  // Fetch students with latest mood (cached)
+  const ensureStudentsLoaded = async () => {
+    if (students.length > 0 || studentsLoading) return;
+    try {
+      setStudentsLoading(true);
+      const res = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/student/students-with-mood',
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      setStudents(Array.isArray(res.data) ? res.data : []);
+    } catch (e) {
+      console.error('Error loading students-with-mood:', e);
+      setStudents([]);
+    } finally {
+      setStudentsLoading(false);
+    }
+  };
+
+  // Search by student number
+  const handleSearch = async () => {
+    const term = (studentSearch || '').trim();
+    if (!term) {
+      setSearchResults([]);
+      return;
+    }
+    await ensureStudentsLoaded();
+    const q = term.toLowerCase();
+    const results = students.filter(s => (s.studentno || '').toLowerCase().includes(q));
+    setSearchResults(results);
+  };
+
+  const openMoodModal = async (mood) => {
+    setSelectedMood(mood);
+    await ensureStudentsLoaded();
+    setShowMoodModal(true);
+  };
+
   // Map distribution into displayable array with colors
   const moodData = distribution.map(item => ({
     mood: item.mood,
@@ -209,12 +253,26 @@ const MoodInsightsView = () => {
             <p>No data</p>
           ) : (
             <div>
-              {moodData.map((m, index) => (
-                <div key={index} className="mood-item" style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding: '8px 0'}}>
-                  <span className={badgeClassForMood(m.mood)}>{m.mood}</span>
-                  <span style={{ fontSize: 14, color: '#6b7280' }}>{m.count} students</span>
-                </div>
-              ))}
+          {moodData.map((m, index) => (
+            <button
+              key={index}
+              className="mood-item"
+              onClick={() => openMoodModal(m.mood)}
+              style={{
+                display:'flex',
+                justifyContent:'space-between',
+                alignItems:'center',
+                padding: '8px 0',
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              <span className={badgeClassForMood(m.mood)}>{m.mood}</span>
+              <span style={{ fontSize: 14, color: '#6b7280' }}>{m.count} students</span>
+            </button>
+          ))}
             </div>
           )}
         </div>
@@ -334,6 +392,103 @@ const MoodInsightsView = () => {
           )}
         </div>
       </div>
+
+      {/* Student Search by Student Number */}
+      <div className="card" style={{ minWidth: 0, marginTop: 16 }}>
+        <h3 className="card-title" style={{ marginBottom: 12 }}>Search Student by Student Number</h3>
+        <div className="search-input-container" style={{ maxWidth: 420 }}>
+          <Search size={20} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Enter student number…"
+            className="search-input"
+            value={studentSearch}
+            onChange={(e) => setStudentSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
+          />
+          {studentSearch && (
+            <button className="search-clear" onClick={() => { setStudentSearch(''); setSearchResults([]); }}>
+              <X size={16} />
+            </button>
+          )}
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <button className="filter-button" onClick={handleSearch} disabled={studentsLoading}>
+            {studentsLoading ? 'Searching…' : 'Search'}
+          </button>
+        </div>
+
+        {searchResults.length > 0 && (
+          <div style={{ marginTop: 16, overflowX: 'auto' }}>
+            <div style={{ marginBottom: 8, color: '#6b7280', fontSize: 14 }}>
+              Showing {searchResults.length} result{searchResults.length > 1 ? 's' : ''}
+            </div>
+            <table className="table">
+              <thead className="table-header">
+                <tr>
+                  <th className="table-header-cell">Student</th>
+                  <th className="table-header-cell">Student No.</th>
+                  <th className="table-header-cell">Program and Year</th>
+                  <th className="table-header-cell">Last Mood Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchResults.map((s, i) => (
+                  <tr key={`${s.id || i}`} className="table-row">
+                    <td className="table-cell">{s.name || 'N/A'}</td>
+                    <td className="table-cell">{s.studentno || 'N/A'}</td>
+                    <td className="table-cell">{s.program || 'N/A'} - {s.section || 'N/A'}</td>
+                    <td className="table-cell"><span className={badgeClassForMood(s.lastMood)}>{s.lastMood || 'N/A'}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Mood Drilldown Modal */}
+      {showMoodModal && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ width: 620, textAlign: 'left' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0 }}>Students with mood: {selectedMood}</h3>
+              <button className="filter-button" onClick={() => setShowMoodModal(false)}>
+                <X size={16} />
+                Close
+              </button>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              {studentsLoading ? (
+                <div style={{ padding: 20 }}>Loading…</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="table">
+                    <thead className="table-header">
+                      <tr>
+                        <th className="table-header-cell">Student</th>
+                        <th className="table-header-cell">Student No.</th>
+                        <th className="table-header-cell">Program and Year</th>
+                        <th className="table-header-cell">Last Mood</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {students.filter(s => (s.lastMood || '').toUpperCase() === (selectedMood || '').toUpperCase()).map((s, i) => (
+                        <tr key={`${s.id || i}`} className="table-row">
+                          <td className="table-cell">{s.name || 'N/A'}</td>
+                          <td className="table-cell">{s.studentno || 'N/A'}</td>
+                          <td className="table-cell">{s.program || 'N/A'} - {s.section || 'N/A'}</td>
+                          <td className="table-cell"><span className={badgeClassForMood(s.lastMood)}>{s.lastMood || 'N/A'}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
