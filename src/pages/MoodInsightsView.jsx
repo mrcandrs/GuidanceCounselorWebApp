@@ -163,6 +163,25 @@ const MoodInsightsView = () => {
     }
   }, [selectedMonth, selectedYear]);
 
+  // Load students on initial mount for mood distribution
+  useEffect(() => {
+    const loadStudents = async () => {
+      if (students.length === 0 && !studentsLoading) {
+        await ensureStudentsLoaded();
+      }
+    };
+    loadStudents();
+  }, []);
+
+  // Handle search when studentSearch changes
+  useEffect(() => {
+    if (studentSearch) {
+      handleSearch();
+    } else {
+      setSearchResults([]);
+    }
+  }, [studentSearch, handleSearch]);
+
   const fetchMonthlyReports = async (month, year) => {
     try {
       setLoading(true);
@@ -254,7 +273,7 @@ const MoodInsightsView = () => {
   }, { total: 0, mild: 0, moderate: 0, high: 0, na: 0 });
 
   return (
-    <div className="page-container" style={{ width: '100%', minWidth: 0, paddingBottom: '100px' }}>
+    <div className="page-container" style={{ width: '100%', minWidth: 0, height: '100vh', overflowY: 'auto' }}>
       <h2 className="page-title">Student Mood Insights</h2>
 
       {/* Search Student by Student Number - Moved above cards */}
@@ -465,13 +484,23 @@ const MoodInsightsView = () => {
       </div>
 
       {/* Additional spacing to ensure scrollable content */}
-      <div style={{ height: '200px', marginTop: '24px' }}>
+      <div style={{ height: '800px', marginTop: '24px', paddingBottom: '50px' }}>
         <div className="card">
           <h3 className="card-title">Additional Information</h3>
           <p style={{ color: '#6b7280', margin: 0 }}>
             This section provides additional space to demonstrate page-level scrolling functionality. 
             The page should now scroll vertically when content exceeds the viewport height.
           </p>
+          <p style={{ color: '#6b7280', margin: '16px 0 0 0' }}>
+            You should now see a scrollbar on the right side of the browser window.
+          </p>
+          <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>Scroll Test Content</h4>
+            <p style={{ color: '#6b7280', margin: 0 }}>
+              This content is here to ensure the page is tall enough to require scrolling. 
+              If you can see this text, the scroll functionality is working properly.
+            </p>
+          </div>
         </div>
       </div>
 
