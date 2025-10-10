@@ -110,6 +110,18 @@ const HistoryReportsView = () => {
       } else if (reportTab === 'notes') {
         const { data } = await axios.get(`${API_BASE}/api/reports/notes`, common);
         setReportsData({ type: 'notes', ...data });
+      } else if (reportTab === 'consultations') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/consultations`, common);
+        setReportsData({ type: 'consultations', ...data });
+      } else if (reportTab === 'endorsements') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/endorsements`, common);
+        setReportsData({ type: 'endorsements', ...data });
+      } else if (reportTab === 'timeslots') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/timeslots`, common);
+        setReportsData({ type: 'timeslots', ...data });
+      } else if (reportTab === 'guidancepasses') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/guidancepasses`, common);
+        setReportsData({ type: 'guidancepasses', ...data });
       } else if (reportTab === 'forms') {
         const { data } = await axios.get(`${API_BASE}/api/reports/forms-completion`, common);
         setReportsData({ type: 'forms', ...data });
@@ -732,7 +744,7 @@ const HistoryReportsView = () => {
           <div>
             {/* Report sub-tabs */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              {['appointments','referrals','notes','forms','analytics'].map(rt => (
+              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidancepasses','forms','analytics'].map(rt => (
                 <button
                   key={rt}
                   className={`filter-button ${reportTab === rt ? 'active' : ''}`}
@@ -753,6 +765,10 @@ const HistoryReportsView = () => {
                   {rt === 'appointments' && <Calendar size={16} />}
                   {rt === 'referrals' && <Users size={16} />}
                   {rt === 'notes' && <FileText size={16} />}
+                  {rt === 'consultations' && <FileText size={16} />}
+                  {rt === 'endorsements' && <FileText size={16} />}
+                  {rt === 'timeslots' && <Clock size={16} />}
+                  {rt === 'guidancepasses' && <CheckCircle size={16} />}
                   {rt === 'forms' && <FileText size={16} />}
                   {rt.charAt(0).toUpperCase() + rt.slice(1)}
                 </button>
@@ -989,6 +1005,74 @@ const HistoryReportsView = () => {
                       {reportsData.byNature?.map((x, i) => (
                         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
                           <span>{x.type}</span><strong>{x.count}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {reportsData?.type === 'consultations' && (
+                  <div className="cards-row">
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consultation' })}>
+                      <h3 className="card-title">Total Consultations</h3>
+                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+                    </div>
+                    <div className="card" style={{ marginTop: 16 }}>
+                      <h3 className="card-title">By Status</h3>
+                      {reportsData.byStatus?.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                          <span>{x.status}</span><strong>{x.count}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {reportsData?.type === 'endorsements' && (
+                  <div className="cards-row">
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'endorsement' })}>
+                      <h3 className="card-title">Total Endorsements</h3>
+                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+                    </div>
+                    <div className="card" style={{ marginTop: 16 }}>
+                      <h3 className="card-title">By Type</h3>
+                      {reportsData.byType?.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                          <span>{x.type}</span><strong>{x.count}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {reportsData?.type === 'timeslots' && (
+                  <div className="cards-row">
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'timeslot' })}>
+                      <h3 className="card-title">Total Time Slots</h3>
+                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+                    </div>
+                    <div className="card" style={{ marginTop: 16 }}>
+                      <h3 className="card-title">By Status</h3>
+                      {reportsData.byStatus?.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                          <span>{x.status}</span><strong>{x.count}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {reportsData?.type === 'guidancepasses' && (
+                  <div className="cards-row">
+                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'guidancepass' })}>
+                      <h3 className="card-title">Total Guidance Passes</h3>
+                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
+                    </div>
+                    <div className="card" style={{ marginTop: 16 }}>
+                      <h3 className="card-title">By Status</h3>
+                      {reportsData.byStatus?.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                          <span>{x.status}</span><strong>{x.count}</strong>
                         </div>
                       ))}
                     </div>
