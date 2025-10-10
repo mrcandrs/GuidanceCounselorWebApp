@@ -157,7 +157,6 @@ const ResourceManager = ({
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(defaults);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
   const [selectedItems, setSelectedItems] = useState([]);
