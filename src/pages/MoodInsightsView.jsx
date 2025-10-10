@@ -26,7 +26,7 @@ const badgeClassForMood = (mood) => {
 };
 
   //Chart component for mood trends
-  const MoodTrendChart = ({ data }) => {
+  const MoodTrendChart = React.memo(({ data }) => {
   return (
     <div style={{ width: '100%', height: '260px', overflow: 'hidden' }}>
       <ResponsiveContainer width="100%" height={260}>
@@ -43,10 +43,10 @@ const badgeClassForMood = (mood) => {
       </ResponsiveContainer>
     </div>
     );
-  };
+  });
 
   // Monthly Reports Chart Component with enhanced tooltip
-  const MonthlyReportsChart = ({ data }) => {
+  const MonthlyReportsChart = React.memo(({ data }) => {
     const CustomTooltip = ({ active, payload, label }) => {
       if (active && payload && payload.length) {
         const weekData = data.find(item => item.week === label);
@@ -104,7 +104,7 @@ const badgeClassForMood = (mood) => {
         </ResponsiveContainer>
       </div>
     );
-  };
+  });
 
 const MoodInsightsView = () => {
   const [distribution, setDistribution] = useState([]);
@@ -478,33 +478,6 @@ const MoodInsightsView = () => {
         </div>
       </div>
 
-      {/* Additional spacing to ensure scrollable content */}
-      <div style={{ height: '2000px', marginTop: '24px', paddingBottom: '50px' }}>
-        <div className="card">
-          <h3 className="card-title">Additional Information</h3>
-          <p style={{ color: '#6b7280', margin: 0 }}>
-            This section provides additional space to demonstrate page-level scrolling functionality. 
-            The page should now scroll vertically when content exceeds the viewport height.
-          </p>
-          <p style={{ color: '#6b7280', margin: '16px 0 0 0' }}>
-            You should now see a scrollbar on the right side of the browser window.
-          </p>
-          <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>Scroll Test Content</h4>
-            <p style={{ color: '#6b7280', margin: 0 }}>
-              This content is here to ensure the page is tall enough to require scrolling. 
-              If you can see this text, the scroll functionality is working properly.
-            </p>
-          </div>
-          <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f3f4f6', borderRadius: '8px' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>More Test Content</h4>
-            <p style={{ color: '#6b7280', margin: 0 }}>
-              This is additional content to make the page even taller and ensure scrolling works.
-              The page should definitely scroll now with this much content.
-            </p>
-          </div>
-        </div>
-      </div>
 
       {/* Mood Drilldown Modal */}
       {showMoodModal && (
