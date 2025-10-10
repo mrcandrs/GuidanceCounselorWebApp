@@ -43,7 +43,6 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
         gap: '8px',
         minWidth: '300px',
         animation: 'slideInRight 0.3s ease-out',
-        position: 'relative',
         overflow: 'hidden'
       }}
     >
@@ -973,44 +972,46 @@ const FileMaintenanceView = () => {
   const tab = tabs.find(t => t.id === active);
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <h2 className="page-title">File Maintenance</h2>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {tabs.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setActive(t.id)}
-              className={`filter-button ${active === t.id ? 'active' : ''}`}
-              type="button"
-              style={{
-                position: 'relative',
-                cursor: 'pointer',
-              }}
-              aria-pressed={active === t.id}
-            >
-              {t.label}
-            </button>
-          ))}
+    <>
+      <div className="page-container">
+        <div className="page-header">
+          <h2 className="page-title">File Maintenance</h2>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {tabs.map(t => (
+              <button
+                key={t.id}
+                onClick={() => setActive(t.id)}
+                className={`filter-button ${active === t.id ? 'active' : ''}`}
+                type="button"
+                style={{
+                  position: 'relative',
+                  cursor: 'pointer',
+                }}
+                aria-pressed={active === t.id}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {tab && (
+          <ResourceManager
+            title={tab.label}
+            endpoint={tab.endpoint}
+            columns={tab.columns}
+            defaults={tab.defaults}
+            transformIn={tab.transformIn}
+            transformOut={tab.transformOut}
+            validation={tab.validation}
+            bulkImport={tab.bulkImport}
+            relationships={tab.relationships}
+            onShowToast={showGlobalToast}
+          />
+        )}
       </div>
 
-      {tab && (
-        <ResourceManager
-          title={tab.label}
-          endpoint={tab.endpoint}
-          columns={tab.columns}
-          defaults={tab.defaults}
-          transformIn={tab.transformIn}
-          transformOut={tab.transformOut}
-          validation={tab.validation}
-          bulkImport={tab.bulkImport}
-          relationships={tab.relationships}
-          onShowToast={showGlobalToast}
-        />
-      )}
-
-      {/* Global Toast Notification */}
+      {/* Global Toast Notification - Outside main container */}
       {globalToast && (
         <Toast
           message={globalToast.message}
@@ -1018,7 +1019,7 @@ const FileMaintenanceView = () => {
           onClose={hideGlobalToast}
         />
       )}
-    </div>
+    </>
   );
 };
 
