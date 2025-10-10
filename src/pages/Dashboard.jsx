@@ -415,7 +415,7 @@ const GuidanceDashboard = () => {
 
 
   {/* Session Timeout Warning Modal */}
-  {isWarning && (
+  {isWarning && !showSessionInvalidatedModal && (
     <div className="modal-overlay session-timeout-modal">
       <div className="modal session-timeout-warning">
         <div className="session-timeout-header">
