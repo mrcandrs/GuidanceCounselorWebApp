@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import useSessionTimeout from '../hooks/useSessionTimeout';
+import { getCurrentSession, storeSessionInfo } from '../utils/sessionManager';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -43,13 +44,32 @@ const Login = () => {
   setError('');
   setIsLoading(true);
   try {
+    const sessionInfo = getCurrentSession();
+    
     const response = await api.post('https://guidanceofficeapi-production.up.railway.app/api/counselor/login', {
       email: email.trim().toLowerCase(),
-      password: password.trim()
+      password: password.trim(),
+      deviceId: sessionInfo.deviceId,
+      sessionId: sessionInfo.sessionId
     });
 
     const token = response.data.token;
     localStorage.setItem('authToken', token);
+
+    // Store session info
+    storeSessionInfo(sessionInfo);
+
+    // Invalidate other sessions for this counselor
+    try {
+      await api.post('https://guidanceofficeapi-production.up.railway.app/api/auth/invalidate-other-sessions', {
+        currentDeviceId: sessionInfo.deviceId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      console.warn('Failed to invalidate other sessions:', error);
+      // Don't fail login if session invalidation fails
+    }
 
     if (rememberMe) {
       localStorage.setItem('rememberedEmail', email.trim().toLowerCase());

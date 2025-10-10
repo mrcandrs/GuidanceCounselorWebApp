@@ -12,8 +12,7 @@ import GuidancePassView from './GuidancePassView';
 import ReferralView from './ReferralView';
 import FileMaintenanceView from './FileMaintenanceView';
 import HistoryReportsView from './HistoryReportsView';
-import '../styles/Dashboard.css';
-import axios from "axios";
+import { SessionValidator, clearSessionInfo } from '../utils/sessionManager';
 
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
@@ -60,6 +59,11 @@ const GuidanceDashboard = () => {
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  
+  // Session validation state
+  const [sessionValidator] = useState(() => new SessionValidator());
+  const [showSessionInvalidatedModal, setShowSessionInvalidatedModal] = useState(false);
+  const [sessionInvalidationReason, setSessionInvalidationReason] = useState('');
 
   const [now, setNow] = useState(new Date());
 
@@ -117,10 +121,21 @@ const GuidanceDashboard = () => {
   const fetchingRef = React.useRef(false);
 
 
-  const persistReadKeys = (nextSet) => {
-  setReadKeys(new Set(nextSet));
-  localStorage.setItem('readNotificationKeys', JSON.stringify(Array.from(nextSet)));
-  };
+  // Session validation effect
+  useEffect(() => {
+    const handleSessionInvalidated = (reason) => {
+      setSessionInvalidationReason(reason);
+      setShowSessionInvalidatedModal(true);
+    };
+
+    // Start session validation
+    sessionValidator.startValidation(30000, handleSessionInvalidated); // Check every 30 seconds
+
+    // Cleanup on unmount
+    return () => {
+      sessionValidator.stopValidation();
+    };
+  }, [sessionValidator]);
 
   // Update active tab when URL changes
   useEffect(() => {
@@ -295,14 +310,25 @@ const GuidanceDashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    // Remove token
-    localStorage.removeItem('authToken');
-    console.log("Authentication token removed successfully.");
+    // Stop session validation
+    sessionValidator.stopValidation();
+    
+    // Clear session info
+    clearSessionInfo();
+    console.log("Authentication token and session info removed successfully.");
 
     //Clear state
     setCounselor({ name: '', email: '' });
 
     //Redirect to login
+    navigate('/');
+  };
+
+  // Handle forced logout due to session invalidation
+  const handleForcedLogout = () => {
+    sessionValidator.stopValidation();
+    clearSessionInfo();
+    setCounselor({ name: '', email: '' });
     navigate('/');
   };
 
@@ -474,6 +500,26 @@ const GuidanceDashboard = () => {
               </button>
               <button className="confirm-btn" onClick={handleLogout}>
                 Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Session Invalidated Modal */}
+      {showSessionInvalidatedModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <AlertTriangle size={48} style={{ color: '#ef4444', marginBottom: '16px' }} />
+              <h3 style={{ color: '#ef4444', marginBottom: '8px' }}>Session Invalidated</h3>
+              <p style={{ color: '#6b7280', fontSize: '14px' }}>
+                {sessionInvalidationReason || 'Your session has been invalidated because you logged in on another device.'}
+              </p>
+            </div>
+            <div className="modal-actions">
+              <button className="confirm-btn" onClick={handleForcedLogout} style={{ width: '100%' }}>
+                Return to Login
               </button>
             </div>
           </div>
