@@ -215,6 +215,30 @@
   cursor: not-allowed;
 }
 
+.delete-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.delete-button:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.delete-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
 .photo-upload {
   display: flex;
   flex-direction: column;
@@ -224,6 +248,13 @@
   border: 2px dashed #d1d5db;
   border-radius: 8px;
   background: #fafafa;
+}
+
+.photo-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .current-photo {

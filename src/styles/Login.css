@@ -128,7 +128,7 @@
 
         .form-control {
             width: 100%;
-            padding: 1rem 1rem 1rem 3.5rem;
+            padding: 1rem 1rem 1rem 3rem;
             border: 2px solid var(--gray-200);
             border-radius: 12px;
             font-size: 1rem;
@@ -145,14 +145,16 @@
 
         .input-icon {
             position: absolute;
-            left: 1rem;
+            left: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--gray-600);
-            font-size: 1.1rem;
+            font-size: 1rem;
             pointer-events: none;
             transition: color 0.3s ease;
             z-index: 1;
+            width: 1.5rem;
+            text-align: center;
         }
 
         .form-control:focus + .input-icon {

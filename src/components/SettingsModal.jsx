@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, User, Mail, Lock, Camera, Save, Eye, EyeOff } from 'lucide-react';
+import { X, User, Mail, Lock, Camera, Save, Eye, EyeOff, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
 const SettingsModal = ({ isOpen, onClose, counselor, onUpdate }) => {
@@ -173,6 +173,37 @@ const SettingsModal = ({ isOpen, onClose, counselor, onUpdate }) => {
     } catch (error) {
       console.error('Photo update failed:', error);
       setErrors({ photo: 'Failed to update photo. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePhotoDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete your profile photo?')) {
+      return;
+    }
+
+    setLoading(true);
+    setErrors({});
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.delete(`${API_BASE}/api/counselor/photo`, {
+        headers: { 
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      setSuccessMessage('Photo deleted successfully!');
+      onUpdate(response.data);
+      
+      setTimeout(() => {
+        setSuccessMessage('');
+        onClose();
+      }, 2000);
+    } catch (error) {
+      console.error('Photo delete failed:', error);
+      setErrors({ photo: 'Failed to delete photo. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -377,14 +408,27 @@ const SettingsModal = ({ isOpen, onClose, counselor, onUpdate }) => {
                   style={{ display: 'none' }}
                 />
 
-                <button 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={loading}
-                  className="upload-button"
-                >
-                  <Camera size={16} />
-                  {loading ? 'Uploading...' : 'Choose New Photo'}
-                </button>
+                <div className="photo-actions">
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={loading}
+                    className="upload-button"
+                  >
+                    <Camera size={16} />
+                    {loading ? 'Uploading...' : 'Choose New Photo'}
+                  </button>
+
+                  {counselor?.profileImage && (
+                    <button 
+                      onClick={handlePhotoDelete}
+                      disabled={loading}
+                      className="delete-button"
+                    >
+                      <Trash2 size={16} />
+                      Delete Photo
+                    </button>
+                  )}
+                </div>
 
                 {errors.photo && <span className="error-text">{errors.photo}</span>}
               </div>
