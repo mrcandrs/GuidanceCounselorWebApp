@@ -159,10 +159,14 @@ class SessionValidator {
 
   // Handle session invalidation
   handleSessionInvalidated(reason) {
+    console.log('🚨 Session invalidation triggered:', reason);
     this.stopValidation();
     
     if (this.onSessionInvalidated) {
+      console.log('📞 Calling onSessionInvalidated callback');
       this.onSessionInvalidated(reason);
+    } else {
+      console.warn('⚠️ No onSessionInvalidated callback set');
     }
   }
 }

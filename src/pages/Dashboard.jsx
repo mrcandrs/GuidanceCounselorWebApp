@@ -130,12 +130,14 @@ const GuidanceDashboard = () => {
   // Session validation effect
   useEffect(() => {
     const handleSessionInvalidated = (reason) => {
+      console.log('🎯 Dashboard: Session invalidated callback received:', reason);
       setSessionInvalidationReason(reason);
       setShowSessionInvalidatedModal(true);
+      console.log('🎯 Dashboard: Modal state set to true');
     };
 
     // Start session validation
-    sessionValidator.startValidation(30000, handleSessionInvalidated); // Check every 30 seconds
+    sessionValidator.startValidation(5000, handleSessionInvalidated); // Check every 5 seconds for testing
 
     // Cleanup on unmount
     return () => {
