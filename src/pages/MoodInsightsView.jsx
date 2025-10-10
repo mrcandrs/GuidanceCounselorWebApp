@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, Calendar, ChevronDown, Search, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import '../styles/Dashboard.css';
@@ -180,7 +180,7 @@ const MoodInsightsView = () => {
     } else {
       setSearchResults([]);
     }
-  }, [studentSearch, handleSearch]);
+  }, [studentSearch]);
 
   const fetchMonthlyReports = async (month, year) => {
     try {
@@ -204,7 +204,7 @@ const MoodInsightsView = () => {
   };
 
   // Fetch students with latest mood (cached)
-  const ensureStudentsLoaded = useCallback(async () => {
+  const ensureStudentsLoaded = async () => {
     if (students.length > 0 || studentsLoading) return;
     try {
       setStudentsLoading(true);
@@ -219,10 +219,10 @@ const MoodInsightsView = () => {
     } finally {
       setStudentsLoading(false);
     }
-  }, [students.length, studentsLoading]);
+  };
 
   // Search by student number
-  const handleSearch = useCallback(async () => {
+  const handleSearch = async () => {
     const term = (studentSearch || '').trim();
     if (!term) {
       setSearchResults([]);
@@ -232,7 +232,7 @@ const MoodInsightsView = () => {
     const q = term.toLowerCase();
     const results = students.filter(s => (s.studentno || '').toLowerCase().includes(q));
     setSearchResults(results);
-  }, [studentSearch, students, ensureStudentsLoaded]);
+  };
 
   const openMoodModal = async (mood) => {
     setSelectedMood(mood);
@@ -273,7 +273,7 @@ const MoodInsightsView = () => {
   }, { total: 0, mild: 0, moderate: 0, high: 0, na: 0 });
 
   return (
-    <div className="page-container" style={{ width: '100%', minWidth: 0, height: '100vh', overflowY: 'auto' }}>
+    <div className="page-container" style={{ width: '100%', minWidth: 0 }}>
       <h2 className="page-title">Student Mood Insights</h2>
 
       {/* Search Student by Student Number - Moved above cards */}
