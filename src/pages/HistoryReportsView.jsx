@@ -228,7 +228,7 @@ const HistoryReportsView = () => {
         reportType: activeTab,
         frequency: 'weekly',
         email: 'admin@example.com',
-        format: exportFormat
+        format: 'csv'
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
