@@ -831,58 +831,58 @@ const HistoryReportsView = () => {
               gap: '16px', 
               marginBottom: '24px',
               flexWrap: 'wrap',
-              alignItems: 'center'
+              alignItems: 'center',
+              justifyContent: 'space-between'
             }}>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <input 
-                  type="date" 
-                  value={filters.from} 
-                  onChange={(e) => handleFilterChange('from', e.target.value)}
-                  className="filter-input"
-                  placeholder="From Date"
-                />
-                <input 
-                  type="date" 
-                  value={filters.to} 
-                  onChange={(e) => handleFilterChange('to', e.target.value)}
-                  className="filter-input"
-                  placeholder="To Date"
-                />
+              {/* Date Range Controls */}
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div className="filter-group">
+                  <label className="filter-label">Date From</label>
+                  <input 
+                    type="date" 
+                    value={filters.from} 
+                    onChange={(e) => handleFilterChange('from', e.target.value)}
+                    className="filter-input"
+                    style={{
+                      position: 'relative',
+                      zIndex: 999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </div>
+                <div className="filter-group">
+                  <label className="filter-label">Date To</label>
+                  <input 
+                    type="date" 
+                    value={filters.to} 
+                    onChange={(e) => handleFilterChange('to', e.target.value)}
+                    className="filter-input"
+                    style={{
+                      position: 'relative',
+                      zIndex: 999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </div>
               </div>
               
-              {/* Export controls */}
+              {/* Export controls - Only CSV */}
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <button 
                   onClick={exportToCSV} 
-                  className="filter-button"
-                  title="Export to CSV"
-                >
-                  <Download size={16} />
-                  CSV
-                </button>
-                <button 
-                  onClick={exportToExcel} 
-                  className="filter-button"
-                  title="Export to Excel"
-                >
-                  <Download size={16} />
-                  Excel
-                </button>
-                <button 
-                  onClick={exportToPDF} 
-                  className="filter-button"
-                  title="Export to PDF"
-                >
-                  <Download size={16} />
-                  PDF
-                </button>
-                <button 
-                  onClick={scheduleReport} 
                   className="primary-button"
-                  title="Schedule Report"
+                  title="Export to CSV"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
                 >
-                  <Settings size={16} />
-                  Schedule
+                  <Download size={16} />
+                  Export CSV
                 </button>
               </div>
             </div>
@@ -1005,123 +1005,436 @@ const HistoryReportsView = () => {
                   </div>
                 )}
 
-                {/* Other report types remain the same */}
+                {/* Referrals Report */}
                 {reportsData?.type === 'referrals' && (
-                  <div className="cards-row">
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'referral' })}>
-                      <h3 className="card-title">Total Referrals</h3>
-                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-                    </div>
-                    <div className="card" style={{ marginTop: 16 }}>
-                      <h3 className="card-title">By Priority</h3>
-                      {reportsData.byPriority?.map((x, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                          <span>{x.priority}</span><strong>{x.count}</strong>
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'referral' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Users size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Referrals</h3>
                         </div>
-                      ))}
-                    </div>
-                    <div className="card" style={{ marginTop: 16 }}>
-                      <h3 className="card-title">By Category</h3>
-                      {reportsData.byCategory?.map((x, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                          <span>{x.category}</span><strong>{x.count}</strong>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total}
                         </div>
-                      ))}
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Referrals by Priority</h3>
+                      {reportsData.byPriority && reportsData.byPriority.length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {reportsData.byPriority.map((item, index) => {
+                            const maxCount = Math.max(...reportsData.byPriority.map(d => d.count));
+                            const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({ entityType: 'referral' })}
+                                  style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${item.count} referrals with ${item.priority} priority`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {item.priority}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {item.count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <Users size={48} className="empty-icon" />
+                          <p>No referral data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
+                {/* Notes Report */}
                 {reportsData?.type === 'notes' && (
-                  <div className="cards-row">
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'note' })}>
-                      <h3 className="card-title">Total Notes</h3>
-                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-                    </div>
-                    <div className="card" style={{ marginTop: 16 }}>
-                      <h3 className="card-title">By Nature</h3>
-                      {reportsData.byNature?.map((x, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                          <span>{x.type}</span><strong>{x.count}</strong>
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'note' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <FileText size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Notes</h3>
                         </div>
-                      ))}
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Notes by Nature</h3>
+                      {reportsData.byNature && reportsData.byNature.length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {reportsData.byNature.map((item, index) => {
+                            const maxCount = Math.max(...reportsData.byNature.map(d => d.count));
+                            const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({ entityType: 'note' })}
+                                  style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${item.count} notes of ${item.type} nature`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {item.type}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {item.count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <FileText size={48} className="empty-icon" />
+                          <p>No notes data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
+                {/* Consultations Report */}
                 {reportsData?.type === 'consultations' && (
-                  <div className="cards-row">
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consultation' })}>
-                      <h3 className="card-title">Total Consultations</h3>
-                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-                    </div>
-                    <div className="card" style={{ marginTop: 16 }}>
-                      <h3 className="card-title">By Status</h3>
-                      {reportsData.byStatus?.map((x, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                          <span>{x.status}</span><strong>{x.count}</strong>
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consultation' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <FileText size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Consultations</h3>
                         </div>
-                      ))}
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Consultations by Status</h3>
+                      {reportsData.byStatus && reportsData.byStatus.length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {reportsData.byStatus.map((item, index) => {
+                            const maxCount = Math.max(...reportsData.byStatus.map(d => d.count));
+                            const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({ entityType: 'consultation' })}
+                                  style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${item.count} consultations with ${item.status} status`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {item.status}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {item.count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <FileText size={48} className="empty-icon" />
+                          <p>No consultation data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
+                {/* Endorsements Report */}
                 {reportsData?.type === 'endorsements' && (
-                  <div className="cards-row">
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'endorsement' })}>
-                      <h3 className="card-title">Total Endorsements</h3>
-                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-                    </div>
-                    <div className="card" style={{ marginTop: 16 }}>
-                      <h3 className="card-title">By Type</h3>
-                      {reportsData.byType?.map((x, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                          <span>{x.type}</span><strong>{x.count}</strong>
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'endorsement' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <FileText size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Endorsements</h3>
                         </div>
-                      ))}
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Endorsements by Type</h3>
+                      {reportsData.byType && reportsData.byType.length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {reportsData.byType.map((item, index) => {
+                            const maxCount = Math.max(...reportsData.byType.map(d => d.count));
+                            const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({ entityType: 'endorsement' })}
+                                  style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${item.count} endorsements of ${item.type} type`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {item.type}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {item.count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <FileText size={48} className="empty-icon" />
+                          <p>No endorsement data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
+                {/* Time Slots Report */}
                 {reportsData?.type === 'timeslots' && (
-                  <div className="cards-row">
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'timeslot' })}>
-                      <h3 className="card-title">Total Time Slots</h3>
-                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-                    </div>
-                    <div className="card" style={{ marginTop: 16 }}>
-                      <h3 className="card-title">By Status</h3>
-                      {reportsData.byStatus?.map((x, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                          <span>{x.status}</span><strong>{x.count}</strong>
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'timeslot' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Clock size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Time Slots</h3>
                         </div>
-                      ))}
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Time Slots by Status</h3>
+                      {reportsData.byStatus && reportsData.byStatus.length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {reportsData.byStatus.map((item, index) => {
+                            const maxCount = Math.max(...reportsData.byStatus.map(d => d.count));
+                            const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({ entityType: 'timeslot' })}
+                                  style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${item.count} time slots with ${item.status} status`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {item.status}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {item.count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <Clock size={48} className="empty-icon" />
+                          <p>No time slot data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
+                {/* Guidance Passes Report */}
                 {reportsData?.type === 'guidancepasses' && (
-                  <div className="cards-row">
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'guidancepass' })}>
-                      <h3 className="card-title">Total Guidance Passes</h3>
-                      <div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.total}</div>
-                    </div>
-                    <div className="card" style={{ marginTop: 16 }}>
-                      <h3 className="card-title">By Status</h3>
-                      {reportsData.byStatus?.map((x, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                          <span>{x.status}</span><strong>{x.count}</strong>
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'guidancepass' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <CheckCircle size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Guidance Passes</h3>
                         </div>
-                      ))}
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Guidance Passes by Status</h3>
+                      {reportsData.byStatus && reportsData.byStatus.length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {reportsData.byStatus.map((item, index) => {
+                            const maxCount = Math.max(...reportsData.byStatus.map(d => d.count));
+                            const height = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({ entityType: 'guidancepass' })}
+                                  style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${item.count} guidance passes with ${item.status} status`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {item.status}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {item.count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <CheckCircle size={48} className="empty-icon" />
+                          <p>No guidance pass data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
 
+                {/* Forms Report */}
                 {reportsData?.type === 'forms' && (
-                  <div className="cards-row">
-                    <div className="kpi-card"><h3 className="card-title">Total Students</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.totalStudents}</div></div>
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consent' })}><h3 className="card-title">Consent Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.consentForms}</div><div>{reportsData.consentCompletionRate.toFixed(1)}%</div></div>
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'inventory' })}><h3 className="card-title">Inventory Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.inventoryForms}</div><div>{reportsData.inventoryCompletionRate.toFixed(1)}%</div></div>
-                    <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'career' })}><h3 className="card-title">Career Completed</h3><div style={{ fontSize: 28, fontWeight: 700 }}>{reportsData.careerForms}</div><div>{reportsData.careerCompletionRate.toFixed(1)}%</div></div>
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Users size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Students</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.totalStudents}
+                        </div>
+                      </div>
+
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consent' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <CheckCircle size={20} className="text-green-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Consent Completed</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+                          {reportsData.consentForms}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
+                          {reportsData.consentCompletionRate.toFixed(1)}%
+                        </div>
+                      </div>
+
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'inventory' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <FileText size={20} className="text-yellow-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Inventory Completed</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
+                          {reportsData.inventoryForms}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
+                          {reportsData.inventoryCompletionRate.toFixed(1)}%
+                        </div>
+                      </div>
+
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'career' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Target size={20} className="text-purple-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Career Completed</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#8b5cf6' }}>
+                          {reportsData.careerForms}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
+                          {reportsData.careerCompletionRate.toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
