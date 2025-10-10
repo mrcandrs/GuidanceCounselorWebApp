@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Brain, Eye, Share2, Settings, RefreshCw } from 'lucide-react';
+import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
@@ -27,15 +27,6 @@ const HistoryReportsView = () => {
   const [reportTab, setReportTab] = useState('appointments');
   const [showFilters, setShowFilters] = useState(false);
   
-  // Enhanced analytics state
-  const [analyticsData, setAnalyticsData] = useState(null);
-  const [insights, setInsights] = useState([]);
-  const [trends, setTrends] = useState(null);
-  const [performanceMetrics, setPerformanceMetrics] = useState(null);
-  const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState(false);
-  const [selectedTimeRange, setSelectedTimeRange] = useState('30d');
-  const [chartType, setChartType] = useState('bar');
-  const [exportFormat, setExportFormat] = useState('csv');
 
   // Ref for the filter panel to detect clicks outside
   const filterPanelRef = useRef(null);
@@ -66,32 +57,6 @@ const HistoryReportsView = () => {
     }
   };
 
-  // Enhanced analytics functions
-  const fetchAdvancedAnalytics = async () => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const headers = { Authorization: `Bearer ${token}` };
-      const params = { 
-        from: filters.from, 
-        to: filters.to,
-        timeRange: selectedTimeRange 
-      };
-
-      const [analytics, insights, trends, performance] = await Promise.all([
-        axios.get(`${API_BASE}/api/analytics/overview`, { headers, params }),
-        axios.get(`${API_BASE}/api/analytics/insights`, { headers, params }),
-        axios.get(`${API_BASE}/api/analytics/trends`, { headers, params }),
-        axios.get(`${API_BASE}/api/analytics/performance`, { headers, params })
-      ]);
-
-      setAnalyticsData(analytics.data);
-      setInsights(insights.data);
-      setTrends(trends.data);
-      setPerformanceMetrics(performance.data);
-    } catch (error) {
-      console.error('Error fetching advanced analytics:', error);
-    }
-  };
 
   // Fetch reports data
   const fetchReports = async () => {
@@ -132,8 +97,6 @@ const HistoryReportsView = () => {
           axios.get(`${API_BASE}/api/moodtracker/monthly-reports`, { headers: { Authorization: `Bearer ${token}` }, params: { month: new Date().getMonth()+1, year: new Date().getFullYear() } }),
         ]);
         setReportsData({ type: 'moods', distribution: distribution.data, daily: daily.data, monthly: monthly.data });
-      } else if (reportTab === 'analytics') {
-        await fetchAdvancedAnalytics();
       }
     } catch (error) {
       console.error('Error fetching reports:', error);
@@ -744,7 +707,7 @@ const HistoryReportsView = () => {
           <div>
             {/* Report sub-tabs */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidancepasses','forms','analytics'].map(rt => (
+              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidancepasses','forms'].map(rt => (
                 <button
                   key={rt}
                   className={`filter-button ${reportTab === rt ? 'active' : ''}`}
@@ -761,7 +724,6 @@ const HistoryReportsView = () => {
                     gap: '6px'
                   }}
                 >
-                  {rt === 'analytics' && <Brain size={16} />}
                   {rt === 'appointments' && <Calendar size={16} />}
                   {rt === 'referrals' && <Users size={16} />}
                   {rt === 'notes' && <FileText size={16} />}
@@ -798,19 +760,6 @@ const HistoryReportsView = () => {
                   className="filter-input"
                   placeholder="To Date"
                 />
-                {reportTab === 'analytics' && (
-                  <select 
-                    value={selectedTimeRange}
-                    onChange={(e) => setSelectedTimeRange(e.target.value)}
-                    className="filter-input"
-                    style={{ minWidth: '120px' }}
-                  >
-                    <option value="7d">Last 7 days</option>
-                    <option value="30d">Last 30 days</option>
-                    <option value="90d">Last 90 days</option>
-                    <option value="1y">Last year</option>
-                  </select>
-                )}
               </div>
               
               {/* Export controls */}
@@ -1088,169 +1037,6 @@ const HistoryReportsView = () => {
                   </div>
                 )}
 
-                {/* Advanced Analytics Section */}
-                {reportTab === 'analytics' && (
-                  <div>
-                    {/* Key Performance Indicators */}
-                    <div style={{ 
-                      display: 'grid', 
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                      gap: '20px', 
-                      marginBottom: '32px' 
-                    }}>
-                      <div className="kpi-card">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <Activity size={20} className="text-blue-500" />
-                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Activities</h3>
-                        </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
-                          {analyticsData?.totalActivities || 0}
-                        </div>
-                      </div>
-
-                      <div className="kpi-card">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <Target size={20} className="text-green-500" />
-                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Success Rate</h3>
-                        </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
-                          {analyticsData?.successRate || 0}%
-                        </div>
-                      </div>
-
-                      <div className="kpi-card">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <Zap size={20} className="text-yellow-500" />
-                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Efficiency Score</h3>
-                        </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
-                          {analyticsData?.efficiencyScore || 0}
-                        </div>
-                      </div>
-
-                      <div className="kpi-card">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <TrendingUp size={20} className="text-purple-500" />
-                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Growth Rate</h3>
-                        </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#8b5cf6' }}>
-                          +{analyticsData?.growthRate || 0}%
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* AI Insights */}
-                    {insights && insights.length > 0 && (
-                      <div className="card" style={{ marginBottom: '24px' }}>
-                        <h3 style={{ margin: '0 0 20px 0', color: '#374151', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Brain size={20} />
-                          AI-Powered Insights
-                        </h3>
-                        <div style={{ display: 'grid', gap: '12px' }}>
-                          {insights.map((insight, index) => (
-                            <div key={index} style={{ 
-                              padding: '12px', 
-                              background: '#f8fafc', 
-                              borderRadius: '8px',
-                              border: '1px solid #e2e8f0'
-                            }}>
-                              <div style={{ fontWeight: '500', marginBottom: '4px' }}>
-                                {insight.title}
-                              </div>
-                              <div style={{ color: '#64748b', fontSize: '14px' }}>
-                                {insight.description}
-                              </div>
-                              <div style={{ 
-                                marginTop: '8px', 
-                                fontSize: '12px', 
-                                color: insight.confidence > 0.8 ? '#10b981' : insight.confidence > 0.6 ? '#f59e0b' : '#ef4444',
-                                fontWeight: '500'
-                              }}>
-                                Confidence: {Math.round(insight.confidence * 100)}%
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Performance Metrics */}
-                    {performanceMetrics && (
-                      <div className="card" style={{ marginBottom: '24px' }}>
-                        <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Performance Metrics</h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                          <div>
-                            <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#6b7280' }}>Response Time</h4>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0477BF' }}>
-                              {performanceMetrics.avgResponseTime || 0}ms
-                            </div>
-                          </div>
-                          <div>
-                            <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#6b7280' }}>Throughput</h4>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>
-                              {performanceMetrics.throughput || 0}/hour
-                            </div>
-                          </div>
-                          <div>
-                            <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#6b7280' }}>Error Rate</h4>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>
-                              {performanceMetrics.errorRate || 0}%
-                            </div>
-                          </div>
-                          <div>
-                            <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#6b7280' }}>Uptime</h4>
-                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#059669' }}>
-                              {performanceMetrics.uptime || 0}%
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Trends Chart */}
-                    {trends && (
-                      <div className="card">
-                        <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Trend Analysis</h3>
-                        <div style={{ 
-                          display: 'flex', 
-                          alignItems: 'end', 
-                          gap: '12px', 
-                          height: '200px', 
-                          padding: '20px 0',
-                          borderBottom: '1px solid #e5e7eb'
-                        }}>
-                          {trends.dataPoints && trends.dataPoints.map((point, index) => {
-                            const maxValue = Math.max(...trends.dataPoints.map(p => p.value));
-                            const height = maxValue > 0 ? (point.value / maxValue) * 100 : 0;
-                            
-                            return (
-                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
-                                <div
-                                  style={{ 
-                                    width: '100%', 
-                                    background: '#0477BF', 
-                                    borderRadius: '4px 4px 0 0', 
-                                    minHeight: '4px', 
-                                    height: `${height}%`, 
-                                    transition: 'all 0.3s', 
-                                    cursor: 'pointer' 
-                                  }}
-                                  title={`${point.value} on ${point.date}`}
-                                />
-                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
-                                  {new Date(point.date).toLocaleDateString()}
-                                </div>
-                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
-                                  {point.value}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
               </>
             )}
           </div>
