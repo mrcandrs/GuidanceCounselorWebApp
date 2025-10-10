@@ -1,7 +1,85 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
+
+// Toast Notification Component
+const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, duration);
+
+    // Progress bar animation
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev - (100 / (duration / 100));
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    };
+  }, [onClose, duration]);
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '300px',
+        animation: 'slideInRight 0.3s ease-out',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: '3px',
+          background: 'rgba(255, 255, 255, 0.3)',
+          width: `${progress}%`,
+          transition: 'width 0.1s linear'
+        }}
+      />
+      
+      {type === 'success' && <CheckCircle size={20} />}
+      {type === 'error' && <AlertTriangle size={20} />}
+      <span style={{ flex: 1 }}>{message}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
 
 const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
 
@@ -10,6 +88,15 @@ const HistoryReportsView = () => {
   const [historyData, setHistoryData] = useState([]);
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast(null);
+  }, []);
   const [filters, setFilters] = useState({
     entityType: '',
     action: '',
@@ -232,9 +319,10 @@ const HistoryReportsView = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Report scheduled successfully!');
+      showToast('Report scheduled successfully!');
     } catch (error) {
       console.error('Schedule report failed:', error);
+      showToast('Failed to schedule report. Please try again.', 'error');
     }
   };
 
@@ -1042,6 +1130,15 @@ const HistoryReportsView = () => {
           </div>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
     </div>
   );
 };

@@ -1,9 +1,88 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import useSessionTimeout from '../hooks/useSessionTimeout';
 import { getCurrentSession, storeSessionInfo, generateSessionId } from '../utils/sessionManager';
+import { CheckCircle, AlertTriangle, X } from 'lucide-react';
 import '../styles/Login.css';
+
+// Toast Notification Component
+const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  const [progress, setProgress] = useState(100);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, duration);
+
+    // Progress bar animation
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev - (100 / (duration / 100));
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    };
+  }, [onClose, duration]);
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '300px',
+        animation: 'slideInRight 0.3s ease-out',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: '3px',
+          background: 'rgba(255, 255, 255, 0.3)',
+          width: `${progress}%`,
+          transition: 'width 0.1s linear'
+        }}
+      />
+      
+      {type === 'success' && <CheckCircle size={20} />}
+      {type === 'error' && <AlertTriangle size={20} />}
+      <span style={{ flex: 1 }}>{message}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
 
 const Login = () => {
   const bgUrl = (typeof window !== 'undefined')
@@ -16,6 +95,15 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isCapsOn, setIsCapsOn] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast(null);
+  }, []);
   const navigate = useNavigate();
   // Reset session timeout on successful login
   const { resetTimeout } = useSessionTimeout(30, 5);
@@ -85,12 +173,14 @@ const Login = () => {
     }
 
     resetTimeout();
+    showToast('Login successful!', 'success');
     navigate('/dashboard');
   } catch (err) {
     const msg = err?.response?.status === 401
       ? 'Invalid email or password.'
       : 'Unable to sign in. Please try again.';
     setError(msg);
+    showToast(msg, 'error');
   } finally {
     setIsLoading(false);
   }
@@ -209,6 +299,15 @@ const Login = () => {
         </button>
       </form>
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
     </div>
   );
 };

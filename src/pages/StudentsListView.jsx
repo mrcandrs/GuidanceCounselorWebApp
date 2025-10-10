@@ -1,9 +1,87 @@
-import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, Filter, Eye, Trash2, Users, ArrowLeft, SortAsc, ChevronDown, X, RefreshCw } from 'lucide-react';
+import { Search, Filter, Eye, Trash2, Users, ArrowLeft, SortAsc, ChevronDown, X, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
 import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
+
+// Toast Notification Component
+const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, duration);
+
+    // Progress bar animation
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev - (100 / (duration / 100));
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    };
+  }, [onClose, duration]);
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '300px',
+        animation: 'slideInRight 0.3s ease-out',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: '3px',
+          background: 'rgba(255, 255, 255, 0.3)',
+          width: `${progress}%`,
+          transition: 'width 0.1s linear'
+        }}
+      />
+      
+      {type === 'success' && <CheckCircle size={20} />}
+      {type === 'error' && <AlertTriangle size={20} />}
+      <span style={{ flex: 1 }}>{message}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
 
 const CourseSelectionView = ({ courses, handleCourseSelect, loading, fetchCourses}) => (
   <div className="page-container">
@@ -546,6 +624,15 @@ const StudentsListView = () => {
   const [erroredAvatars, setErroredAvatars] = useState({});
   // Dynamic course configuration - fetch from API
   const [courses, setCourses] = useState([]);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast(null);
+  }, []);
   const [coursesLoading, setCoursesLoading] = useState(true);
 
   // Filter and sort state
@@ -793,7 +880,7 @@ const StudentsListView = () => {
         if (selectedCourse) {
           setTimeout(() => filterStudentsByCourse(selectedCourse, allStudents), 100);
         }
-        alert('Student deleted successfully!');
+        showToast('Student deleted successfully!');
       } else {
         throw new Error(`Unexpected response status: ${response.status}`);
       }
@@ -805,24 +892,24 @@ const StudentsListView = () => {
         console.error('Response status:', error.response.status);
         
         if (error.response.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          showToast('Authentication failed. Please log in again.', 'error');
           return;
         } else if (error.response.status === 403) {
-          alert('You do not have permission to delete students.');
+          showToast('You do not have permission to delete students.', 'error');
           return;
         } else if (error.response.status === 404) {
-          alert('Student not found.');
+          showToast('Student not found.', 'error');
           return;
         } else {
-          alert(`Server error: ${error.response.data?.message || 'Unknown error'}`);
+          showToast(`Server error: ${error.response.data?.message || 'Unknown error'}`, 'error');
           return;
         }
       } else if (error.request) {
         console.error('Network error - no response received');
-        alert('Network error: Unable to reach the server. Please check your connection.');
+        showToast('Network error: Unable to reach the server. Please check your connection.', 'error');
       } else {
         console.error('Request setup error:', error.message);
-        alert(`Request error: ${error.message}`);
+        showToast(`Request error: ${error.message}`, 'error');
       }
     }
   };
@@ -838,35 +925,48 @@ const StudentsListView = () => {
   }
 
   // Clean return statement
-  return selectedCourse ? (
-    <StudentsTableView 
-      selectedCourse={selectedCourse}
-      handleBackToCourseSelection={handleBackToCourseSelection}
-      searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
-      isLoading={isLoading}
-      filteredStudents={filteredStudents}
-      displayedStudents={displayedStudents}
-      getMoodBadgeClass={getMoodBadgeClass}
-      handleDelete={handleDelete}
-      handleView={handleView}
-      erroredAvatars={erroredAvatars}
-      setErroredAvatars={setErroredAvatars}
-      showFilters={showFilters}
-      setShowFilters={setShowFilters}
-      filters={filters}
-      setFilters={setFilters}
-      sortConfig={sortConfig}
-      setSortConfig={setSortConfig}
-      hasActiveFilters={hasActiveFilters}
-    />
-  ) : (
-    <CourseSelectionView 
-      courses={courses}
-      handleCourseSelect={handleCourseSelect}
-      loading={coursesLoading}
-      fetchCourses={fetchCourses}
-    />
+  return (
+    <>
+      {selectedCourse ? (
+        <StudentsTableView 
+          selectedCourse={selectedCourse}
+          handleBackToCourseSelection={handleBackToCourseSelection}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          isLoading={isLoading}
+          filteredStudents={filteredStudents}
+          displayedStudents={displayedStudents}
+          getMoodBadgeClass={getMoodBadgeClass}
+          handleDelete={handleDelete}
+          handleView={handleView}
+          erroredAvatars={erroredAvatars}
+          setErroredAvatars={setErroredAvatars}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
+          filters={filters}
+          setFilters={setFilters}
+          sortConfig={sortConfig}
+          setSortConfig={setSortConfig}
+          hasActiveFilters={hasActiveFilters}
+        />
+      ) : (
+        <CourseSelectionView 
+          courses={courses}
+          handleCourseSelect={handleCourseSelect}
+          loading={coursesLoading}
+          fetchCourses={fetchCourses}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
+    </>
   );
 };
 

@@ -1,7 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { FileText, Download, Eye, Calendar, Clock, User, CheckCircle, X, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { FileText, Download, Eye, Calendar, Clock, User, CheckCircle, X, RefreshCw, AlertTriangle } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
+
+// Toast Notification Component
+const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, duration);
+
+    // Progress bar animation
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev - (100 / (duration / 100));
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    };
+  }, [onClose, duration]);
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '300px',
+        animation: 'slideInRight 0.3s ease-out',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: '3px',
+          background: 'rgba(255, 255, 255, 0.3)',
+          width: `${progress}%`,
+          transition: 'width 0.1s linear'
+        }}
+      />
+      
+      {type === 'success' && <CheckCircle size={20} />}
+      {type === 'error' && <AlertTriangle size={20} />}
+      <span style={{ flex: 1 }}>{message}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
 
 const GuidancePassView = () => {
   const [guidancePasses, setGuidancePasses] = useState([]);
@@ -11,6 +89,15 @@ const GuidancePassView = () => {
   const [showPassModal, setShowPassModal] = useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [passToDeactivate, setPassToDeactivate] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast(null);
+  }, []);
 
   useEffect(() => {
     fetchGuidancePasses();
@@ -60,14 +147,14 @@ const GuidancePassView = () => {
         }
       );
 
-      alert('Time slot deactivated successfully. Student can now make new appointments.');
+      showToast('Time slot deactivated successfully. Student can now make new appointments.');
       setGuidancePasses(prev => prev.filter(p => p.appointmentId !== passToDeactivate.appointmentId));
       setShowDeactivateModal(false);
       setPassToDeactivate(null);
       fetchGuidancePasses(); // Refresh the list
     } catch (error) {
       console.error('Error deactivating slot:', error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+      showToast(`Error: ${error.response?.data?.message || error.message}`, 'error');
     }
   };
 
@@ -330,6 +417,15 @@ const GuidancePassView = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Toast Notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          />
         )}
 
             </div>

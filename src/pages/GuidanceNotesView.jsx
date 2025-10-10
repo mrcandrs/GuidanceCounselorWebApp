@@ -1,9 +1,87 @@
-import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle, Search, ChevronDown, X, SortAsc } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect, useCallback } from 'react';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle, Search, ChevronDown, X, SortAsc, CheckCircle, AlertTriangle } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import '../styles/GuidanceNotes.css';
 import Select from 'react-select';
 import axios from 'axios';
+
+// Toast Notification Component
+const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, duration);
+
+    // Progress bar animation
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev - (100 / (duration / 100));
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    };
+  }, [onClose, duration]);
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '300px',
+        animation: 'slideInRight 0.3s ease-out',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: '3px',
+          background: 'rgba(255, 255, 255, 0.3)',
+          width: `${progress}%`,
+          transition: 'width 0.1s linear'
+        }}
+      />
+      
+      {type === 'success' && <CheckCircle size={20} />}
+      {type === 'error' && <AlertTriangle size={20} />}
+      <span style={{ flex: 1 }}>{message}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
 
 // Utility functions
 const formatManilaDateTime = (dateString) => {
@@ -67,6 +145,15 @@ const GuidanceNotesView = () => {
   const [viewingNote, setViewingNote] = useState(null);
   const [showView, setShowView] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast(null);
+  }, []);
   const [formData, setFormData] = useState({
     studentId: '',
     interviewDate: getCurrentManilaDate(),
@@ -528,7 +615,7 @@ const validateForm = () => {
     
     // Validate form
     if (!validateForm()) {
-      alert('Please correct the errors in the form before submitting.');
+      showToast('Please correct the errors in the form before submitting.', 'error');
       return;
     }
 
@@ -556,7 +643,7 @@ const validateForm = () => {
             ? { ...note, ...cleanedFormData, updatedAt: new Date().toISOString() }
             : note
         ));
-        alert('Guidance note updated successfully!');
+        showToast('Guidance note updated successfully!');
       } else {
         const newNote = {
           noteId: Date.now(),
@@ -566,7 +653,7 @@ const validateForm = () => {
           student: students.find(s => s.studentId.toString() === cleanedFormData.studentId)
         };
         setNotes(prev => [newNote, ...prev]);
-        alert('Guidance note created successfully!');
+        showToast('Guidance note created successfully!');
       }
 
       // Reset form
@@ -577,7 +664,7 @@ const validateForm = () => {
     } catch (error) {
       console.error('Error saving note:', error);
       console.error('Full error response:', error.response?.data);
-      alert(`Error saving guidance note: ${error.response?.data?.message || error.message}`);
+      showToast(`Error saving guidance note: ${error.response?.data?.message || error.message}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -641,10 +728,10 @@ const validateForm = () => {
       );
 
       setNotes(prev => prev.filter(note => note.noteId !== noteId));
-      alert('Guidance note deleted successfully!');
+      showToast('Guidance note deleted successfully!');
     } catch (error) {
       console.error('Error deleting note:', error);
-      alert('Error deleting guidance note. Please try again.');
+      showToast('Error deleting guidance note. Please try again.', 'error');
     }
   };
 
@@ -1243,6 +1330,15 @@ const validateForm = () => {
             </div>
           </form>
         </div>
+
+        {/* Toast Notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          />
+        )}
       </div>
     );
   }
@@ -1438,6 +1534,15 @@ const validateForm = () => {
             </div>
           </div>
         </div>
+
+        {/* Toast Notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          />
+        )}
       </div>
     );
   }
@@ -1734,6 +1839,15 @@ const validateForm = () => {
           </div>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
     </div>
   );
 };

@@ -1,10 +1,88 @@
-import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronUp, ChevronDown, X, SortAsc } from 'lucide-react'; // Add Search, ChevronUp, ChevronDown, X, SortAsc
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronUp, ChevronDown, X, SortAsc, CheckCircle, AlertTriangle } from 'lucide-react'; // Add Search, ChevronUp, ChevronDown, X, SortAsc
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import Select from 'react-select';
 import '../styles/EndorsementCustodyView.css';
+
+// Toast Notification Component
+const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, duration);
+
+    // Progress bar animation
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev - (100 / (duration / 100));
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    };
+  }, [onClose, duration]);
+
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
+        color: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        zIndex: 10000,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '300px',
+        animation: 'slideInRight 0.3s ease-out',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: '3px',
+          background: 'rgba(255, 255, 255, 0.3)',
+          width: `${progress}%`,
+          transition: 'width 0.1s linear'
+        }}
+      />
+      
+      {type === 'success' && <CheckCircle size={20} />}
+      {type === 'error' && <AlertTriangle size={20} />}
+      <span style={{ flex: 1 }}>{message}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
 
 // Add this PDF handler function to your EndorsementCustodyView component
 const handleDownloadPDF = (formData) => {
@@ -202,6 +280,15 @@ const EndorsementCustodyView = () => {
   const [editingForm, setEditingForm] = useState(null);
   const [viewingForm, setViewingForm] = useState(null);
   const [showView, setShowView] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast(null);
+  }, []);
   const [formData, setFormData] = useState({
     studentId: '',
     date: getCurrentManilaDate(),
@@ -535,9 +622,9 @@ const uniqueEndorsedTo = useMemo(() => {
 
       // Show success message
       if (editingForm) {
-        alert('Endorsement custody form updated successfully!');
+        showToast('Endorsement custody form updated successfully!');
       } else {
-        alert('Endorsement custody form created successfully!');
+        showToast('Endorsement custody form created successfully!');
       }
 
       // Reset form and refresh data
@@ -561,13 +648,13 @@ const uniqueEndorsedTo = useMemo(() => {
     } catch (error) {
       console.error('Error saving form:', error);
       if (error.response?.status === 401) {
-        alert('Authentication failed. Please log in again.');
+        showToast('Authentication failed. Please log in again.', 'error');
       } else if (error.response?.status === 403) {
-        alert('You do not have permission to perform this action.');
+        showToast('You do not have permission to perform this action.', 'error');
       } else if (error.response?.status === 404) {
-        alert('Form not found. It may have been deleted.');
+        showToast('Form not found. It may have been deleted.', 'error');
       } else {
-        alert(`Error saving form: ${error.response?.data?.message || error.message}`);
+        showToast(`Error saving form: ${error.response?.data?.message || error.message}`, 'error');
       }
     } finally {
       setLoading(false);
@@ -618,9 +705,10 @@ const uniqueEndorsedTo = useMemo(() => {
         }
       );
       fetchForms();
+      showToast('Endorsement custody form deleted successfully!');
     } catch (error) {
       console.error('Error deleting form:', error);
-      alert('Error deleting form. Please try again.');
+      showToast('Error deleting form. Please try again.', 'error');
     }
   };
 
@@ -850,6 +938,15 @@ const uniqueEndorsedTo = useMemo(() => {
             </div>
           </form>
         </div>
+
+        {/* Toast Notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          />
+        )}
       </div>
     );
   }
@@ -1009,6 +1106,15 @@ const uniqueEndorsedTo = useMemo(() => {
             </div>
           </div>
         </div>
+
+        {/* Toast Notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          />
+        )}
       </div>
     );
   }
@@ -1357,6 +1463,15 @@ const uniqueEndorsedTo = useMemo(() => {
           </div>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
     </div>
   );
 };
