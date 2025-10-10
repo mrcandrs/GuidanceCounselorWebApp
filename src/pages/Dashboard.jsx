@@ -912,11 +912,15 @@ const GuidanceDashboard = () => {
 
       {/* Global App Lock Overlay */}
       {isLocked && !showSessionInvalidatedModal && (
-        <div className="modal-overlay" style={{ zIndex: 20000 }}>
+        <div className="modal-overlay" style={{ 
+          zIndex: 20000, 
+          backdropFilter: 'blur(8px)', 
+          backgroundColor: 'rgba(0, 0, 0, 0.3)' 
+        }}>
           <div className="modal" style={{ width: 420 }}>
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <Lock size={40} style={{ color: '#111827', marginBottom: 8 }} />
-              <h3 style={{ margin: 0 }}>Application Locked</h3>
+              <h3 style={{ margin: 0 }}>Web Application Locked</h3>
               <p style={{ color: '#6b7280', fontSize: 14, marginTop: 6 }}>Enter your password to continue.</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
