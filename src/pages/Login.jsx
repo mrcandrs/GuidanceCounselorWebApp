@@ -64,7 +64,8 @@ const Login = () => {
     try {
       console.log('🔄 Invalidating other sessions...');
       await api.post('https://guidanceofficeapi-production.up.railway.app/api/counselor/invalidate-other-sessions', {
-        currentDeviceId: sessionInfo.deviceId
+        currentDeviceId: sessionInfo.deviceId,
+        currentSessionId: sessionInfo.sessionId
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
