@@ -273,26 +273,28 @@ const MoodInsightsView = () => {
             <div style={{ marginBottom: 8, color: '#6b7280', fontSize: 14 }}>
               Showing {searchResults.length} result{searchResults.length > 1 ? 's' : ''}
             </div>
-            <table className="table">
-              <thead className="table-header">
-                <tr>
-                  <th className="table-header-cell">Student</th>
-                  <th className="table-header-cell">Student No.</th>
-                  <th className="table-header-cell">Program and Year</th>
-                  <th className="table-header-cell">Last Mood Level</th>
-                </tr>
-              </thead>
-              <tbody>
-                {searchResults.map((s, i) => (
-                  <tr key={`${s.id || i}`} className="table-row">
-                    <td className="table-cell">{s.name || 'N/A'}</td>
-                    <td className="table-cell">{s.studentno || 'N/A'}</td>
-                    <td className="table-cell">{s.program || 'N/A'} - {s.section || 'N/A'}</td>
-                    <td className="table-cell"><span className={badgeClassForMood(s.lastMood)}>{s.lastMood || 'N/A'}</span></td>
+            <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+              <table className="table">
+                <thead className="table-header" style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                  <tr>
+                    <th className="table-header-cell">Student</th>
+                    <th className="table-header-cell">Student No.</th>
+                    <th className="table-header-cell">Program and Year</th>
+                    <th className="table-header-cell">Last Mood Level</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {searchResults.map((s, i) => (
+                    <tr key={`${s.id || i}`} className="table-row">
+                      <td className="table-cell">{s.name || 'N/A'}</td>
+                      <td className="table-cell">{s.studentno || 'N/A'}</td>
+                      <td className="table-cell">{s.program || 'N/A'} - {s.section || 'N/A'}</td>
+                      <td className="table-cell"><span className={badgeClassForMood(s.lastMood)}>{s.lastMood || 'N/A'}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
