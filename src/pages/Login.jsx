@@ -3,7 +3,7 @@ import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import useSessionTimeout from '../hooks/useSessionTimeout';
 import { getCurrentSession, storeSessionInfo, generateSessionId } from '../utils/sessionManager';
-import { CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { CheckCircle, AlertTriangle, X, User, Lock, Eye, EyeOff } from 'lucide-react';
 import '../styles/Login.css';
 
 // Toast Notification Component
@@ -95,6 +95,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isCapsOn, setIsCapsOn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
@@ -103,6 +104,10 @@ const Login = () => {
 
   const hideToast = useCallback(() => {
     setToast(null);
+  }, []);
+
+  const togglePassword = useCallback(() => {
+    setShowPassword(prev => !prev);
   }, []);
   const navigate = useNavigate();
   // Reset session timeout on successful login
@@ -120,12 +125,6 @@ const Login = () => {
   setIsCapsOn(!!caps);
   };
 
-  const togglePassword = () => {
-    const input = passwordInputRef.current;
-    if (input) {
-      input.type = input.type === 'password' ? 'text' : 'password';
-    }
-  };
 
   const handleLogin = async (e) => {
   e.preventDefault();
@@ -240,7 +239,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
             />
-            <span className="input-icon">👤</span>
+            <User className="input-icon" size={18} />
           </div>
         </div>
 
@@ -249,7 +248,7 @@ const Login = () => {
           <div style={{ position: 'relative' }}>
             <input
               ref={passwordInputRef}
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="form-control"
               required
               value={password}
@@ -259,14 +258,14 @@ const Login = () => {
               autoComplete="current-password"
               aria-describedby={isCapsOn ? 'caps-hint' : undefined}
             />
-            <span className="input-icon">🔒</span>
+            <Lock className="input-icon" size={18} />
             <button 
               type="button" 
               className="password-toggle" 
               onClick={togglePassword}
               aria-label="Toggle password visibility"
             >
-              👁️
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
               </div>
               {isCapsOn && (

@@ -510,8 +510,16 @@ const GuidanceDashboard = () => {
         <div className="user-section">
           <div className="user-info" onClick={() => setShowUserProfileModal(true)} style={{ cursor: 'pointer' }}>
             <div className="user-avatar">
-              {counselor.name ? counselor.name.charAt(0) : 'GC'}
-              </div>
+              {counselor.profileImage ? (
+                <img 
+                  src={`data:image/jpeg;base64,${counselor.profileImage}`} 
+                  alt="Profile" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                />
+              ) : (
+                counselor.name ? counselor.name.charAt(0) : 'GC'
+              )}
+            </div>
             <div className="user-meta">
               <p className="user-name">{counselor.name || 'Loading...'}</p>
               <p className="user-email">{counselor.email || ''}</p>
