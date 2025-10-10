@@ -121,6 +121,8 @@ const MoodInsightsView = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [selectedMood, setSelectedMood] = useState(null);
+  const [moodHistoryData, setMoodHistoryData] = useState([]);
+  const [moodHistoryLoading, setMoodHistoryLoading] = useState(false);
 
   // Generate months for dropdown
   const months = [
@@ -215,9 +217,55 @@ const MoodInsightsView = () => {
     setSearchResults(results);
   };
 
+  // Fetch mood history data for all students
+  const fetchMoodHistoryData = async () => {
+    if (moodHistoryData.length > 0 || moodHistoryLoading) return;
+    
+    try {
+      setMoodHistoryLoading(true);
+      await ensureStudentsLoaded();
+      
+      // Fetch mood history for each student
+      const historyPromises = students.map(async (student) => {
+        try {
+          const response = await axios.get(
+            `https://guidanceofficeapi-production.up.railway.app/api/student/${student.id}/mood-history`,
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+          return {
+            studentId: student.id,
+            studentName: student.name,
+            studentNo: student.studentno,
+            program: student.program,
+            section: student.section,
+            moodHistory: response.data || []
+          };
+        } catch (error) {
+          console.log(`No mood history for student ${student.id}`);
+          return {
+            studentId: student.id,
+            studentName: student.name,
+            studentNo: student.studentno,
+            program: student.program,
+            section: student.section,
+            moodHistory: []
+          };
+        }
+      });
+      
+      const results = await Promise.all(historyPromises);
+      setMoodHistoryData(results);
+    } catch (error) {
+      console.error('Error fetching mood history data:', error);
+      setMoodHistoryData([]);
+    } finally {
+      setMoodHistoryLoading(false);
+    }
+  };
+
   const openMoodModal = async (mood) => {
     setSelectedMood(mood);
-    await ensureStudentsLoaded();
+    await fetchMoodHistoryData();
     setShowMoodModal(true);
   };
 
@@ -459,8 +507,8 @@ const MoodInsightsView = () => {
               </button>
             </div>
             <div style={{ marginTop: 12 }}>
-              {studentsLoading ? (
-                <div style={{ padding: 20 }}>Loading…</div>
+              {moodHistoryLoading ? (
+                <div style={{ padding: 20 }}>Loading mood history…</div>
               ) : (
                 <div style={{ overflowX: 'auto' }}>
                   <table className="table">
@@ -470,17 +518,34 @@ const MoodInsightsView = () => {
                         <th className="table-header-cell">Student No.</th>
                         <th className="table-header-cell">Program and Year</th>
                         <th className="table-header-cell">Last Mood</th>
+                        <th className="table-header-cell">Times Had {selectedMood}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {students.filter(s => (s.lastMood || '').toUpperCase() === (selectedMood || '').toUpperCase()).map((s, i) => (
-                        <tr key={`${s.id || i}`} className="table-row">
-                          <td className="table-cell">{s.name || 'N/A'}</td>
-                          <td className="table-cell">{s.studentno || 'N/A'}</td>
-                          <td className="table-cell">{s.program || 'N/A'} - {s.section || 'N/A'}</td>
-                          <td className="table-cell"><span className={badgeClassForMood(s.lastMood)}>{s.lastMood || 'N/A'}</span></td>
-                        </tr>
-                      ))}
+                      {moodHistoryData
+                        .filter(studentData => 
+                          studentData.moodHistory.some(mood => 
+                            (mood.moodLevel || '').toUpperCase() === (selectedMood || '').toUpperCase()
+                          )
+                        )
+                        .map((studentData, i) => {
+                          const timesHadMood = studentData.moodHistory.filter(mood => 
+                            (mood.moodLevel || '').toUpperCase() === (selectedMood || '').toUpperCase()
+                          ).length;
+                          const lastMood = studentData.moodHistory.length > 0 
+                            ? studentData.moodHistory[studentData.moodHistory.length - 1].moodLevel 
+                            : 'N/A';
+                          
+                          return (
+                            <tr key={`${studentData.studentId || i}`} className="table-row">
+                              <td className="table-cell">{studentData.studentName || 'N/A'}</td>
+                              <td className="table-cell">{studentData.studentNo || 'N/A'}</td>
+                              <td className="table-cell">{studentData.program || 'N/A'} - {studentData.section || 'N/A'}</td>
+                              <td className="table-cell"><span className={badgeClassForMood(lastMood)}>{lastMood || 'N/A'}</span></td>
+                              <td className="table-cell">{timesHadMood}</td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 </div>
