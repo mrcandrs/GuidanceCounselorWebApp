@@ -340,6 +340,8 @@ const GuidanceDashboard = () => {
     
     // Clear session info
     clearSessionInfo();
+    // Clear any persisted lock state
+    localStorage.removeItem('appLocked');
     console.log("Authentication token and session info removed successfully.");
 
     //Clear state
@@ -353,6 +355,7 @@ const GuidanceDashboard = () => {
   const handleForcedLogout = () => {
     sessionValidator.stopValidation();
     clearSessionInfo();
+    localStorage.removeItem('appLocked');
     setCounselor({ name: '', email: '' });
     navigate('/');
   };

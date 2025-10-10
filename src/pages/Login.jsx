@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import useSessionTimeout from '../hooks/useSessionTimeout';
-import { getCurrentSession, storeSessionInfo } from '../utils/sessionManager';
+import { getCurrentSession, storeSessionInfo, generateSessionId } from '../utils/sessionManager';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -44,7 +44,10 @@ const Login = () => {
   setError('');
   setIsLoading(true);
   try {
-    const sessionInfo = getCurrentSession();
+    const baseSession = getCurrentSession();
+    // Always use a fresh sessionId on login to avoid reusing an invalidated session
+    const freshSessionId = generateSessionId();
+    const sessionInfo = { ...baseSession, sessionId: freshSessionId };
     console.log('🔐 Login attempt with session info:', sessionInfo);
     
     const response = await api.post('https://guidanceofficeapi-production.up.railway.app/api/counselor/login', {
