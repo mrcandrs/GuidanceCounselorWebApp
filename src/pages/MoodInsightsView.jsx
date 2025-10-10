@@ -254,7 +254,7 @@ const MoodInsightsView = () => {
   }, { total: 0, mild: 0, moderate: 0, high: 0, na: 0 });
 
   return (
-    <div className="page-container" style={{ width: '100%', minWidth: 0 }}>
+    <div className="page-container" style={{ width: '100%', minWidth: 0, paddingBottom: '100px' }}>
       <h2 className="page-title">Student Mood Insights</h2>
 
       {/* Search Student by Student Number - Moved above cards */}
@@ -464,6 +464,16 @@ const MoodInsightsView = () => {
         </div>
       </div>
 
+      {/* Additional spacing to ensure scrollable content */}
+      <div style={{ height: '200px', marginTop: '24px' }}>
+        <div className="card">
+          <h3 className="card-title">Additional Information</h3>
+          <p style={{ color: '#6b7280', margin: 0 }}>
+            This section provides additional space to demonstrate page-level scrolling functionality. 
+            The page should now scroll vertically when content exceeds the viewport height.
+          </p>
+        </div>
+      </div>
 
       {/* Mood Drilldown Modal */}
       {showMoodModal && (
