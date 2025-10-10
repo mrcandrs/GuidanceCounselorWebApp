@@ -118,9 +118,13 @@ class SessionValidator {
     
     try {
       const sessionInfo = getCurrentSession();
+      console.log('🔍 Validating session:', { 
+        sessionId: sessionInfo.sessionId, 
+        deviceId: sessionInfo.deviceId 
+      });
       
       // Call API to validate session
-      const response = await fetch('https://guidanceofficeapi-production.up.railway.app/api/auth/validate-session', {
+      const response = await fetch('https://guidanceofficeapi-production.up.railway.app/api/counselor/validate-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,9 +141,11 @@ class SessionValidator {
       }
       
       const result = await response.json();
+      console.log('✅ Session validation result:', result);
       
       if (!result.isValid) {
         // Session is invalid, trigger logout
+        console.log('❌ Session invalidated:', result.reason);
         this.handleSessionInvalidated(result.reason || 'Session invalidated');
       }
       

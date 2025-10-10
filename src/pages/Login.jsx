@@ -45,6 +45,7 @@ const Login = () => {
   setIsLoading(true);
   try {
     const sessionInfo = getCurrentSession();
+    console.log('🔐 Login attempt with session info:', sessionInfo);
     
     const response = await api.post('https://guidanceofficeapi-production.up.railway.app/api/counselor/login', {
       email: email.trim().toLowerCase(),
@@ -61,11 +62,13 @@ const Login = () => {
 
     // Invalidate other sessions for this counselor
     try {
-      await api.post('https://guidanceofficeapi-production.up.railway.app/api/auth/invalidate-other-sessions', {
+      console.log('🔄 Invalidating other sessions...');
+      await api.post('https://guidanceofficeapi-production.up.railway.app/api/counselor/invalidate-other-sessions', {
         currentDeviceId: sessionInfo.deviceId
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('✅ Other sessions invalidated successfully');
     } catch (error) {
       console.warn('Failed to invalidate other sessions:', error);
       // Don't fail login if session invalidation fails
