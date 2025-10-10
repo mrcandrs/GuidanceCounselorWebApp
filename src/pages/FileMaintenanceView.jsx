@@ -1,22 +1,36 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Plus, Edit, Trash2, Save, X, Filter, RefreshCw, Upload, Download, Copy, AlertTriangle, CheckCircle, Eye, Search, SortAsc, SortDesc } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
 // Toast Notification Component
 const Toast = ({ message, type, onClose, duration = 3000 }) => {
+  const [progress, setProgress] = useState(100);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
     }, duration);
-    return () => clearTimeout(timer);
+
+    // Progress bar animation
+    const progressTimer = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev - (100 / (duration / 100));
+        return newProgress <= 0 ? 0 : newProgress;
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    };
   }, [onClose, duration]);
 
   return (
     <div 
       style={{
         position: 'fixed',
-        top: '20px',
+        bottom: '20px',
         right: '20px',
         background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#0477BF',
         color: 'white',
@@ -28,9 +42,24 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
         alignItems: 'center',
         gap: '8px',
         minWidth: '300px',
-        animation: 'slideInRight 0.3s ease-out'
+        animation: 'slideInRight 0.3s ease-out',
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: '3px',
+          background: 'rgba(255, 255, 255, 0.3)',
+          width: `${progress}%`,
+          transition: 'width 0.1s linear'
+        }}
+      />
+      
       {type === 'success' && <CheckCircle size={20} />}
       {type === 'error' && <AlertTriangle size={20} />}
       <span style={{ flex: 1 }}>{message}</span>
@@ -147,9 +176,9 @@ const ResourceManager = ({
     setToast({ message, type });
   };
 
-  const hideToast = () => {
+  const hideToast = useCallback(() => {
     setToast(null);
-  };
+  }, []);
 
   const load = async () => {
     setLoading(true);
