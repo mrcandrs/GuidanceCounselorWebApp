@@ -385,7 +385,6 @@ const HistoryReportsView = () => {
       case 'inventory': return <FileText size={16} />;
       case 'career': return <Target size={16} />;
       case 'exitinterview': return <LogOut size={16} />;
-      case 'mood': return <Heart size={16} />;
       default: return <FileText size={16} />;
     }
   };
