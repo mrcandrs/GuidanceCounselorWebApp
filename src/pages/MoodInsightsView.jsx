@@ -221,13 +221,27 @@ const MoodInsightsView = () => {
     setShowMoodModal(true);
   };
 
-  // Map distribution into displayable array with colors
-  // Note: The API should return current mood counts, not total historical counts
-  const moodData = distribution.map(item => ({
-    mood: item.mood,
-    count: item.count,
-    color: colorForMood(item.mood)
-  }));
+  // Calculate current mood distribution from students data
+  const currentMoodDistribution = useMemo(() => {
+    if (students.length === 0) return [];
+    
+    const moodCounts = students.reduce((acc, student) => {
+      const mood = student.lastMood || 'N/A';
+      acc[mood] = (acc[mood] || 0) + 1;
+      return acc;
+    }, {});
+    
+    return Object.entries(moodCounts)
+      .map(([mood, count]) => ({
+        mood,
+        count,
+        color: colorForMood(mood)
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [students]);
+
+  // Use current mood distribution instead of API distribution
+  const moodData = currentMoodDistribution;
 
   // Calculate monthly statistics
   const monthlyStats = monthlyReports.reduce((acc, week) => {
@@ -273,9 +287,9 @@ const MoodInsightsView = () => {
             <div style={{ marginBottom: 8, color: '#6b7280', fontSize: 14 }}>
               Showing {searchResults.length} result{searchResults.length > 1 ? 's' : ''}
             </div>
-            <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+            <div style={{ overflowX: 'auto' }}>
               <table className="table">
-                <thead className="table-header" style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                <thead className="table-header">
                   <tr>
                     <th className="table-header-cell">Student</th>
                     <th className="table-header-cell">Student No.</th>
