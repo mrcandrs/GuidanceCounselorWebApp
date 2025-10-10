@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Users, TrendingUp, FileText, Calendar, ClipboardList, Menu, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X, Clock, AlertTriangle } from 'lucide-react';
+import { Users, TrendingUp, FileText, Calendar, ClipboardList, Menu, UserCheck, Plus, AtSign, Filter, Bell, Settings, LogOut, FileArchive, Edit, History, X, Clock, AlertTriangle, Lock } from 'lucide-react';
 import useSessionTimeout from '../hooks/useSessionTimeout';
 import StudentsListView from './StudentsListView';
 import AppointmentApprovalView from './AppointmentApprovalView';
@@ -65,6 +65,18 @@ const GuidanceDashboard = () => {
   const [sessionValidator] = useState(() => new SessionValidator());
   const [showSessionInvalidatedModal, setShowSessionInvalidatedModal] = useState(false);
   const [sessionInvalidationReason, setSessionInvalidationReason] = useState('');
+
+  // App Lock state
+  const [isLocked, setIsLocked] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('appLocked') || 'false');
+    } catch {
+      return false;
+    }
+  });
+  const [unlockPassword, setUnlockPassword] = useState('');
+  const [unlockError, setUnlockError] = useState('');
+  const [unlockLoading, setUnlockLoading] = useState(false);
 
   const [now, setNow] = useState(new Date());
 
@@ -144,6 +156,11 @@ const GuidanceDashboard = () => {
       sessionValidator.stopValidation();
     };
   }, [sessionValidator]);
+
+  // Persist lock state
+  useEffect(() => {
+    localStorage.setItem('appLocked', JSON.stringify(isLocked));
+  }, [isLocked]);
 
   // Update active tab when URL changes
   useEffect(() => {
@@ -415,7 +432,7 @@ const GuidanceDashboard = () => {
 
 
   {/* Session Timeout Warning Modal */}
-  {isWarning && !showSessionInvalidatedModal && (
+  {isWarning && !showSessionInvalidatedModal && !isLocked && (
     <div className="modal-overlay session-timeout-modal">
       <div className="modal session-timeout-warning">
         <div className="session-timeout-header">
@@ -591,6 +608,17 @@ const GuidanceDashboard = () => {
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
+                </button>
+
+                {/* Lock Button */}
+                <button 
+                  className="notification-button" 
+                  onClick={() => { setIsLocked(true); setUnlockPassword(''); setUnlockError(''); }}
+                  style={{ marginLeft: 8 }}
+                  title="Lock application"
+                  aria-label="Lock application"
+                >
+                  <Lock size={20} />
                 </button>
 
                 {/* Notifications Dropdown */}
@@ -874,6 +902,93 @@ const GuidanceDashboard = () => {
               <button className="primary-button full-width" onClick={() => setShowNotificationCenter(false)}>
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global App Lock Overlay */}
+      {isLocked && !showSessionInvalidatedModal && (
+        <div className="modal-overlay" style={{ zIndex: 20000 }}>
+          <div className="modal" style={{ width: 420 }}>
+            <div style={{ textAlign: 'center', marginBottom: 16 }}>
+              <Lock size={40} style={{ color: '#111827', marginBottom: 8 }} />
+              <h3 style={{ margin: 0 }}>Application Locked</h3>
+              <p style={{ color: '#6b7280', fontSize: 14, marginTop: 6 }}>Enter your password to continue.</p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input 
+                type="password"
+                className="form-control"
+                placeholder="Password"
+                value={unlockPassword}
+                onChange={(e) => setUnlockPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('unlock-submit')?.click();
+                  }
+                }}
+                autoFocus
+              />
+              {unlockError && (
+                <div style={{ color: '#b91c1c', fontSize: 13 }}>{unlockError}</div>
+              )}
+              <div className="modal-actions" style={{ display: 'flex', gap: 8 }}>
+                <button 
+                  id="unlock-submit"
+                  className="confirm-btn"
+                  disabled={unlockLoading || !unlockPassword}
+                  onClick={async () => {
+                    setUnlockError('');
+                    setUnlockLoading(true);
+                    try {
+                      const tokenBefore = localStorage.getItem('authToken');
+                      const deviceId = localStorage.getItem('deviceId');
+                      const sessionId = localStorage.getItem('sessionId');
+                      const email = counselor?.email || '';
+                      if (!email) {
+                        throw new Error('Missing counselor email');
+                      }
+                      const res = await axios.post(
+                        'https://guidanceofficeapi-production.up.railway.app/api/counselor/login',
+                        {
+                          email: email.trim().toLowerCase(),
+                          password: unlockPassword.trim(),
+                          deviceId,
+                          sessionId
+                        }
+                      );
+                      const newToken = res?.data?.token;
+                      if (!newToken) throw new Error('No token received');
+                      localStorage.setItem('authToken', newToken);
+                      setIsLocked(false);
+                      setUnlockPassword('');
+                      // Resume session validation after unlock
+                      sessionValidator.startValidation(5000, (reason) => {
+                        setSessionInvalidationReason(reason);
+                        setShowSessionInvalidatedModal(true);
+                      });
+                    } catch (err) {
+                      const status = err?.response?.status;
+                      if (status === 401) setUnlockError('Incorrect password.');
+                      else setUnlockError('Unable to verify password. Try again.');
+                    } finally {
+                      setUnlockLoading(false);
+                    }
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  {unlockLoading ? 'Verifying…' : 'Unlock'}
+                </button>
+                <button 
+                  className="cancel-btn"
+                  onClick={handleLogout}
+                  style={{ flex: 1 }}
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </div>
