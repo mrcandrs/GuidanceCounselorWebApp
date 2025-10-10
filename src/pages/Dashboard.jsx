@@ -13,7 +13,10 @@ import ReferralView from './ReferralView';
 import FileMaintenanceView from './FileMaintenanceView';
 import HistoryReportsView from './HistoryReportsView';
 import { SessionValidator, clearSessionInfo } from '../utils/sessionManager';
+import SettingsModal from '../components/SettingsModal';
+import UserProfileModal from '../components/UserProfileModal';
 import axios from 'axios';
+import '../styles/ModalStyles.css';
 
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
@@ -57,6 +60,8 @@ const GuidanceDashboard = () => {
 
   const [counselor, setCounselor] = useState({ name: '', email: '' });
   const [showModal, setShowModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showUserProfileModal, setShowUserProfileModal] = useState(false);
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -360,6 +365,10 @@ const GuidanceDashboard = () => {
     navigate('/');
   };
 
+  const handleCounselorUpdate = (updatedCounselor) => {
+    setCounselor(prev => ({ ...prev, ...updatedCounselor }));
+  };
+
   const sidebarItems = [
     { id: 'students', icon: Users, label: 'Students List' },
     { id: 'mood', icon: TrendingUp, label: 'Mood Insights' },
@@ -499,7 +508,7 @@ const GuidanceDashboard = () => {
         
         {/* User Section */}
         <div className="user-section">
-          <div className="user-info">
+          <div className="user-info" onClick={() => setShowUserProfileModal(true)} style={{ cursor: 'pointer' }}>
             <div className="user-avatar">
               {counselor.name ? counselor.name.charAt(0) : 'GC'}
               </div>
@@ -509,7 +518,11 @@ const GuidanceDashboard = () => {
             </div>
           </div>
           <div className="user-actions">
-            <button className="user-action-button settings-button">
+            <button 
+              className="user-action-button settings-button" 
+              onClick={() => setShowSettingsModal(true)}
+              title="Settings"
+            >
               <Settings size={16} />
             </button>
 
@@ -1000,6 +1013,21 @@ const GuidanceDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        counselor={counselor}
+        onUpdate={handleCounselorUpdate}
+      />
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={showUserProfileModal}
+        onClose={() => setShowUserProfileModal(false)}
+        counselor={counselor}
+      />
     </div>
   );
 };
