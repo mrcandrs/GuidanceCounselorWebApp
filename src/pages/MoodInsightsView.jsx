@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { TrendingUp, Calendar, ChevronDown, Search, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import '../styles/Dashboard.css';
@@ -204,7 +204,7 @@ const MoodInsightsView = () => {
   };
 
   // Fetch students with latest mood (cached)
-  const ensureStudentsLoaded = async () => {
+  const ensureStudentsLoaded = useCallback(async () => {
     if (students.length > 0 || studentsLoading) return;
     try {
       setStudentsLoading(true);
@@ -219,10 +219,10 @@ const MoodInsightsView = () => {
     } finally {
       setStudentsLoading(false);
     }
-  };
+  }, [students.length, studentsLoading]);
 
   // Search by student number
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     const term = (studentSearch || '').trim();
     if (!term) {
       setSearchResults([]);
@@ -232,7 +232,7 @@ const MoodInsightsView = () => {
     const q = term.toLowerCase();
     const results = students.filter(s => (s.studentno || '').toLowerCase().includes(q));
     setSearchResults(results);
-  };
+  }, [studentSearch, students, ensureStudentsLoaded]);
 
   const openMoodModal = async (mood) => {
     setSelectedMood(mood);
