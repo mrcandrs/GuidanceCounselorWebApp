@@ -1409,10 +1409,10 @@ const HistoryReportsView = () => {
 
                       <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'consent' })} style={{ cursor: 'pointer' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <CheckCircle size={20} className="text-green-500" />
+                          <CheckCircle size={20} style={{ color: '#3b82f6' }} />
                           <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Consent Completed</h3>
                         </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6' }}>
                           {reportsData.consentForms}
                         </div>
                         <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
@@ -1422,10 +1422,10 @@ const HistoryReportsView = () => {
 
                       <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'inventory' })} style={{ cursor: 'pointer' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <FileText size={20} className="text-yellow-500" />
+                          <FileText size={20} style={{ color: '#10b981' }} />
                           <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Inventory Completed</h3>
                         </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
                           {reportsData.inventoryForms}
                         </div>
                         <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
@@ -1435,7 +1435,7 @@ const HistoryReportsView = () => {
 
                       <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'career' })} style={{ cursor: 'pointer' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <Target size={20} className="text-purple-500" />
+                          <Target size={20} style={{ color: '#8b5cf6' }} />
                           <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Career Completed</h3>
                         </div>
                         <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#8b5cf6' }}>
@@ -1448,10 +1448,10 @@ const HistoryReportsView = () => {
 
                       <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'exitinterview' })} style={{ cursor: 'pointer' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <LogOut size={20} className="text-red-500" />
+                          <LogOut size={20} style={{ color: '#f59e0b' }} />
                           <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Exit Interview Completed</h3>
                         </div>
-                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
                           {reportsData.exitInterviewForms || 0}
                         </div>
                         <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
@@ -1494,7 +1494,8 @@ const HistoryReportsView = () => {
                           borderBottom: '1px solid #e5e7eb'
                         }}>
                           {Object.entries(reportsData.distribution).filter(([key]) => key !== 'total').map(([mood, count], index) => {
-                            const maxCount = Math.max(...Object.values(reportsData.distribution).filter((_, i) => i !== Object.keys(reportsData.distribution).indexOf('total')));
+                            const values = Object.values(reportsData.distribution).filter((_, i) => i !== Object.keys(reportsData.distribution).indexOf('total'));
+                            const maxCount = Math.max(...values);
                             const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
                             
                             return (
