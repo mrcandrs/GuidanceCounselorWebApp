@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw, AlertTriangle, LogOut, Heart } from 'lucide-react';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
@@ -388,6 +388,11 @@ const HistoryReportsView = () => {
       case 'endorsement': return <FileText size={16} />;
       case 'timeslot': return <Clock size={16} />;
       case 'guidancepass': return <CheckCircle size={16} />;
+      case 'consent': return <FileText size={16} />;
+      case 'inventory': return <FileText size={16} />;
+      case 'career': return <Target size={16} />;
+      case 'exitinterview': return <LogOut size={16} />;
+      case 'mood': return <Heart size={16} />;
       default: return <FileText size={16} />;
     }
   };
@@ -529,6 +534,11 @@ const HistoryReportsView = () => {
                             <option value="endorsement">📋 Endorsements</option>
                             <option value="timeslot">⏰ Time Slots</option>
                             <option value="guidancepass">🎫 Guidance Passes</option>
+                            <option value="consent">📋 Consent Forms</option>
+                            <option value="inventory">📊 Inventory Forms</option>
+                            <option value="career">🎯 Career Forms</option>
+                            <option value="exitinterview">🚪 Exit Interview Forms</option>
+                            <option value="mood">💭 Mood Entries</option>
                           </select>
                         </div>
 
@@ -795,7 +805,7 @@ const HistoryReportsView = () => {
           <div>
             {/* Report sub-tabs */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidancepasses','forms'].map(rt => (
+              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidance Passes','forms','moods'].map(rt => (
                 <button
                   key={rt}
                   className={`filter-button ${reportTab === rt ? 'active' : ''}`}
@@ -820,6 +830,7 @@ const HistoryReportsView = () => {
                   {rt === 'timeslots' && <Clock size={16} />}
                   {rt === 'guidancepasses' && <CheckCircle size={16} />}
                   {rt === 'forms' && <FileText size={16} />}
+                  {rt === 'moods' && <Heart size={16} />}
                   {rt.charAt(0).toUpperCase() + rt.slice(1)}
                 </button>
               ))}
@@ -1434,6 +1445,81 @@ const HistoryReportsView = () => {
                           {reportsData.careerCompletionRate.toFixed(1)}%
                         </div>
                       </div>
+
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'exitinterview' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <LogOut size={20} className="text-red-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Exit Interview Completed</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>
+                          {reportsData.exitInterviewForms || 0}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px' }}>
+                          {reportsData.exitInterviewCompletionRate ? reportsData.exitInterviewCompletionRate.toFixed(1) : '0.0'}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Moods Report */}
+                {reportsData?.type === 'moods' && (
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'mood' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Heart size={20} className="text-pink-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Mood Entries</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ec4899' }}>
+                          {reportsData.distribution?.total || 0}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h3 style={{ margin: '0 0 20px 0', color: '#374151' }}>Mood Distribution</h3>
+                      {reportsData.distribution && Object.keys(reportsData.distribution).length > 0 ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'end', 
+                          gap: '12px', 
+                          height: '200px', 
+                          padding: '20px 0',
+                          borderBottom: '1px solid #e5e7eb'
+                        }}>
+                          {Object.entries(reportsData.distribution).filter(([key]) => key !== 'total').map(([mood, count], index) => {
+                            const maxCount = Math.max(...Object.values(reportsData.distribution).filter((_, i) => i !== Object.keys(reportsData.distribution).indexOf('total')));
+                            const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                            
+                            return (
+                              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                                <div
+                                  onClick={() => goToHistoryWith({ entityType: 'mood' })}
+                                  style={{ width:'100%', background:'#ec4899', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
+                                  title={`${count} ${mood} mood entries`}
+                                />
+                                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
+                                  {mood}
+                                </div>
+                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
+                                  {count}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <Heart size={48} className="empty-icon" />
+                          <p>No mood data available for the selected period.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
