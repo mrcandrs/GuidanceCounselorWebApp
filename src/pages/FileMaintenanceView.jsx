@@ -146,7 +146,8 @@ const ResourceManager = ({
   transformOut,     // optional map form -> API
   validation = {},  // validation rules
   bulkImport = false, // enable bulk import
-  relationships = [] // related data for dropdowns
+  relationships = [], // related data for dropdowns
+  onShowToast       // global toast function
 }) => {
   const [list, setList] = useState([]);
   const [search, setSearch] = useState('');
@@ -167,18 +168,15 @@ const ResourceManager = ({
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingItem, setViewingItem] = useState(null);
   const [relationshipData, setRelationshipData] = useState({});
-  const [toast, setToast] = useState(null);
 
   const headers = fetchAuthHeaders();
 
   // Toast helper function
   const showToast = (message, type = 'success') => {
-    setToast({ message, type });
+    if (onShowToast) {
+      onShowToast(message, type);
+    }
   };
-
-  const hideToast = useCallback(() => {
-    setToast(null);
-  }, []);
 
   const load = async () => {
     setLoading(true);
@@ -807,19 +805,22 @@ const ResourceManager = ({
         </Modal>
       )}
 
-      {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={hideToast}
-        />
-      )}
     </div>
   );
 };
 
 const FileMaintenanceView = () => {
+  const [globalToast, setGlobalToast] = useState(null);
+
+  // Global toast helper function
+  const showGlobalToast = (message, type = 'success') => {
+    setGlobalToast({ message, type });
+  };
+
+  const hideGlobalToast = useCallback(() => {
+    setGlobalToast(null);
+  }, []);
+
   // Define tabs/resources here. Adjust endpoints and fields to match your API.
   const tabs = [
     {
@@ -1006,6 +1007,16 @@ const FileMaintenanceView = () => {
           validation={tab.validation}
           bulkImport={tab.bulkImport}
           relationships={tab.relationships}
+          onShowToast={showGlobalToast}
+        />
+      )}
+
+      {/* Global Toast Notification */}
+      {globalToast && (
+        <Toast
+          message={globalToast.message}
+          type={globalToast.type}
+          onClose={hideGlobalToast}
         />
       )}
     </div>
