@@ -3,7 +3,7 @@ import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import useSessionTimeout from '../hooks/useSessionTimeout';
 import { getCurrentSession, storeSessionInfo, generateSessionId } from '../utils/sessionManager';
-import { CheckCircle, AlertTriangle, X, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { CheckCircle, AlertTriangle, X, Eye, EyeOff } from 'lucide-react';
 import '../styles/Login.css';
 
 // Toast Notification Component
@@ -239,7 +239,6 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
             />
-            <User className="input-icon" size={18} />
           </div>
         </div>
 
@@ -258,7 +257,6 @@ const Login = () => {
               autoComplete="current-password"
               aria-describedby={isCapsOn ? 'caps-hint' : undefined}
             />
-            <Lock className="input-icon" size={18} />
             <button 
               type="button" 
               className="password-toggle" 
