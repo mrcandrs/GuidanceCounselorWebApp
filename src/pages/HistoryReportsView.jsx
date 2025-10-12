@@ -695,7 +695,17 @@ const HistoryReportsView = () => {
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {getActionIcon(item.action)}
-                            <span style={{ textTransform: 'capitalize' }}>{item.action}</span>
+                            <span style={{ 
+                              textTransform: 'capitalize',
+                              color: item.action === 'created' ? '#10b981' : 
+                                     item.action === 'updated' ? '#f59e0b' : 
+                                     item.action === 'deleted' ? '#ef4444' : 
+                                     item.action === 'approved' ? '#10b981' : 
+                                     item.action === 'rejected' ? '#ef4444' : 
+                                     item.action === 'activated' ? '#10b981' : 
+                                     item.action === 'deactivated' ? '#ef4444' : '#6b7280',
+                              fontWeight: '500'
+                            }}>{item.action}</span>
                           </div>
                         </td>
                         <td>
