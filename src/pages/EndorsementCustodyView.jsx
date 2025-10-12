@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useLayoutEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronUp, ChevronDown, X, SortAsc, CheckCircle, AlertTriangle } from 'lucide-react'; // Add Search, ChevronUp, ChevronDown, X, SortAsc
+import { useLocation } from 'react-router-dom';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronUp, ChevronDown, X, SortAsc, CheckCircle, AlertTriangle, Hash } from 'lucide-react'; // Add Search, ChevronUp, ChevronDown, X, SortAsc
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import Select from 'react-select';
@@ -273,6 +274,7 @@ const handleDownloadPDF = (formData) => {
   };
 
 const EndorsementCustodyView = () => {
+  const location = useLocation();
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -281,6 +283,7 @@ const EndorsementCustodyView = () => {
   const [viewingForm, setViewingForm] = useState(null);
   const [showView, setShowView] = useState(false);
   const [toast, setToast] = useState(null);
+  const [highlightedId, setHighlightedId] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -520,6 +523,20 @@ const EndorsementCustodyView = () => {
     fetchForms();
     fetchStudents();
   }, []);
+
+  // Handle URL parameters for highlighting
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const highlightId = searchParams.get('highlightId');
+    if (highlightId) {
+      setHighlightedId(parseInt(highlightId));
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -1374,7 +1391,7 @@ const uniqueEndorsedTo = useMemo(() => {
                 {filteredAndSortedForms.map((form) => (
                   <tr 
                     key={form.custodyId}
-                    className="clickable-row"
+                    className={`clickable-row ${highlightedId === form.custodyId ? 'highlighted-row' : ''}`}
                     onClick={() => handleView(form)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -1386,6 +1403,11 @@ const uniqueEndorsedTo = useMemo(() => {
                     role="button"
                     aria-label={`View form for ${form.student?.fullName || 'student'}`}
                     title="View"
+                    style={{
+                      backgroundColor: highlightedId === form.custodyId ? '#fef3c7' : 'transparent',
+                      border: highlightedId === form.custodyId ? '2px solid #f59e0b' : '1px solid transparent',
+                      animation: highlightedId === form.custodyId ? 'pulse 2s ease-in-out' : 'none'
+                    }}
                     >
                     <td>
                       <div className="student-info">
@@ -1398,6 +1420,30 @@ const uniqueEndorsedTo = useMemo(() => {
                           </div>
                           <div className="student-number">
                             {form.student?.studentNumber}
+                          </div>
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px', 
+                            marginTop: '2px',
+                            fontSize: '11px',
+                            color: highlightedId === form.custodyId ? '#d97706' : '#6b7280',
+                            fontWeight: highlightedId === form.custodyId ? '600' : '500'
+                          }}>
+                            <Hash size={10} />
+                            ID: {form.custodyId}
+                            {highlightedId === form.custodyId && (
+                              <span style={{ 
+                                background: '#f59e0b', 
+                                color: 'white', 
+                                padding: '1px 4px', 
+                                borderRadius: '3px',
+                                fontSize: '9px',
+                                marginLeft: '4px'
+                              }}>
+                                HIGHLIGHTED
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
