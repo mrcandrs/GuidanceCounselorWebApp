@@ -411,27 +411,27 @@ const HistoryReportsView = () => {
       
       switch (entityType) {
         case 'appointment':
-          return '/dashboard/appointment-approval';
+          return `/dashboard/appointment-approval?highlightId=${entityId}`;
         case 'referral':
-          return '/dashboard/referral';
+          return `/dashboard/referral?highlightId=${entityId}`;
         case 'note':
         case 'consultation':
-          return '/dashboard/counseling-notes';
+          return `/dashboard/counseling-notes?highlightId=${entityId}`;
         case 'endorsement':
-          return '/dashboard/endorsement-custody';
+          return `/dashboard/endorsement-custody?highlightId=${entityId}`;
         case 'timeslot':
-          return '/dashboard/appointment-approval';
+          return `/dashboard/appointment-approval?highlightId=${entityId}`;
         case 'guidancepass':
-          return '/dashboard/guidance-pass';
+          return `/dashboard/guidance-pass?highlightId=${entityId}`;
         case 'consent':
         case 'inventory':
         case 'career':
         case 'exitinterview':
           // These forms are typically viewed through student details
           if (details.studentId) {
-            return `/dashboard/students-list?viewStudent=${details.studentId}`;
+            return `/dashboard/students-list?viewStudent=${details.studentId}&highlightForm=${entityType}&highlightId=${entityId}`;
           }
-          return '/dashboard/students-list';
+          return `/dashboard/students-list?highlightForm=${entityType}&highlightId=${entityId}`;
         default:
           return '/dashboard/students-list';
       }
@@ -733,10 +733,41 @@ const HistoryReportsView = () => {
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {getEntityIcon(item.entityType)}
-                            <span style={{ fontWeight: '500' }}>
-                              {item.entityType}
-                              {item.entityId && ` #${item.entityId}`}
-                            </span>
+                            <div>
+                              <span style={{ fontWeight: '500', textTransform: 'capitalize' }}>
+                                {item.entityType}
+                                {item.entityId && ` #${item.entityId}`}
+                              </span>
+                              {item.detailsJson && (() => {
+                                try {
+                                  const details = JSON.parse(item.detailsJson);
+                                  if (details.studentName) {
+                                    return (
+                                      <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>
+                                        Student: {details.studentName}
+                                      </div>
+                                    );
+                                  }
+                                  if (details.title) {
+                                    return (
+                                      <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>
+                                        {details.title}
+                                      </div>
+                                    );
+                                  }
+                                  if (details.description) {
+                                    return (
+                                      <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>
+                                        {details.description.length > 30 ? details.description.substring(0, 30) + '...' : details.description}
+                                      </div>
+                                    );
+                                  }
+                                } catch (e) {
+                                  return null;
+                                }
+                                return null;
+                              })()}
+                            </div>
                           </div>
                         </td>
                         <td>
@@ -768,34 +799,48 @@ const HistoryReportsView = () => {
                           </span>
                         </td>
                         <td>
-                          <button
-                            onClick={() => handleViewDetails(item)}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              color: '#0477BF',
+                          {item.action === 'deleted' ? (
+                            <span style={{
+                              color: '#9ca3af',
                               fontSize: '12px',
-                              cursor: 'pointer',
+                              fontStyle: 'italic',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '4px',
-                              padding: '4px 8px',
-                              borderRadius: '4px',
-                              transition: 'all 0.2s ease',
-                              textDecoration: 'none'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.target.style.backgroundColor = '#f0f9ff';
-                              e.target.style.textDecoration = 'underline';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = 'transparent';
-                              e.target.style.textDecoration = 'none';
-                            }}
-                          >
-                            <ExternalLink size={12} />
-                            View Details
-                          </button>
+                              gap: '4px'
+                            }}>
+                              <XCircle size={12} />
+                              Record Deleted
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => handleViewDetails(item)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#0477BF',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                transition: 'all 0.2s ease',
+                                textDecoration: 'none'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.target.style.backgroundColor = '#f0f9ff';
+                                e.target.style.textDecoration = 'underline';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.backgroundColor = 'transparent';
+                                e.target.style.textDecoration = 'none';
+                              }}
+                            >
+                              <ExternalLink size={12} />
+                              View Details
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
