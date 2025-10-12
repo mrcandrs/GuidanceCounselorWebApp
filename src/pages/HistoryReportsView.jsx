@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw, AlertTriangle, LogOut } from 'lucide-react';
+import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw, AlertTriangle, LogOut, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
@@ -84,6 +85,7 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
 const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
 
 const HistoryReportsView = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
   const [historyData, setHistoryData] = useState([]);
   const [reportsData, setReportsData] = useState(null);
@@ -400,6 +402,49 @@ const HistoryReportsView = () => {
       case 'deactivated': return <XCircle size={16} className="text-red-500" />;
       default: return <AlertCircle size={16} className="text-gray-500" />;
     }
+  };
+
+  // Helper function to determine navigation path based on entity type and ID
+  const getNavigationPath = (entityType, entityId, detailsJson) => {
+    try {
+      const details = detailsJson ? JSON.parse(detailsJson) : {};
+      
+      switch (entityType) {
+        case 'appointment':
+          return '/dashboard/appointment-approval';
+        case 'referral':
+          return '/dashboard/referral';
+        case 'note':
+        case 'consultation':
+          return '/dashboard/counseling-notes';
+        case 'endorsement':
+          return '/dashboard/endorsement-custody';
+        case 'timeslot':
+          return '/dashboard/appointment-approval';
+        case 'guidancepass':
+          return '/dashboard/guidance-pass';
+        case 'consent':
+        case 'inventory':
+        case 'career':
+        case 'exitinterview':
+          // These forms are typically viewed through student details
+          if (details.studentId) {
+            return `/dashboard/students-list?viewStudent=${details.studentId}`;
+          }
+          return '/dashboard/students-list';
+        default:
+          return '/dashboard/students-list';
+      }
+    } catch (error) {
+      console.error('Error parsing details for navigation:', error);
+      return '/dashboard/students-list';
+    }
+  };
+
+  // Handle navigation to specific record
+  const handleViewDetails = (item) => {
+    const path = getNavigationPath(item.entityType, item.entityId, item.detailsJson);
+    navigate(path);
   };
 
   const activeFilterCount = [
@@ -723,32 +768,34 @@ const HistoryReportsView = () => {
                           </span>
                         </td>
                         <td>
-                          {item.detailsJson && (
-                            <details style={{ cursor: 'pointer' }}>
-                              <summary style={{ 
-                                color: '#0477BF', 
-                                fontSize: '12px',
-                                position: 'relative',
-                                zIndex: 9999,
-                                pointerEvents: 'auto',
-                                cursor: 'pointer'
-                              }}>
-                                View Details
-                              </summary>
-                              <pre style={{ 
-                                background: '#f8f9fa', 
-                                padding: '8px', 
-                                borderRadius: '4px', 
-                                fontSize: '11px',
-                                marginTop: '8px',
-                                maxWidth: '200px',
-                                overflow: 'auto',
-                                whiteSpace: 'pre-wrap'
-                              }}>
-                                {JSON.stringify(JSON.parse(item.detailsJson), null, 2)}
-                              </pre>
-                            </details>
-                          )}
+                          <button
+                            onClick={() => handleViewDetails(item)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#0477BF',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              transition: 'all 0.2s ease',
+                              textDecoration: 'none'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.backgroundColor = '#f0f9ff';
+                              e.target.style.textDecoration = 'underline';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.backgroundColor = 'transparent';
+                              e.target.style.textDecoration = 'none';
+                            }}
+                          >
+                            <ExternalLink size={12} />
+                            View Details
+                          </button>
                         </td>
                       </tr>
                     ))}
