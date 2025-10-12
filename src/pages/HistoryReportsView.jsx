@@ -415,8 +415,9 @@ const HistoryReportsView = () => {
         case 'referral':
           return `/dashboard/referral?highlightId=${entityId}`;
         case 'note':
-        case 'consultation':
           return `/dashboard/counseling-notes?highlightId=${entityId}`;
+        case 'consultation':
+          return `/dashboard/consultation-conference-forms?highlightId=${entityId}`;
         case 'endorsement':
           return `/dashboard/endorsement-custody?highlightId=${entityId}`;
         case 'timeslot':

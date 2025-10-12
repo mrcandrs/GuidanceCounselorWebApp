@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronDown, X, SortAsc } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Search, ChevronDown, X, SortAsc, Hash } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import jsPDF from 'jspdf';
 import axios from 'axios';
@@ -200,6 +201,7 @@ const formatTime = (timeString) => {
 };
 
 const ConsultationConferenceView = () => {
+  const location = useLocation();
   const [forms, setForms] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -207,6 +209,7 @@ const ConsultationConferenceView = () => {
   const [editingForm, setEditingForm] = useState(null);
   const [viewingForm, setViewingForm] = useState(null);
   const [showView, setShowView] = useState(false);
+  const [highlightedId, setHighlightedId] = useState(null);
   const [formData, setFormData] = useState({
     studentId: '',
     date: getCurrentManilaDate(),
@@ -493,6 +496,20 @@ const uniqueParentGuardians = useMemo(() => {
     fetchForms();
     fetchStudents();
   }, []);
+
+  // Handle URL parameters for highlighting
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const highlightId = searchParams.get('highlightId');
+    if (highlightId) {
+      setHighlightedId(parseInt(highlightId));
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -1224,7 +1241,7 @@ const uniqueParentGuardians = useMemo(() => {
                 {filteredAndSortedForms.map((form) => (
                   <tr 
                     key={form.consultationId}
-                    className="clickable-row"
+                    className={`clickable-row ${highlightedId === form.consultationId ? 'highlighted-consultation' : ''}`}
                     onClick={() => handleView(form)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -1236,6 +1253,11 @@ const uniqueParentGuardians = useMemo(() => {
                     role="button"
                     aria-label={`View form for ${form.student?.fullName || 'student'}`}
                     title="View"
+                    style={{
+                      backgroundColor: highlightedId === form.consultationId ? '#fef3c7' : 'transparent',
+                      border: highlightedId === form.consultationId ? '2px solid #f59e0b' : '1px solid transparent',
+                      animation: highlightedId === form.consultationId ? 'pulse 2s ease-in-out' : 'none'
+                    }}
                     >
                     <td>
                       <div className="student-info">
@@ -1248,6 +1270,30 @@ const uniqueParentGuardians = useMemo(() => {
                           </div>
                           <div className="student-number">
                             {form.student?.studentNumber}
+                          </div>
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px', 
+                            marginTop: '2px',
+                            fontSize: '11px',
+                            color: highlightedId === form.consultationId ? '#d97706' : '#6b7280',
+                            fontWeight: highlightedId === form.consultationId ? '600' : '500'
+                          }}>
+                            <Hash size={10} />
+                            ID: {form.consultationId}
+                            {highlightedId === form.consultationId && (
+                              <span style={{ 
+                                background: '#f59e0b', 
+                                color: 'white', 
+                                padding: '1px 4px', 
+                                borderRadius: '3px',
+                                fontSize: '9px',
+                                marginLeft: '4px'
+                              }}>
+                                HIGHLIGHTED
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
