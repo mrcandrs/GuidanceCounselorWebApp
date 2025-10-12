@@ -392,10 +392,12 @@ const HistoryReportsView = () => {
   const getActionIcon = (action) => {
     switch (action) {
       case 'created': return <CheckCircle size={16} className="text-green-500" />;
-      case 'updated': return <AlertCircle size={16} className="text-blue-500" />;
+      case 'updated': return <AlertCircle size={16} className="text-orange-500" />;
       case 'deleted': return <XCircle size={16} className="text-red-500" />;
       case 'approved': return <CheckCircle size={16} className="text-green-500" />;
       case 'rejected': return <XCircle size={16} className="text-red-500" />;
+      case 'activated': return <CheckCircle size={16} className="text-green-500" />;
+      case 'deactivated': return <XCircle size={16} className="text-red-500" />;
       default: return <AlertCircle size={16} className="text-gray-500" />;
     }
   };
