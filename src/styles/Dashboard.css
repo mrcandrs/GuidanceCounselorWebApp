@@ -36,6 +36,22 @@
   animation: pulse 2s ease-in-out;
 }
 
+.deactivated-slot {
+  position: relative;
+}
+
+.deactivated-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 48%, #d1d5db 49%, #d1d5db 51%, transparent 52%);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .highlighted-student {
   animation: pulse 2s ease-in-out;
 }

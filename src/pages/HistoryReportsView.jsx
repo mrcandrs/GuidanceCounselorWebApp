@@ -110,7 +110,7 @@ const HistoryReportsView = () => {
     search: ''
   });
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [reportTab, setReportTab] = useState('appointments');

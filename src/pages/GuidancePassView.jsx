@@ -295,14 +295,17 @@ const GuidancePassView = () => {
         
         {guidancePasses.length > 0 ? (
           <div className="appointments-scroll-container">
-            {guidancePasses.map((pass) => (
+            {guidancePasses.map((pass) => {
+              const isSlotDeactivated = pass.appointment?.status?.toLowerCase() === 'completed';
+              return (
               <div 
                 key={pass.passId} 
-                className={`appointment-card ${highlightedId === pass.passId ? 'highlighted-pass' : ''}`}
+                className={`appointment-card ${highlightedId === pass.passId ? 'highlighted-pass' : ''} ${isSlotDeactivated ? 'deactivated-slot' : ''}`}
                 style={{
-                  backgroundColor: highlightedId === pass.passId ? '#fef3c7' : 'white',
-                  border: highlightedId === pass.passId ? '2px solid #f59e0b' : '1px solid #e5e7eb',
-                  animation: highlightedId === pass.passId ? 'pulse 2s ease-in-out' : 'none'
+                  backgroundColor: highlightedId === pass.passId ? '#fef3c7' : isSlotDeactivated ? '#f9fafb' : 'white',
+                  border: highlightedId === pass.passId ? '2px solid #f59e0b' : isSlotDeactivated ? '1px solid #d1d5db' : '1px solid #e5e7eb',
+                  animation: highlightedId === pass.passId ? 'pulse 2s ease-in-out' : 'none',
+                  opacity: isSlotDeactivated ? 0.7 : 1
                 }}
               >
                 <div className="appointment-header">
@@ -339,14 +342,14 @@ const GuidancePassView = () => {
                     </div>
                   </div>
                   <div style={{ 
-                    background: '#ecfdf5', 
-                    color: '#065f46', 
+                    background: isSlotDeactivated ? '#fef2f2' : '#ecfdf5', 
+                    color: isSlotDeactivated ? '#dc2626' : '#065f46', 
                     padding: '4px 8px', 
                     borderRadius: '4px',
                     fontSize: '12px',
                     fontWeight: '500'
                   }}>
-                    PASS ISSUED
+                    {isSlotDeactivated ? 'SLOT DEACTIVATED' : 'PASS ISSUED'}
                   </div>
                 </div>
                 
@@ -410,14 +413,21 @@ const GuidancePassView = () => {
                   <button
                     onClick={() => handleDeactivateSlot(pass)}
                     className="reject-button"
-                    style={{ padding: '6px 12px', fontSize: '12px' }}
+                    disabled={isSlotDeactivated}
+                    style={{ 
+                      padding: '6px 12px', 
+                      fontSize: '12px',
+                      opacity: isSlotDeactivated ? 0.5 : 1,
+                      cursor: isSlotDeactivated ? 'not-allowed' : 'pointer'
+                    }}
                   >
                     <X size={14} />
-                    Deactivate Slot
+                    {isSlotDeactivated ? 'Slot Deactivated' : 'Deactivate Slot'}
                   </button>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="empty-state">
