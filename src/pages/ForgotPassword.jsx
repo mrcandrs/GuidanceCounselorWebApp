@@ -83,7 +83,7 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -103,8 +103,8 @@ const ForgotPassword = () => {
     setError('');
 
     // Validation
-    if (!username.trim()) {
-      setError('Username is required');
+    if (!email.trim()) {
+      setError('Email is required');
       return;
     }
 
@@ -132,7 +132,7 @@ const ForgotPassword = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: username.trim(),
+          email: email.trim(),
           newPassword: newPassword.trim()
         })
       });
@@ -188,7 +188,7 @@ const ForgotPassword = () => {
             />
           </div>
           <h1 className="login-title">Reset Password</h1>
-          <p className="login-subtitle">Enter your username and new password</p>
+          <p className="login-subtitle">Enter your email and new password</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -199,14 +199,14 @@ const ForgotPassword = () => {
           )}
 
           <div className="form-group">
-            <label>Username</label>
+            <label>Email</label>
             <input
-              type="text"
+              type="email"
               className="form-control"
               required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
               disabled={isLoading}
             />
           </div>
