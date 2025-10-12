@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Check, X, Clock, FileText, Plus, Trash2, History, Eye, AlertCircle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Calendar, Check, X, Clock, FileText, Plus, Trash2, History, Eye, AlertCircle, Hash } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
 const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) => {
+  const location = useLocation();
   const [loading, setLoading] = useState({});
   const [error, setError] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [highlightedId, setHighlightedId] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTimes, setSelectedTimes] = useState([]);
   const [maxAppointments, setMaxAppointments] = useState(3);
@@ -36,6 +39,20 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     fetchRejectedAppointments();
     fetchRecentActivity();
   }, []);
+
+  // Handle URL parameters for highlighting
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const highlightId = searchParams.get('highlightId');
+    if (highlightId) {
+      setHighlightedId(parseInt(highlightId));
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   // Add this useEffect after your existing fetchAvailableSlots useEffect
   useEffect(() => {
@@ -502,7 +519,15 @@ const handleToggleTimeSlot = async () => {
         <div className="appointments-scroll-container">
           {pendingAppointments && pendingAppointments.length > 0 ? (
             pendingAppointments.map((appointment) => (
-              <div key={appointment.appointmentId} className="appointment-card">
+              <div 
+                key={appointment.appointmentId} 
+                className={`appointment-card ${highlightedId === appointment.appointmentId ? 'highlighted-appointment' : ''}`}
+                style={{
+                  backgroundColor: highlightedId === appointment.appointmentId ? '#fef3c7' : 'white',
+                  border: highlightedId === appointment.appointmentId ? '2px solid #f59e0b' : '1px solid #e5e7eb',
+                  animation: highlightedId === appointment.appointmentId ? 'pulse 2s ease-in-out' : 'none'
+                }}
+              >
                 <div className="appointment-header">
                   <div>
                     <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
@@ -511,6 +536,30 @@ const handleToggleTimeSlot = async () => {
                     <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
                       {appointment.programSection}
                     </p>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '4px', 
+                      marginTop: '4px',
+                      fontSize: '11px',
+                      color: highlightedId === appointment.appointmentId ? '#d97706' : '#6b7280',
+                      fontWeight: highlightedId === appointment.appointmentId ? '600' : '500'
+                    }}>
+                      <Hash size={10} />
+                      ID: {appointment.appointmentId}
+                      {highlightedId === appointment.appointmentId && (
+                        <span style={{ 
+                          background: '#f59e0b', 
+                          color: 'white', 
+                          padding: '1px 4px', 
+                          borderRadius: '3px',
+                          fontSize: '9px',
+                          marginLeft: '4px'
+                        }}>
+                          HIGHLIGHTED
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="appointment-actions">
                     <button 

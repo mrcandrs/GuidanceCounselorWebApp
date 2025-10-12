@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useLayoutEffect, useCallback } from 'react';
-import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle, Search, ChevronDown, X, SortAsc, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { FileText, Plus, Filter, Eye, Edit, Trash2, ArrowLeft, Save, Clock, AlertCircle, Search, ChevronDown, X, SortAsc, CheckCircle, AlertTriangle, Hash } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import '../styles/GuidanceNotes.css';
 import Select from 'react-select';
@@ -137,6 +138,7 @@ const formatTime = (timeString) => {
 };
 
 const GuidanceNotesView = () => {
+  const location = useLocation();
   const [notes, setNotes] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -146,6 +148,7 @@ const GuidanceNotesView = () => {
   const [showView, setShowView] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [toast, setToast] = useState(null);
+  const [highlightedId, setHighlightedId] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -560,6 +563,20 @@ const validateForm = () => {
     fetchNotes();
     fetchStudents();
   }, []);
+
+  // Handle URL parameters for highlighting
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const highlightId = searchParams.get('highlightId');
+    if (highlightId) {
+      setHighlightedId(parseInt(highlightId));
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -1746,7 +1763,7 @@ const validateForm = () => {
                 {filteredAndSortedNotes.map((note) => (
                   <tr 
                     key={note.noteId}
-                    className="clickable-row"
+                    className={`clickable-row ${highlightedId === note.noteId ? 'highlighted-note' : ''}`}
                     onClick={() => handleView(note)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -1758,6 +1775,11 @@ const validateForm = () => {
                     role="button"
                     aria-label={`View form for ${note.student?.fullName || 'student'}`}
                     title="View"
+                    style={{
+                      backgroundColor: highlightedId === note.noteId ? '#fef3c7' : 'transparent',
+                      border: highlightedId === note.noteId ? '2px solid #f59e0b' : '1px solid transparent',
+                      animation: highlightedId === note.noteId ? 'pulse 2s ease-in-out' : 'none'
+                    }}
                   >
                     <td>
                       <div className="student-info">
@@ -1770,6 +1792,30 @@ const validateForm = () => {
                           </div>
                           <div className="student-number">
                             {note.student?.studentNumber}
+                          </div>
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px', 
+                            marginTop: '2px',
+                            fontSize: '11px',
+                            color: highlightedId === note.noteId ? '#d97706' : '#6b7280',
+                            fontWeight: highlightedId === note.noteId ? '600' : '500'
+                          }}>
+                            <Hash size={10} />
+                            ID: {note.noteId}
+                            {highlightedId === note.noteId && (
+                              <span style={{ 
+                                background: '#f59e0b', 
+                                color: 'white', 
+                                padding: '1px 4px', 
+                                borderRadius: '3px',
+                                fontSize: '9px',
+                                marginLeft: '4px'
+                              }}>
+                                HIGHLIGHTED
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, Download, Eye, Calendar, Clock, User, CheckCircle, X, RefreshCw, AlertTriangle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { FileText, Download, Eye, Calendar, Clock, User, CheckCircle, X, RefreshCw, AlertTriangle, Hash } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
@@ -82,6 +83,7 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
 };
 
 const GuidancePassView = () => {
+  const location = useLocation();
   const [guidancePasses, setGuidancePasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -90,6 +92,7 @@ const GuidancePassView = () => {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [passToDeactivate, setPassToDeactivate] = useState(null);
   const [toast, setToast] = useState(null);
+  const [highlightedId, setHighlightedId] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -102,6 +105,20 @@ const GuidancePassView = () => {
   useEffect(() => {
     fetchGuidancePasses();
   }, []);
+
+  // Handle URL parameters for highlighting
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const highlightId = searchParams.get('highlightId');
+    if (highlightId) {
+      setHighlightedId(parseInt(highlightId));
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   const fetchGuidancePasses = async () => {
   setLoading(true);
@@ -279,7 +296,15 @@ const GuidancePassView = () => {
         {guidancePasses.length > 0 ? (
           <div className="appointments-scroll-container">
             {guidancePasses.map((pass) => (
-              <div key={pass.passId} className="appointment-card">
+              <div 
+                key={pass.passId} 
+                className={`appointment-card ${highlightedId === pass.passId ? 'highlighted-pass' : ''}`}
+                style={{
+                  backgroundColor: highlightedId === pass.passId ? '#fef3c7' : 'white',
+                  border: highlightedId === pass.passId ? '2px solid #f59e0b' : '1px solid #e5e7eb',
+                  animation: highlightedId === pass.passId ? 'pulse 2s ease-in-out' : 'none'
+                }}
+              >
                 <div className="appointment-header">
                   <div>
                     <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
@@ -288,6 +313,30 @@ const GuidancePassView = () => {
                     <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
                       {pass.appointment.programSection}
                     </p>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '4px', 
+                      marginTop: '4px',
+                      fontSize: '11px',
+                      color: highlightedId === pass.passId ? '#d97706' : '#6b7280',
+                      fontWeight: highlightedId === pass.passId ? '600' : '500'
+                    }}>
+                      <Hash size={10} />
+                      ID: {pass.passId}
+                      {highlightedId === pass.passId && (
+                        <span style={{ 
+                          background: '#f59e0b', 
+                          color: 'white', 
+                          padding: '1px 4px', 
+                          borderRadius: '3px',
+                          fontSize: '9px',
+                          marginLeft: '4px'
+                        }}>
+                          HIGHLIGHTED
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div style={{ 
                     background: '#ecfdf5', 

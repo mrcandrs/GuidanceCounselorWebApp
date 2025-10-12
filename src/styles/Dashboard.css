@@ -15,6 +15,31 @@
   }
 }
 
+/* Highlight animation */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+.highlighted-appointment {
+  animation: pulse 2s ease-in-out;
+}
+
+.highlighted-pass {
+  animation: pulse 2s ease-in-out;
+}
+
+.highlighted-student {
+  animation: pulse 2s ease-in-out;
+}
+
 /*FINALLY FIXED THE WIDTH!!!!*/
 html, body {
   margin: 0;

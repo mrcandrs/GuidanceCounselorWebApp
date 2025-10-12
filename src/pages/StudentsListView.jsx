@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useLayoutEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, Filter, Eye, Trash2, Users, ArrowLeft, SortAsc, ChevronDown, X, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Search, Filter, Eye, Trash2, Users, ArrowLeft, SortAsc, ChevronDown, X, RefreshCw, CheckCircle, AlertTriangle, Hash } from 'lucide-react';
 import StudentDetailsView from './StudentDetailsView';
 import '../styles/Dashboard.css';
 import axios from "axios";
@@ -187,7 +188,9 @@ const StudentsTableView = ({
   setFilters, 
   sortConfig, 
   setSortConfig, 
-  hasActiveFilters
+  hasActiveFilters,
+  highlightedStudentId,
+  highlightedForm
 }) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const sortBtnRef = useRef(null);
@@ -495,7 +498,7 @@ const StudentsTableView = ({
                 {filteredStudents.map((student) => (
                   <tr 
                     key={student.id} 
-                    className="table-row clickable-row"
+                    className={`table-row clickable-row ${highlightedStudentId === student.id ? 'highlighted-student' : ''}`}
                     onClick={() => handleView(student.id)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -507,6 +510,11 @@ const StudentsTableView = ({
                       role="button"
                       aria-label={`View details for ${student.name || 'student'}`}
                       title="View"
+                      style={{
+                        backgroundColor: highlightedStudentId === student.id ? '#fef3c7' : 'transparent',
+                        border: highlightedStudentId === student.id ? '2px solid #f59e0b' : '1px solid transparent',
+                        animation: highlightedStudentId === student.id ? 'pulse 2s ease-in-out' : 'none'
+                      }}
                       >
                     <td className="table-cell">
                       <div className="student-info">
@@ -527,6 +535,30 @@ const StudentsTableView = ({
                         <div>
                           <div className="student-name">{student.name || 'N/A'}</div>
                           <div className="student-status">{student.status || 'Active'}</div>
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px', 
+                            marginTop: '2px',
+                            fontSize: '11px',
+                            color: highlightedStudentId === student.id ? '#d97706' : '#6b7280',
+                            fontWeight: highlightedStudentId === student.id ? '600' : '500'
+                          }}>
+                            <Hash size={10} />
+                            ID: {student.id}
+                            {highlightedStudentId === student.id && (
+                              <span style={{ 
+                                background: '#f59e0b', 
+                                color: 'white', 
+                                padding: '1px 4px', 
+                                borderRadius: '3px',
+                                fontSize: '9px',
+                                marginLeft: '4px'
+                              }}>
+                                HIGHLIGHTED
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -614,6 +646,7 @@ const StudentsTableView = ({
 
 // Main StudentsListView component
 const StudentsListView = () => {
+  const location = useLocation();
   const [allStudents, setAllStudents] = useState([]);
   const [displayedStudents, setDisplayedStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -625,6 +658,8 @@ const StudentsListView = () => {
   // Dynamic course configuration - fetch from API
   const [courses, setCourses] = useState([]);
   const [toast, setToast] = useState(null);
+  const [highlightedStudentId, setHighlightedStudentId] = useState(null);
+  const [highlightedForm, setHighlightedForm] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -779,6 +814,33 @@ const StudentsListView = () => {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  // Handle URL parameters for highlighting
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const viewStudent = searchParams.get('viewStudent');
+    const highlightForm = searchParams.get('highlightForm');
+    const highlightId = searchParams.get('highlightId');
+    
+    if (viewStudent) {
+      setViewingStudentId(parseInt(viewStudent));
+      setHighlightedStudentId(parseInt(viewStudent));
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedStudentId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+    
+    if (highlightForm && highlightId) {
+      setHighlightedForm(highlightForm);
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedForm(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   const getMoodBadgeClass = (mood) => {
     switch (mood) {
@@ -948,6 +1010,8 @@ const StudentsListView = () => {
           sortConfig={sortConfig}
           setSortConfig={setSortConfig}
           hasActiveFilters={hasActiveFilters}
+          highlightedStudentId={highlightedStudentId}
+          highlightedForm={highlightedForm}
         />
       ) : (
         <CourseSelectionView 

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Hash } from 'lucide-react';
 import axios from 'axios';
 import '../styles/ReferralView.css';
 
 const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
 
 const ReferralView = () => {
+  const location = useLocation();
   const [referrals, setReferrals] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -13,6 +16,7 @@ const ReferralView = () => {
   const [currentCounselor, setCurrentCounselor] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [category, setCategory] = useState('all'); // 'all' | 'emergency' | 'asap' | 'scheduled' | 'pastdue' | 'completed'
+  const [highlightedId, setHighlightedId] = useState(null);
 
   // New state for search, sort, and filter
   const [searchTerm, setSearchTerm] = useState('');
@@ -190,6 +194,20 @@ const getVisibleReferrals = () => {
     fetchList();
     fetchCurrentCounselor(); // Fetch counselor on mount
   }, []);
+
+  // Handle URL parameters for highlighting
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const highlightId = searchParams.get('highlightId');
+    if (highlightId) {
+      setHighlightedId(parseInt(highlightId));
+      // Clear highlight after 5 seconds
+      const timer = setTimeout(() => {
+        setHighlightedId(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   // Add real-time polling useEffect
   useEffect(() => {
@@ -511,14 +529,17 @@ const visible = getVisibleReferrals();
                 return (
                   <button
                     key={r.referralId}
-                    className={`referral-item ${isActive ? 'active' : ''} ${saved ? 'completed' : ''}`}
+                    className={`referral-item ${isActive ? 'active' : ''} ${saved ? 'completed' : ''} ${highlightedId === r.referralId ? 'highlighted-referral' : ''}`}
                     title={saved ? 'Feedback saved' : 'Open Feedback'}
                     onClick={() => handleSelectReferral(r)} // Use new handler
                     style={{
                       position: 'relative',
                       zIndex: 9999,
                       pointerEvents: 'auto',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      backgroundColor: highlightedId === r.referralId ? '#fef3c7' : undefined,
+                      border: highlightedId === r.referralId ? '2px solid #f59e0b' : undefined,
+                      animation: highlightedId === r.referralId ? 'pulse 2s ease-in-out' : 'none'
                     }}
                   >
                     <div className="referral-item-header">
@@ -533,6 +554,30 @@ const visible = getVisibleReferrals();
                     <div className="referral-item-sub">
                       <span>Student No.: {r.studentNumber || r.studentNumber /* same name in DTO */}</span>
                       <span>Program: {r.studentProgram}{r.section ? ` - ${r.section}` : ''}</span>
+                    </div>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '4px', 
+                      marginTop: '4px',
+                      fontSize: '11px',
+                      color: highlightedId === r.referralId ? '#d97706' : '#6b7280',
+                      fontWeight: highlightedId === r.referralId ? '600' : '500'
+                    }}>
+                      <Hash size={10} />
+                      ID: {r.referralId}
+                      {highlightedId === r.referralId && (
+                        <span style={{ 
+                          background: '#f59e0b', 
+                          color: 'white', 
+                          padding: '1px 4px', 
+                          borderRadius: '3px',
+                          fontSize: '9px',
+                          marginLeft: '4px'
+                        }}>
+                          HIGHLIGHTED
+                        </span>
+                      )}
                     </div>
                   </button>
                 );
