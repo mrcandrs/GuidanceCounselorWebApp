@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Filter, Download, Calendar, TrendingUp, Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Search, X, BarChart3, PieChart, LineChart, Activity, Target, Zap, Eye, Share2, Settings, RefreshCw, AlertTriangle, LogOut, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -88,6 +88,7 @@ const HistoryReportsView = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('history');
   const [historyData, setHistoryData] = useState([]);
+  const [allHistoryData, setAllHistoryData] = useState([]); // Store all data for client-side search
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
@@ -115,10 +116,77 @@ const HistoryReportsView = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [reportTab, setReportTab] = useState('appointments');
   const [showFilters, setShowFilters] = useState(false);
-  
+  const [searchInput, setSearchInput] = useState('');
 
   // Ref for the filter panel to detect clicks outside
   const filterPanelRef = useRef(null);
+
+  // Client-side search function
+  const searchHistoryData = useCallback((data, searchTerm) => {
+    if (!searchTerm || searchTerm.trim() === '') {
+      return data;
+    }
+
+    const term = searchTerm.toLowerCase().trim();
+    console.log('🔍 Client-side search for:', term);
+
+    return data.filter(item => {
+      // Search in EntityType (Record Type column)
+      if (item.entityType?.toLowerCase().includes(term)) return true;
+      
+      // Search in Action (Action column)
+      if (item.action?.toLowerCase().includes(term)) return true;
+      
+      // Search in ActorType (Performed By column)
+      if (item.actorType?.toLowerCase().includes(term)) return true;
+      
+      // Search in EntityId (Record Type column - ID numbers)
+      if (item.entityId && item.entityId.toString().includes(term)) return true;
+      
+      // Search in ActorId (Performed By column - ID numbers)
+      if (item.actorId && item.actorId.toString().includes(term)) return true;
+      
+      // Search in formatted date/time (Date/Time column)
+      const dateStr = new Date(item.createdAt).toLocaleString();
+      if (dateStr.toLowerCase().includes(term)) return true;
+      
+      // Search in DetailsJson (Student names, titles, descriptions)
+      if (item.detailsJson) {
+        try {
+          const details = JSON.parse(item.detailsJson);
+          
+          // Search student names
+          if (details.studentName && details.studentName.toLowerCase().includes(term)) return true;
+          
+          // Search titles
+          if (details.title && details.title.toLowerCase().includes(term)) return true;
+          
+          // Search descriptions
+          if (details.description && details.description.toLowerCase().includes(term)) return true;
+          
+          // Raw JSON search as fallback
+          if (item.detailsJson.toLowerCase().includes(term)) return true;
+        } catch (e) {
+          // If JSON parsing fails, do raw string search
+          if (item.detailsJson.toLowerCase().includes(term)) return true;
+        }
+      }
+      
+      return false;
+    });
+  }, []);
+
+  // Debounced search effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== filters.search) {
+        console.log('Debounced search triggered:', searchInput);
+        setFilters(prev => ({ ...prev, search: searchInput, page: 1 }));
+      }
+    }, 300); // Reduced to 300ms for better responsiveness
+
+    return () => clearTimeout(timer);
+  }, [searchInput, filters.search]);
 
   // Fetch history data
   const fetchHistory = async () => {
@@ -131,20 +199,75 @@ const HistoryReportsView = () => {
         actorType: filters.actorType || undefined,
         from: filters.from || undefined,
         to: filters.to || undefined,
-        search: filters.search || undefined,
-        page,
-        pageSize
+        // Remove search from backend call - we'll do client-side search
+        page: 1, // Always fetch all data for client-side search
+        pageSize: 1000 // Fetch more data for client-side filtering
       };
+      console.log('Fetching history with params:', params);
       const res = await axios.get(`${API_BASE}/api/history`, { params, headers: { Authorization: `Bearer ${token}` } });
-      setHistoryData(res.data.items || []);
-      setTotalItems(res.data.totalItems || 0);
-      setTotalPages(res.data.totalPages || 1);
+      console.log('History response:', res.data);
+      
+      // Store all data for client-side search
+      setAllHistoryData(res.data.items || []);
+      
+      // Apply client-side search and pagination
+      applyClientSideFilters();
+      
     } catch (e) {
       console.error('history fetch failed', e?.response?.data || e.message);
     } finally {
       setLoading(false);
     }
   };
+
+  // Apply client-side filters and pagination
+  const applyClientSideFilters = useCallback(() => {
+    let filteredData = [...allHistoryData];
+    
+    // Apply search filter
+    if (filters.search) {
+      filteredData = searchHistoryData(filteredData, filters.search);
+    }
+    
+    // Apply other filters
+    if (filters.entityType) {
+      filteredData = filteredData.filter(item => item.entityType === filters.entityType);
+    }
+    
+    if (filters.action) {
+      filteredData = filteredData.filter(item => item.action === filters.action);
+    }
+    
+    if (filters.actorType) {
+      filteredData = filteredData.filter(item => item.actorType === filters.actorType);
+    }
+    
+    if (filters.from) {
+      const fromDate = new Date(filters.from);
+      filteredData = filteredData.filter(item => new Date(item.createdAt) >= fromDate);
+    }
+    
+    if (filters.to) {
+      const toDate = new Date(filters.to);
+      toDate.setHours(23, 59, 59, 999); // End of day
+      filteredData = filteredData.filter(item => new Date(item.createdAt) <= toDate);
+    }
+    
+    // Sort by date (newest first)
+    filteredData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    // Apply pagination
+    const totalItems = filteredData.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const paginatedData = filteredData.slice(startIndex, startIndex + pageSize);
+    
+    console.log(`Client-side filtering: ${allHistoryData.length} → ${filteredData.length} → ${paginatedData.length} (page ${page}/${totalPages})`);
+    
+    setHistoryData(paginatedData);
+    setTotalItems(totalItems);
+    setTotalPages(totalPages);
+  }, [allHistoryData, filters, page, pageSize, searchHistoryData]);
 
 
   // Fetch reports data
@@ -187,19 +310,30 @@ const HistoryReportsView = () => {
     }
   };
 
+  // Fetch data when component mounts or filters change (except search)
   useEffect(() => {
     if (activeTab !== 'history') return;
     fetchHistory();
   }, [
     activeTab,
-    page,
-    pageSize,
     filters.entityType,
     filters.action,
     filters.actorType,
     filters.from,
-    filters.to,
-    filters.search
+    filters.to
+  ]);
+
+  // Apply client-side filters when search or pagination changes
+  useEffect(() => {
+    if (activeTab !== 'history' || allHistoryData.length === 0) return;
+    applyClientSideFilters();
+  }, [
+    activeTab,
+    filters.search,
+    page,
+    pageSize,
+    allHistoryData,
+    applyClientSideFilters
   ]);
 
   useEffect(() => {
@@ -227,6 +361,7 @@ const HistoryReportsView = () => {
   }, [showFilters]);
 
   const handleFilterChange = (key, value) => {
+    console.log(`Filter changed: ${key} = "${value}"`);
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
   };
 
@@ -524,13 +659,16 @@ const HistoryReportsView = () => {
                     type="text"
                     placeholder="Search history records..."
                     className="search-input"
-                    value={filters.search}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     style={{ paddingLeft: '48px'}}
                   />
-                  {filters.search && (
+                  {searchInput && (
                     <button
-                      onClick={() => handleFilterChange('search', '')}
+                      onClick={() => {
+                        setSearchInput('');
+                        setFilters(prev => ({ ...prev, search: '', page: 1 }));
+                      }}
                       className="search-clear"
                     >
                       <X size={16} />
