@@ -86,7 +86,7 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
 
 const Login = () => {
   const bgUrl = (typeof window !== 'undefined')
-    ? `${window.location.origin}/sti-college-building.jpg`
+    ? `${window.location.origin}/sti-college-tarlac-building.jpg`
     : '';
 
   const [email, setEmail] = useState('');
@@ -196,7 +196,7 @@ const Login = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: `linear-gradient(135deg, rgba(4,119,191,.55) 0%, rgba(3,90,140,.7) 50%, rgba(4,119,191,.8) 100%), url(${bgUrl})`,
+      background: `linear-gradient(135deg, rgba(4,119,191,.25) 0%, rgba(3,90,140,.35) 50%, rgba(4,119,191,.4) 100%), url(${bgUrl})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',
