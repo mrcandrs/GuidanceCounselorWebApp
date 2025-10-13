@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { FileText, Download, Eye, Calendar, Clock, User, CheckCircle, X, RefreshCw, AlertTriangle, Hash } from 'lucide-react';
 import '../styles/Dashboard.css';
@@ -93,14 +93,30 @@ const GuidancePassView = () => {
   const [passToDeactivate, setPassToDeactivate] = useState(null);
   const [toast, setToast] = useState(null);
   const [highlightedId, setHighlightedId] = useState(null);
+  const [viewTab, setViewTab] = useState('active'); // 'active' | 'history'
 
-  const showToast = useCallback((message, type = 'success') => {
-    setToast({ message, type });
-  }, []);
+  //Derive active/history lists (memoized)
+  const { activePasses, historyPasses, displayedPasses } = useMemo(() => {
+    const active = (guidancePasses || []).filter(p =>
+      p?.appointment?.status?.toLowerCase() === 'approved'
+    );
+    const history = (guidancePasses || []).filter(p =>
+      p?.appointment?.status?.toLowerCase() !== 'approved'
+    );
+    return {
+      activePasses: active,
+      historyPasses: history,
+      displayedPasses: viewTab === 'active' ? active : history
+    };
+  }, [guidancePasses, viewTab]);
 
-  const hideToast = useCallback(() => {
-    setToast(null);
-  }, []);
+    const showToast = useCallback((message, type = 'success') => {
+      setToast({ message, type });
+    }, []);
+
+    const hideToast = useCallback(() => {
+      setToast(null);
+    }, []);
 
   useEffect(() => {
     fetchGuidancePasses();
@@ -287,152 +303,168 @@ const GuidancePassView = () => {
             <RefreshCw size={16} />
             Refresh
           </button>
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              className={`filter-button ${viewTab === 'active' ? 'active' : ''}`}
+              onClick={() => setViewTab('active')}
+            >
+              Active ({activePasses.length})
+            </button>
+            <button
+              className={`filter-button ${viewTab === 'history' ? 'active' : ''}`}
+              onClick={() => setViewTab('history')}
+            >
+              History ({historyPasses.length})
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="card">
-        <h3 className="card-title">Issued Guidance Passes ({guidancePasses.length})</h3>
-        
-        {guidancePasses.length > 0 ? (
-          <div className="appointments-scroll-container">
-            {guidancePasses.map((pass) => {
-              const isSlotDeactivated = pass.appointment?.status?.toLowerCase() === 'completed';
-              return (
-              <div 
-                key={pass.passId} 
-                className={`appointment-card ${highlightedId === pass.passId ? 'highlighted-pass' : ''} ${isSlotDeactivated ? 'deactivated-slot' : ''}`}
-                style={{
-                  backgroundColor: highlightedId === pass.passId ? '#fef3c7' : isSlotDeactivated ? '#f9fafb' : 'white',
-                  border: highlightedId === pass.passId ? '2px solid #f59e0b' : isSlotDeactivated ? '1px solid #d1d5db' : '1px solid #e5e7eb',
-                  animation: highlightedId === pass.passId ? 'pulse 2s ease-in-out' : 'none',
-                  opacity: isSlotDeactivated ? 0.7 : 1
-                }}
-              >
-                <div className="appointment-header">
-                  <div>
-                    <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
-                      {pass.appointment.studentName}
-                    </h4>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      {pass.appointment.programSection}
-                    </p>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '4px', 
-                      marginTop: '4px',
-                      fontSize: '11px',
-                      color: highlightedId === pass.passId ? '#d97706' : '#6b7280',
-                      fontWeight: highlightedId === pass.passId ? '600' : '500'
-                    }}>
-                      <Hash size={10} />
-                      ID: {pass.passId}
-                      {highlightedId === pass.passId && (
-                        <span style={{ 
-                          background: '#f59e0b', 
-                          color: 'white', 
-                          padding: '1px 4px', 
-                          borderRadius: '3px',
-                          fontSize: '9px',
-                          marginLeft: '4px'
+        <h3 className="card-title">Issued Guidance Passes ({displayedPasses.length})</h3>
+
+                      {displayedPasses.length > 0 ? (
+                        <div className="appointments-scroll-container">
+                          {displayedPasses.map((pass) => {
+                const status = pass.appointment?.status?.toLowerCase();
+                const isApproved = status === 'approved';
+                const isCompleted = status === 'completed' || status === 'closed';
+                const isSlotDeactivated = isCompleted;
+                          
+                return (
+                  <div 
+                    key={pass.passId} 
+                    className={`appointment-card ${highlightedId === pass.passId ? 'highlighted-pass' : ''} ${isSlotDeactivated ? 'deactivated-slot' : ''}`}
+                    style={{
+                      backgroundColor: highlightedId === pass.passId ? '#fef3c7' : isSlotDeactivated ? '#f9fafb' : 'white',
+                      border: highlightedId === pass.passId ? '2px solid #f59e0b' : isSlotDeactivated ? '1px solid #d1d5db' : '1px solid #e5e7eb',
+                      animation: highlightedId === pass.passId ? 'pulse 2s ease-in-out' : 'none',
+                      opacity: isSlotDeactivated ? 0.7 : 1
+                    }}
+                  >
+                    <div className="appointment-header">
+                      <div>
+                        <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
+                          {pass.appointment.studentName}
+                        </h4>
+                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
+                          {pass.appointment.programSection}
+                        </p>
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '4px', 
+                          marginTop: '4px',
+                          fontSize: '11px',
+                          color: highlightedId === pass.passId ? '#d97706' : '#6b7280',
+                          fontWeight: highlightedId === pass.passId ? '600' : '500'
                         }}>
-                          HIGHLIGHTED
+                          <Hash size={10} />
+                          ID: {pass.passId}
+                          {highlightedId === pass.passId && (
+                            <span style={{ 
+                              background: '#f59e0b', 
+                              color: 'white', 
+                              padding: '1px 4px', 
+                              borderRadius: '3px',
+                              fontSize: '9px',
+                              marginLeft: '4px'
+                            }}>
+                              HIGHLIGHTED
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div style={{ 
+                        background: isSlotDeactivated ? '#fef2f2' : '#ecfdf5', 
+                        color: isSlotDeactivated ? '#dc2626' : '#065f46', 
+                        padding: '4px 8px', 
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: '500'
+                      }}>
+                        {isSlotDeactivated ? 'SLOT DEACTIVATED' : 'PASS ISSUED'}
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <Calendar size={14} color="#6b7280" />
+                        <span style={{ fontSize: '14px', color: '#374151' }}>
+                          {formatDate(pass.appointment.date)}
                         </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <Clock size={14} color="#6b7280" />
+                        <span style={{ fontSize: '14px', color: '#374151' }}>
+                          {pass.appointment.time}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <User size={14} color="#6b7280" />
+                        <span style={{ fontSize: '14px', color: '#374151' }}>
+                          Issued by: {pass.counselor.name}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {pass.notes && (
+                      <div style={{ 
+                        fontSize: '13px', 
+                        color: '#6b7280', 
+                        marginBottom: '12px',
+                        fontStyle: 'italic'
+                      }}>
+                        Notes: {pass.notes}
+                      </div>
+                    )}
+
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#9ca3af', 
+                      marginBottom: '12px'
+                    }}>
+                      Issued: {formatDate(pass.issuedDate)}
+                    </div>
+                  
+                    <div className="appointment-actions">
+                      <button
+                        onClick={() => handleViewPass(pass)}
+                        className="filter-button"
+                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                      >
+                        <Eye size={14} />
+                        View
+                      </button>
+                      <button
+                        onClick={() => generateGuidancePassPDF(pass)}
+                        className="primary-button"
+                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                      >
+                        <Download size={14} />
+                        Print
+                      </button>
+                  
+                      {isApproved && (
+                        <button
+                          onClick={() => handleDeactivateSlot(pass)}
+                          className="reject-button"
+                          style={{ padding: '6px 12px', fontSize: '12px' }}
+                        >
+                          <X size={14} />
+                          Deactivate Slot
+                        </button>
                       )}
                     </div>
                   </div>
-                  <div style={{ 
-                    background: isSlotDeactivated ? '#fef2f2' : '#ecfdf5', 
-                    color: isSlotDeactivated ? '#dc2626' : '#065f46', 
-                    padding: '4px 8px', 
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    fontWeight: '500'
-                  }}>
-                    {isSlotDeactivated ? 'SLOT DEACTIVATED' : 'PASS ISSUED'}
-                  </div>
-                </div>
-                
-                <div style={{ marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <Calendar size={14} color="#6b7280" />
-                    <span style={{ fontSize: '14px', color: '#374151' }}>
-                      {formatDate(pass.appointment.date)}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <Clock size={14} color="#6b7280" />
-                    <span style={{ fontSize: '14px', color: '#374151' }}>
-                      {pass.appointment.time}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <User size={14} color="#6b7280" />
-                    <span style={{ fontSize: '14px', color: '#374151' }}>
-                      Issued by: {pass.counselor.name}
-                    </span>
-                  </div>
-                </div>
-
-                {pass.notes && (
-                  <div style={{ 
-                    fontSize: '13px', 
-                    color: '#6b7280', 
-                    marginBottom: '12px',
-                    fontStyle: 'italic'
-                  }}>
-                    Notes: {pass.notes}
-                  </div>
-                )}
-
-                <div style={{ 
-                  fontSize: '12px', 
-                  color: '#9ca3af', 
-                  marginBottom: '12px'
-                }}>
-                  Issued: {formatDate(pass.issuedDate)}
-                </div>
-
-                <div className="appointment-actions">
-                  <button
-                    onClick={() => handleViewPass(pass)}
-                    className="filter-button"
-                    style={{ padding: '6px 12px', fontSize: '12px' }}
-                  >
-                    <Eye size={14} />
-                    View
-                  </button>
-                  <button
-                    onClick={() => generateGuidancePassPDF(pass)}
-                    className="primary-button"
-                    style={{ padding: '6px 12px', fontSize: '12px' }}
-                  >
-                    <Download size={14} />
-                    Print
-                  </button>
-                  <button
-                    onClick={() => handleDeactivateSlot(pass)}
-                    className="reject-button"
-                    disabled={isSlotDeactivated}
-                    style={{ 
-                      padding: '6px 12px', 
-                      fontSize: '12px',
-                      opacity: isSlotDeactivated ? 0.5 : 1,
-                      cursor: isSlotDeactivated ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    <X size={14} />
-                    {isSlotDeactivated ? 'Slot Deactivated' : 'Deactivate Slot'}
-                  </button>
-                </div>
-              </div>
-              );
-            })}
+                );
+              })}
           </div>
         ) : (
           <div className="empty-state">
             <FileText size={48} className="empty-icon" />
-            <p>No guidance passes issued yet</p>
+            <p>No {viewTab === 'active' ? 'active' : 'historical'} guidance passes</p>
           </div>
         )}
       </div>
