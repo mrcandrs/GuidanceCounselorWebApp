@@ -52,25 +52,18 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     fetchRecentActivity();
   }, []);
 
-  // Support highlighting and tab via query param
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const hid = params.get('highlightId');
-    const tab = params.get('tab');
-    if (hid) {
-      setHighlightedId(parseInt(hid));
-      const timer = setTimeout(() => setHighlightedId(null), 5000);
-      return () => clearTimeout(timer);
-    }
-    if (tab === 'all' || tab === 'pending') {
-      setViewTab(tab);
-    }
-  }, [location.search]);
-
-  // Handle URL parameters for highlighting
+  // Handle URL parameters for highlighting and tab
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const highlightId = searchParams.get('highlightId');
+    const tab = searchParams.get('tab');
+    
+    // Set tab if provided
+    if (tab === 'all' || tab === 'pending') {
+      setViewTab(tab);
+    }
+    
+    // Handle highlighting
     if (highlightId) {
       setHighlightedId(parseInt(highlightId));
       // Clear highlight after 5 seconds
