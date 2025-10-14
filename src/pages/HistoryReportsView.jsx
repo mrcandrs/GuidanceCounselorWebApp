@@ -531,6 +531,7 @@ const HistoryReportsView = () => {
       case 'created': return <CheckCircle size={16} className="text-green-500" />;
       case 'updated': return <AlertCircle size={16} className="text-orange-500" />;
       case 'deleted': return <XCircle size={16} className="text-red-500" />;
+       case 'completed': return <CheckCircle size={16} className="text-green-600" />;
       case 'approved': return <CheckCircle size={16} className="text-green-500" />;
       case 'rejected': return <XCircle size={16} className="text-red-500" />;
       case 'activated': return <CheckCircle size={16} className="text-green-500" />;
@@ -732,6 +733,7 @@ const HistoryReportsView = () => {
                             <option value="created">✅ Created</option>
                             <option value="updated">✏️ Updated</option>
                             <option value="deleted">🗑️ Deleted</option>
+                            <option value="completed">✔️ Completed</option>
                             <option value="approved">👍 Approved</option>
                             <option value="rejected">👎 Rejected</option>
                             <option value="activated">🟢 Activated</option>
@@ -917,6 +919,7 @@ const HistoryReportsView = () => {
                               color: item.action === 'created' ? '#10b981' : 
                                      item.action === 'updated' ? '#f59e0b' : 
                                      item.action === 'deleted' ? '#ef4444' : 
+                                     item.action === 'completed' ? '#059669' : 
                                      item.action === 'approved' ? '#10b981' : 
                                      item.action === 'rejected' ? '#ef4444' : 
                                      item.action === 'activated' ? '#10b981' : 
