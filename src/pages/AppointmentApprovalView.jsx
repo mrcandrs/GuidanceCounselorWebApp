@@ -40,6 +40,17 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     fetchRecentActivity();
   }, []);
 
+  // Support highlighting a specific appointment via query param
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const hid = params.get('highlightId');
+    if (hid) {
+      setHighlightedId(parseInt(hid));
+      const timer = setTimeout(() => setHighlightedId(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
+
   // Handle URL parameters for highlighting
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);

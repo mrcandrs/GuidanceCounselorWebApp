@@ -92,6 +92,7 @@ const HistoryReportsView = () => {
   const [reportsData, setReportsData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [highlightedApptId, setHighlightedApptId] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -329,8 +330,10 @@ const HistoryReportsView = () => {
       const params = new URLSearchParams(window.location.search);
       const initTab = params.get('tab');
       const initEntity = params.get('entityType');
+      const highlightIdParam = params.get('highlightId');
       if (initTab === 'history' || initTab === 'reports') setActiveTab(initTab);
       if (initEntity) setFilters(prev => ({ ...prev, entityType: initEntity }));
+      if (highlightIdParam) setHighlightedApptId(parseInt(highlightIdParam));
     } catch (e) {
       // ignore malformed query
     }
@@ -618,6 +621,17 @@ const HistoryReportsView = () => {
 
   // Handle navigation to specific record
   const handleViewDetails = (item) => {
+    if (item.entityType === 'appointment') {
+      setActiveTab('history');
+      setFilters(prev => ({ ...prev, entityType: 'appointment' }));
+      setHighlightedApptId(item.entityId);
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', 'history');
+      url.searchParams.set('entityType', 'appointment');
+      url.searchParams.set('highlightId', String(item.entityId));
+      navigate(`${url.pathname}?${url.searchParams.toString()}`, { replace: true });
+      return;
+    }
     const path = getNavigationPath(item.entityType, item.entityId, item.detailsJson, item.action);
     navigate(path);
   };
