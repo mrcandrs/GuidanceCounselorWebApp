@@ -4,6 +4,29 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
+// Utility functions for Manila timezone formatting
+const formatManilaDateTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-PH', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+};
+
+const formatManilaDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-PH', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
+
 // Toast Notification Component
 const Toast = ({ message, type, onClose, duration = 3000 }) => {
   const [progress, setProgress] = useState(100);
@@ -148,7 +171,7 @@ const HistoryReportsView = () => {
       if (item.actorId && item.actorId.toString().includes(term)) return true;
       
       // Search in formatted date/time (Date/Time column)
-      const dateStr = new Date(item.createdAt).toLocaleString();
+      const dateStr = formatManilaDateTime(item.createdAt);
       if (dateStr.toLowerCase().includes(term)) return true;
       
       // Search in DetailsJson (Student names, titles, descriptions)
@@ -393,7 +416,7 @@ const HistoryReportsView = () => {
       const csvContent = [
         ['Date', 'Entity', 'Action', 'Actor', 'Details'].join(','),
         ...historyData.map(item => [
-          new Date(item.createdAt).toLocaleString(),
+          formatManilaDateTime(item.createdAt),
           `${item.entityType}${item.entityId ? ` #${item.entityId}` : ''}`,
           item.action,
           `${item.actorType}${item.actorId ? ` #${item.actorId}` : ''}`,
@@ -510,7 +533,7 @@ const HistoryReportsView = () => {
       const csv = [
         ['Date','Entity','Action','Actor','Details'].join(','),
         ...all.map(item => [
-          new Date(item.createdAt).toLocaleString(),
+          formatManilaDateTime(item.createdAt),
           `${item.entityType}${item.entityId ? ` #${item.entityId}` : ''}`,
           item.action,
           `${item.actorType}${item.actorId ? ` #${item.actorId}` : ''}`,
@@ -924,7 +947,7 @@ const HistoryReportsView = () => {
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Clock size={14} className="text-gray-400" />
-                            {new Date(item.createdAt).toLocaleString()}
+                            {formatManilaDateTime(item.createdAt)}
                           </div>
                         </td>
                         <td>
@@ -1289,10 +1312,10 @@ const HistoryReportsView = () => {
                                     to: new Date(day.date).toISOString().slice(0,10)
                                   })}
                                   style={{ width:'100%', background:'#0477BF', borderRadius:'4px 4px 0 0', minHeight:'4px', height: `${height}%`, transition:'all 0.3s', cursor:'pointer' }}
-                                  title={`${day.count} appointments on ${new Date(day.date).toLocaleDateString()}`}
+                                  title={`${day.count} appointments on ${formatManilaDate(day.date)}`}
                                 />
                                 <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '10px', textAlign: 'center' }}>
-                                  {new Date(day.date).toLocaleDateString()}
+                                  {formatManilaDate(day.date)}
                                 </div>
                                 <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#374151', marginTop: '4px' }}>
                                   {day.count}
@@ -1855,7 +1878,7 @@ const HistoryReportsView = () => {
                   <div style={{ marginBottom: 8 }}><strong>Appointment:</strong> {apptModalData.date} at {apptModalData.time}</div>
                 )}
                 <div style={{ marginBottom: 8 }}><strong>Action:</strong> {apptModalData.action}</div>
-                <div style={{ marginBottom: 8 }}><strong>Recorded:</strong> {new Date(apptModalData.createdAt).toLocaleString()}</div>
+                <div style={{ marginBottom: 8 }}><strong>Recorded:</strong> {formatManilaDateTime(apptModalData.createdAt)}</div>
               </div>
               <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
                 <button className="primary-button" onClick={() => navigate(`/dashboard/appointment-approval?highlightId=${apptModalData.id}&tab=all`)}>Open in Appointment Approval</button>
