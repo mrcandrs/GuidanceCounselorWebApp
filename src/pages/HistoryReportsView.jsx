@@ -1864,7 +1864,7 @@ const HistoryReportsView = () => {
                 <div style={{ marginBottom: 8 }}><strong>Recorded:</strong> {new Date(apptModalData.createdAt).toLocaleString()}</div>
               </div>
               <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-                <button className="primary-button" onClick={() => navigate(`/dashboard/appointment-approval?highlightId=${apptModalData.id}`)}>Open in Appointment Approval</button>
+                <button className="primary-button" onClick={() => navigate(`/dashboard/appointment-approval?highlightId=${apptModalData.id}&tab=all`)}>Open in Appointment Approval</button>
                 <button className="filter-button" onClick={() => setShowApptModal(false)}>Close</button>
               </div>
             </div>

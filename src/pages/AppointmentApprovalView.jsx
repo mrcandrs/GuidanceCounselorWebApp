@@ -826,7 +826,7 @@ const handleToggleTimeSlot = async () => {
 
       {/* Left Column (when All tab) - All Appointments */}
       <div className="card" style={{ display: viewTab === 'all' ? 'block' : 'none' }}>
-        <h3 className="card-title">All Appointments (recent)</h3>
+        <h3 className="card-title">All Appointments ({(pendingAppointments?.length || 0) + (recentActivity?.length || 0)})</h3>
         {/* Toolbar: matches other pages */}
         <div className="endorsement-header-tools" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', margin: '8px 0 12px 0' }}>
           {/* Search */}
@@ -924,6 +924,7 @@ const handleToggleTimeSlot = async () => {
                 style={{ width: '100%' }}
               >
                 <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="completed">Completed</option>
                 <option value="rejected">Rejected</option>
@@ -944,14 +945,30 @@ const handleToggleTimeSlot = async () => {
           </div>
         )}
         <div>
-          {recentActivity.length === 0 ? (
+          {recentActivity.length === 0 && (!pendingAppointments || pendingAppointments.length === 0) ? (
             <div className="empty-state">
               <Clock size={48} className="empty-icon" />
               <p>No appointments found.</p>
             </div>
           ) : (
-            // Apply search, filter, and sort before rendering
-            [...recentActivity]
+            // Combine pending and recent activity, then apply search, filter, and sort
+            [
+              // Add pending appointments with 'pending' status
+              ...(pendingAppointments || []).map(apt => ({
+                ...apt,
+                status: 'pending',
+                appointmentId: apt.appointmentId,
+                studentName: apt.studentName,
+                programSection: apt.programSection,
+                reason: apt.reason,
+                date: apt.date,
+                time: apt.time,
+                createdAt: apt.createdAt,
+                updatedAt: apt.createdAt // Use createdAt as updatedAt for pending
+              })),
+              // Add recent activity (approved, completed, rejected)
+              ...recentActivity
+            ]
               .filter(a => {
                 if (statusFilter !== 'all' && a.status !== statusFilter) return false;
                 if (!searchQuery) return true;
@@ -992,8 +1009,14 @@ const handleToggleTimeSlot = async () => {
                       ID: {activity.appointmentId}
                       <span style={{
                         fontSize: '10px',
-                        background: activity.status === 'approved' ? '#ecfdf5' : activity.status === 'rejected' ? '#fef2f2' : '#fffbeb',
-                        color: activity.status === 'approved' ? '#065f46' : activity.status === 'rejected' ? '#991b1b' : '#92400e',
+                        background: activity.status === 'approved' ? '#ecfdf5' : 
+                                   activity.status === 'rejected' ? '#fef2f2' : 
+                                   activity.status === 'completed' ? '#ecfdf5' :
+                                   activity.status === 'pending' ? '#fef3c7' : '#fffbeb',
+                        color: activity.status === 'approved' ? '#065f46' : 
+                               activity.status === 'rejected' ? '#991b1b' : 
+                               activity.status === 'completed' ? '#065f46' :
+                               activity.status === 'pending' ? '#92400e' : '#92400e',
                         padding: '2px 6px', borderRadius: '10px', fontWeight: 600, textTransform: 'uppercase'
                       }}>{activity.status}</span>
                     </div>
