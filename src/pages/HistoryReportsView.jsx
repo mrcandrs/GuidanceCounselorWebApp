@@ -303,6 +303,12 @@ const HistoryReportsView = () => {
       } else if (reportTab === 'forms') {
         const { data } = await axios.get(`${API_BASE}/api/reports/forms-completion`, common);
         setReportsData({ type: 'forms', ...data });
+      } else if (reportTab === 'mood') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/mood-insights`, common);
+        setReportsData({ type: 'mood', ...data });
+      } else if (reportTab === 'filemaintenance') {
+        const { data } = await axios.get(`${API_BASE}/api/reports/file-maintenance`, common);
+        setReportsData({ type: 'filemaintenance', ...data });
       }
     } catch (error) {
       console.error('Error fetching reports:', error);
@@ -538,6 +544,8 @@ const HistoryReportsView = () => {
       case 'inventory': return <FileText size={16} />;
       case 'career': return <Target size={16} />;
       case 'exitinterview': return <LogOut size={16} />;
+      case 'mood': return <TrendingUp size={16} />;
+      case 'filemaintenance': return <FileText size={16} />;
       default: return <FileText size={16} />;
     }
   };
@@ -605,6 +613,7 @@ const HistoryReportsView = () => {
         case 'inventory':
         case 'career':
         case 'exitinterview':
+        case 'filemaintenance':
           // These forms are typically viewed through student details
           if (details.studentId) {
             return `/dashboard/students-list?viewStudent=${details.studentId}&highlightForm=${entityType}&highlightId=${entityId}`;
@@ -770,6 +779,7 @@ const HistoryReportsView = () => {
                             <option value="career">🎯 Career Forms</option>
                             <option value="exitinterview">🚪 Exit Interview Forms</option>
                             <option value="mood">💭 Mood Entries</option>
+                            <option value="filemaintenance">📁 File Maintenance</option>
                           </select>
                         </div>
 
@@ -1095,7 +1105,7 @@ const HistoryReportsView = () => {
           <div>
             {/* Report sub-tabs */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidancepasses','forms'].map(rt => (
+              {['appointments','referrals','notes','consultations','endorsements','timeslots','guidancepasses','forms','mood','filemaintenance'].map(rt => (
                 <button
                   key={rt}
                   className={`filter-button ${reportTab === rt ? 'active' : ''}`}
@@ -1120,6 +1130,8 @@ const HistoryReportsView = () => {
                   {rt === 'timeslots' && <Clock size={16} />}
                   {rt === 'guidancepasses' && <CheckCircle size={16} />}
                   {rt === 'forms' && <FileText size={16} />}
+                  {rt === 'mood' && <TrendingUp size={16} />}
+                  {rt === 'filemaintenance' && <FileText size={16} />}
                   {rt.charAt(0).toUpperCase() + rt.slice(1)}
                 </button>
               ))}
@@ -1751,6 +1763,79 @@ const HistoryReportsView = () => {
                   </div>
                 )}
 
+                {/* Mood Insights Report */}
+                {reportsData?.type === 'mood' && (
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'mood' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <TrendingUp size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Mood Entries</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total || 0}
+                        </div>
+                      </div>
+
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'mood' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <TrendingUp size={20} className="text-green-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Average Mood Score</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+                          {reportsData.averageScore ? reportsData.averageScore.toFixed(1) : '0.0'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* File Maintenance Report */}
+                {reportsData?.type === 'filemaintenance' && (
+                  <div>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                      gap: '20px', 
+                      marginBottom: '32px' 
+                    }}>
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'filemaintenance' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <FileText size={20} className="text-blue-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Total Files Managed</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0477BF' }}>
+                          {reportsData.total || 0}
+                        </div>
+                      </div>
+
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'filemaintenance' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <FileText size={20} className="text-green-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Files Archived</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+                          {reportsData.archived || 0}
+                        </div>
+                      </div>
+
+                      <div className="kpi-card" onClick={() => goToHistoryWith({ entityType: 'filemaintenance' })} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <FileText size={20} className="text-orange-500" />
+                          <h3 style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>Files Updated</h3>
+                        </div>
+                        <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
+                          {reportsData.updated || 0}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               </>
             )}
