@@ -553,6 +553,27 @@ const HistoryReportsView = () => {
     }
   };
 
+  // Quick view modal for appointments
+  const [showApptModal, setShowApptModal] = useState(false);
+  const [apptModalData, setApptModalData] = useState(null);
+
+  const openAppointmentQuickView = (item) => {
+    try {
+      const details = item?.detailsJson ? JSON.parse(item.detailsJson) : {};
+      setApptModalData({
+        id: item.entityId,
+        action: item.action,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        ...details
+      });
+      setShowApptModal(true);
+    } catch (e) {
+      setApptModalData({ id: item.entityId, action: item.action, createdAt: item.createdAt });
+      setShowApptModal(true);
+    }
+  };
+
   // Helper function to determine navigation path based on entity type and ID
   const getNavigationPath = (entityType, entityId, detailsJson, action) => {
     try {
@@ -972,7 +993,7 @@ const HistoryReportsView = () => {
                             </span>
                           ) : (
                             <button
-                              onClick={() => handleViewDetails(item)}
+                              onClick={() => item.entityType === 'appointment' ? openAppointmentQuickView(item) : handleViewDetails(item)}
                               style={{
                                 background: 'none',
                                 border: 'none',
@@ -1719,6 +1740,35 @@ const HistoryReportsView = () => {
 
               </>
             )}
+          </div>
+        )}
+
+        {/* Appointment Quick View Modal */}
+        {showApptModal && apptModalData && (
+          <div className="modal-overlay">
+            <div className="modal" style={{ width: '520px', textAlign: 'left' }}>
+              <h3 style={{ marginTop: 0 }}>Appointment Details</h3>
+              <div style={{ fontSize: '14px', color: '#374151' }}>
+                {apptModalData.studentName && (
+                  <div style={{ marginBottom: 8 }}><strong>Student:</strong> {apptModalData.studentName}</div>
+                )}
+                {apptModalData.programSection && (
+                  <div style={{ marginBottom: 8 }}><strong>Program/Section:</strong> {apptModalData.programSection}</div>
+                )}
+                {apptModalData.reason && (
+                  <div style={{ marginBottom: 8 }}><strong>Reason:</strong> {apptModalData.reason}</div>
+                )}
+                {apptModalData.date && apptModalData.time && (
+                  <div style={{ marginBottom: 8 }}><strong>Appointment:</strong> {apptModalData.date} at {apptModalData.time}</div>
+                )}
+                <div style={{ marginBottom: 8 }}><strong>Action:</strong> {apptModalData.action}</div>
+                <div style={{ marginBottom: 8 }}><strong>Recorded:</strong> {new Date(apptModalData.createdAt).toLocaleString()}</div>
+              </div>
+              <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+                <button className="primary-button" onClick={() => navigate(`/dashboard/appointment-approval?highlightId=${apptModalData.id}`)}>Open in Appointment Approval</button>
+                <button className="filter-button" onClick={() => setShowApptModal(false)}>Close</button>
+              </div>
+            </div>
           </div>
         )}
       </div>
