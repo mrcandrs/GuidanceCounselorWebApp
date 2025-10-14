@@ -192,7 +192,7 @@ const GuidanceNotesView = () => {
   });
   // Search/Sort/Filter state
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: 'interviewDate', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
   const [showFilters, setShowFilters] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [filters, setFilters] = useState({
@@ -216,6 +216,7 @@ const GuidanceNotesView = () => {
   }, [showSortMenu]);
 
   const sortOptions = [
+    { key: 'createdAt', label: 'Date Created', direction: 'desc' },
     { key: 'interviewDate', label: 'Interview Date', direction: 'desc' },
     { key: 'student', label: 'Student Name', direction: 'asc' },
     { key: 'grade', label: 'Grade/Section', direction: 'asc' },
@@ -285,6 +286,10 @@ const GuidanceNotesView = () => {
     result.sort((a, b) => {
       let aValue, bValue;
       switch (sortConfig.key) {
+        case 'createdAt':
+          aValue = new Date(a.createdAt);
+          bValue = new Date(b.createdAt);
+          break;
         case 'student':
           aValue = a.student?.fullName || '';
           bValue = b.student?.fullName || '';
@@ -333,7 +338,7 @@ const clearFilters = () => {
 const getCurrentSortText = () => {
   const currentSort = sortOptions.find(opt => opt.key === sortConfig.key);
   const directionText = sortConfig.direction === 'asc' ? 'A-Z' : 'Z-A';
-  if (sortConfig.key === 'interviewDate') {
+  if (sortConfig.key === 'interviewDate' || sortConfig.key === 'createdAt') {
     return `${currentSort?.label} (${sortConfig.direction === 'asc' ? 'Oldest' : 'Newest'})`;
   }
   return `${currentSort?.label} (${directionText})`;
@@ -1635,7 +1640,7 @@ const validateForm = () => {
                     >
                       <span>{option.label}</span>
                       <span className="sort-direction">
-                        {option.key === 'interviewDate' 
+                        {(option.key === 'interviewDate' || option.key === 'createdAt')
                           ? (option.direction === 'asc' ? 'Oldest First' : 'Newest First')
                           : (option.direction === 'asc' ? 'A-Z' : 'Z-A')}
                       </span>

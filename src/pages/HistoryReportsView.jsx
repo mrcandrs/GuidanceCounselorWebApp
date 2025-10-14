@@ -8,6 +8,7 @@ import '../styles/Dashboard.css';
 const formatManilaDateTime = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString('en-PH', {
+    timeZone: 'Asia/Manila',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -21,6 +22,7 @@ const formatManilaDateTime = (dateString) => {
 const formatManilaDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-PH', {
+    timeZone: 'Asia/Manila',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
