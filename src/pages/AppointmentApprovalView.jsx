@@ -36,6 +36,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [sortBy, setSortBy] = useState('updatedAt'); // updatedAt | date | student
   const [sortOrder, setSortOrder] = useState('desc'); // asc | desc
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const sortBtnRef = useRef(null);
   const [sortMenuPos, setSortMenuPos] = useState({ top: 0, left: 0, width: 260 });
 
@@ -846,21 +847,16 @@ const handleToggleTimeSlot = async () => {
             )}
           </div>
 
-          {/* Status Filter */}
-          <div className="filters-group" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <FilterIcon size={18} color="#6b7280" />
-            <select
-              className="input"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ width: '180px' }}
-            >
-              <option value="all">All Statuses</option>
-              <option value="approved">Approved</option>
-              <option value="completed">Completed</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
+          {/* Filter Button */}
+          <button
+            className={`filter-button ${showFilters ? 'filter-button-active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <FilterIcon size={18} />
+            Filter
+            <ChevronDown size={16} className={`sort-chevron ${showFilters ? 'sort-chevron-up' : ''}`} />
+          </button>
 
           {/* Sort Dropdown */}
           <div className="sort-dropdown-container" style={{ position: 'relative' }}>
@@ -906,6 +902,47 @@ const handleToggleTimeSlot = async () => {
             )}
           </div>
         </div>
+
+        {/* Filter Panel */}
+        {showFilters && (
+          <div className="filter-panel" style={{ 
+            background: '#f9fafb', 
+            border: '1px solid #e5e7eb', 
+            borderRadius: '8px', 
+            padding: '16px', 
+            margin: '8px 0 16px 0',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '16px'
+          }}>
+            <div>
+              <label style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px', display: 'block' }}>Status</label>
+              <select
+                className="input"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={{ width: '100%' }}
+              >
+                <option value="all">All Statuses</option>
+                <option value="approved">Approved</option>
+                <option value="completed">Completed</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'end', gap: '8px' }}>
+              <button
+                className="filter-button"
+                onClick={() => {
+                  setStatusFilter('all');
+                  setSearchQuery('');
+                }}
+                style={{ padding: '8px 16px' }}
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        )}
         <div>
           {recentActivity.length === 0 ? (
             <div className="empty-state">
