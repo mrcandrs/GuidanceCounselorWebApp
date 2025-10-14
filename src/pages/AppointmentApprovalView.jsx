@@ -26,18 +26,14 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [slotToDelete, setSlotToDelete] = useState(null);
   const [slotToDeactivate, setSlotToDeactivate] = useState(null);
   const [slotDetails, setSlotDetails] = useState(null);
-  const [rejectedAppointments, setRejectedAppointments] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
-  const [showRejectedModal, setShowRejectedModal] = useState(false);
   const [showActivityModal, setShowActivityModal] = useState(false);
-  const [rejectedExpanded, setRejectedExpanded] = useState(false);
   const [expandedDates, setExpandedDates] = useState({});
   const [viewTab, setViewTab] = useState('pending'); // 'pending' | 'all'
 
   // Fetch available time slots
   useEffect(() => {
     fetchAvailableSlots();
-    fetchRejectedAppointments();
     fetchRecentActivity();
   }, []);
 
@@ -79,7 +75,6 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
         onAppointmentUpdate();
       }
       await fetchAvailableSlots();
-      await fetchRejectedAppointments();
       await fetchRecentActivity();
 
       setIsRefreshing(false);
@@ -105,23 +100,6 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     }
   };
 
-  // New function to fetch rejected appointments
-  const fetchRejectedAppointments = async () => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.get(
-        'https://guidanceofficeapi-production.up.railway.app/api/guidanceappointment/rejected-appointments',
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-      setRejectedAppointments(response.data || []);
-    } catch (error) {
-      console.error('Error fetching rejected appointments:', error);
-    }
-  };
 
   // New function to fetch recent activity
   const fetchRecentActivity = async () => {
@@ -514,23 +492,6 @@ const handleToggleTimeSlot = async () => {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <a
-            href="/dashboard/history-reports?tab=history&entityType=appointment"
-            className="filter-button"
-            style={{
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              position: 'relative',
-              zIndex: 9999,
-              pointerEvents: 'auto',
-              cursor: 'pointer'
-            }}
-          >
-            <History size={16} />
-            View All Appointments
-          </a>
           <button
             onClick={() => setShowActivityModal(true)}
             className="filter-button"
@@ -562,12 +523,12 @@ const handleToggleTimeSlot = async () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 appointments-scroll-container">
       {/* Left Column - Pending Appointments */}
       <div className="card" style={{ display: viewTab === 'pending' ? 'block' : 'none' }}>
         <h3 className="card-title">Pending Appointments ({pendingAppointments?.length || 0})</h3>
               
-        <div className="appointments-scroll-container">
+        <div>
           {pendingAppointments && pendingAppointments.length > 0 ? (
             pendingAppointments.map((appointment) => (
               <div 
@@ -853,7 +814,7 @@ const handleToggleTimeSlot = async () => {
       {/* Left Column (when All tab) - All Appointments */}
       <div className="card" style={{ display: viewTab === 'all' ? 'block' : 'none' }}>
         <h3 className="card-title">All Appointments (recent)</h3>
-        <div className="appointments-scroll-container">
+        <div>
           {recentActivity.length === 0 ? (
             <div className="empty-state">
               <Clock size={48} className="empty-icon" />
@@ -897,128 +858,6 @@ const handleToggleTimeSlot = async () => {
         </div>
       </div>
 
-      {/* Recently Rejected Section - Full Width at Bottom */}
-      <div className="card" style={{ marginTop: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h3 className="card-title" style={{ margin: 0 }}>
-              Recently Rejected ({rejectedAppointments?.length || 0})
-            </h3>
-            <button
-              onClick={() => setRejectedExpanded(!rejectedExpanded)}
-              className="filter-button"
-              style={{ 
-                padding: '4px 8px', 
-                fontSize: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              {rejectedExpanded ? 'Collapse' : 'Expand'}
-              {rejectedExpanded ? '▲' : '▼'}
-            </button>
-          </div>
-            
-          {rejectedAppointments && rejectedAppointments.length > 0 && (
-            <button
-              onClick={() => setShowRejectedModal(true)}
-              className="filter-button"
-              style={{ 
-                padding: '4px 8px', 
-                fontSize: '12px',
-                position: 'relative',
-                zIndex: 9999,
-                pointerEvents: 'auto',
-                cursor: 'pointer'
-              }}
-            >
-              <Eye size={14} />
-              View All
-            </button>
-          )}
-        </div>
-        
-        {rejectedExpanded && (
-          <div className="appointments-scroll-container">
-            {rejectedAppointments && rejectedAppointments.length > 0 ? (
-              rejectedAppointments.map((appointment) => (
-                <div key={appointment.appointmentId} className="appointment-card rejected-card">
-                  <div className="appointment-header">
-                    <div>
-                      <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>
-                        {appointment.studentName}
-                      </h4>
-                      <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                        {appointment.programSection}
-                      </p>
-                    </div>
-                    <div style={{ 
-                      background: '#fef2f2', 
-                      color: '#dc2626', 
-                      padding: '4px 8px', 
-                      borderRadius: '4px',
-                      fontSize: '12px',
-                      fontWeight: '500'
-                    }}>
-                      REJECTED
-                    </div>
-                  </div>
-                  
-                  <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 8px 0', textTransform: 'capitalize' }}>
-                    {appointment.reason}
-                  </p>
-                  
-                  {/* Rejection Reason */}
-                  {appointment.rejectionReason && (
-                    <div style={{ 
-                      fontSize: '12px', 
-                      color: '#dc2626', 
-                      margin: '0 0 8px 0',
-                      background: '#fef2f2',
-                      padding: '6px 8px',
-                      borderRadius: '4px',
-                      border: '1px solid #fecaca'
-                    }}>
-                      <strong>Reason:</strong> {appointment.rejectionReason}
-                    </div>
-                  )}
-
-                  {/* Submission Date */}
-                  <div style={{ 
-                    fontSize: '13px', 
-                    color: '#9ca3af', 
-                    margin: '0 0 8px 0',
-                    fontStyle: 'italic',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}>
-                    <FileText size={12} />
-                    Rejected: {formatSubmissionDate(appointment.updatedAt)}
-                  </div>
-                
-                  <div className="appointment-meta">
-                    <span className="appointment-meta-item">
-                      <Calendar size={14} />
-                      {appointment.date}
-                    </span>
-                    <span className="appointment-meta-item">
-                      <Clock size={14} />
-                      {appointment.time}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="empty-state">
-                <AlertCircle size={48} className="empty-icon" />
-                <p>No rejected appointments</p>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
 
       {showApprovedModal && (
         <div className="modal-overlay">
@@ -1467,79 +1306,6 @@ const handleToggleTimeSlot = async () => {
         </div>
       )}
 
-      {/* Rejected Appointments Modal */}
-{showRejectedModal && (
-  <div className="modal-overlay">
-    <div className="modal" style={{ width: '600px', textAlign: 'left' }}>
-      <h3 style={{ marginTop: 0 }}>
-        All Rejected Appointments ({rejectedAppointments.length})
-      </h3>
-
-      {rejectedAppointments.length === 0 ? (
-        <p style={{ color: '#6b7280' }}>No rejected appointments found.</p>
-      ) : (
-        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-          {rejectedAppointments.map(appointment => (
-            <div key={appointment.appointmentId} style={{ 
-              borderBottom: '1px solid #e5e7eb', 
-              padding: '16px 0' 
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                <div>
-                  <div style={{ fontWeight: 600, color: '#1f2937', fontSize: '16px' }}>
-                    {appointment.studentName}
-                  </div>
-                  <div style={{ fontSize: '14px', color: '#6b7280' }}>
-                    {appointment.programSection}
-                  </div>
-                </div>
-                <div style={{ 
-                  background: '#fef2f2', 
-                  color: '#dc2626', 
-                  padding: '4px 8px', 
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  fontWeight: '500'
-                }}>
-                  REJECTED
-                </div>
-              </div>
-              
-              <div style={{ fontSize: '14px', color: '#374151', marginBottom: '8px' }}>
-                <strong>Reason:</strong> {appointment.reason}
-              </div>
-              
-              {appointment.rejectionReason && (
-                <div style={{ 
-                  fontSize: '13px', 
-                  color: '#dc2626', 
-                  marginBottom: '8px',
-                  background: '#fef2f2',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  border: '1px solid #fecaca'
-                }}>
-                  <strong>Rejection Reason:</strong> {appointment.rejectionReason}
-                </div>
-              )}
-              
-              <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                <div>Appointment: {appointment.date} at {appointment.time}</div>
-                <div>Rejected: {formatSubmissionDate(appointment.updatedAt)}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-        <button className="primary-button full-width" onClick={() => setShowRejectedModal(false)}>
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
     </div>
   );
