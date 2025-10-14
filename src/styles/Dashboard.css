@@ -1379,6 +1379,7 @@ html, body {
 
 /* Fixed scrollable appointment container */
 .appointments-scroll-container {
+  max-height: calc(100vh - 300px);
   overflow-y: auto;
   overflow-x: hidden; /* Add this */
   padding-right: 8px;
