@@ -584,7 +584,7 @@ const HistoryReportsView = () => {
       
       switch (entityType) {
         case 'appointment':
-          return `/dashboard/appointment-approval?highlightId=${entityId}`;
+          return `/dashboard/appointment-approval?highlightId=${entityId}&tab=all`;
         case 'referral':
           return `/dashboard/referral?highlightId=${entityId}`;
         case 'note':

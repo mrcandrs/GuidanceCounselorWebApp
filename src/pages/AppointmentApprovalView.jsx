@@ -32,6 +32,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [rejectedExpanded, setRejectedExpanded] = useState(false);
   const [expandedDates, setExpandedDates] = useState({});
+  const [viewTab, setViewTab] = useState('pending'); // 'pending' | 'all'
 
   // Fetch available time slots
   useEffect(() => {
@@ -40,14 +41,18 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     fetchRecentActivity();
   }, []);
 
-  // Support highlighting a specific appointment via query param
+  // Support highlighting and tab via query param
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const hid = params.get('highlightId');
+    const tab = params.get('tab');
     if (hid) {
       setHighlightedId(parseInt(hid));
       const timer = setTimeout(() => setHighlightedId(null), 5000);
       return () => clearTimeout(timer);
+    }
+    if (tab === 'all' || tab === 'pending') {
+      setViewTab(tab);
     }
   }, [location.search]);
 
@@ -487,9 +492,27 @@ const handleToggleTimeSlot = async () => {
   return (
     <div className="page-container dashboard-scrollable-form">
       <div className="page-header">
-        <h2 className="page-title">
-          Appointment Approval
-        </h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <h2 className="page-title" style={{ margin: 0 }}>
+            Appointment Approval
+          </h2>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              className={`filter-button ${viewTab === 'pending' ? 'active' : ''}`}
+              onClick={() => setViewTab('pending')}
+              style={{ cursor: 'pointer' }}
+            >
+              Pending
+            </button>
+            <button
+              className={`filter-button ${viewTab === 'all' ? 'active' : ''}`}
+              onClick={() => setViewTab('all')}
+              style={{ cursor: 'pointer' }}
+            >
+              All Appointments
+            </button>
+          </div>
+        </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <a
             href="/dashboard/history-reports?tab=history&entityType=appointment"
@@ -541,7 +564,7 @@ const handleToggleTimeSlot = async () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Left Column - Pending Appointments */}
-      <div className="card">
+      <div className="card" style={{ display: viewTab === 'pending' ? 'block' : 'none' }}>
         <h3 className="card-title">Pending Appointments ({pendingAppointments?.length || 0})</h3>
               
         <div className="appointments-scroll-container">
@@ -826,6 +849,53 @@ const handleToggleTimeSlot = async () => {
         </div>
       </div>
     </div>
+
+      {/* Left Column (when All tab) - All Appointments */}
+      <div className="card" style={{ display: viewTab === 'all' ? 'block' : 'none' }}>
+        <h3 className="card-title">All Appointments (recent)</h3>
+        <div className="appointments-scroll-container">
+          {recentActivity.length === 0 ? (
+            <div className="empty-state">
+              <Clock size={48} className="empty-icon" />
+              <p>No appointments found.</p>
+            </div>
+          ) : (
+            recentActivity.map((activity, index) => (
+              <div key={index} className={`appointment-card ${highlightedId === activity.appointmentId ? 'highlighted-appointment' : ''}`} style={{
+                backgroundColor: highlightedId === activity.appointmentId ? '#fef3c7' : 'white',
+                border: highlightedId === activity.appointmentId ? '2px solid #f59e0b' : '1px solid #e5e7eb',
+                animation: highlightedId === activity.appointmentId ? 'pulse 2s ease-in-out' : 'none'
+              }}>
+                <div className="appointment-header">
+                  <div>
+                    <h4 style={{ fontWeight: '600', color: '#1f2937', margin: '0 0 4px 0' }}>{activity.studentName}</h4>
+                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>{activity.programSection}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: '11px', color: '#6b7280' }}>
+                      <Hash size={10} />
+                      ID: {activity.appointmentId}
+                      <span style={{
+                        fontSize: '10px',
+                        background: activity.status === 'approved' ? '#ecfdf5' : activity.status === 'rejected' ? '#fef2f2' : '#fffbeb',
+                        color: activity.status === 'approved' ? '#065f46' : activity.status === 'rejected' ? '#991b1b' : '#92400e',
+                        padding: '2px 6px', borderRadius: '10px', fontWeight: 600, textTransform: 'uppercase'
+                      }}>{activity.status}</span>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '14px', color: '#374151', margin: '8px 0', textTransform: 'capitalize' }}>Reason: {activity.reason}</div>
+                <div className="appointment-meta">
+                  <span className="appointment-meta-item">
+                    <Calendar size={14} />{activity.date}
+                  </span>
+                  <span className="appointment-meta-item">
+                    <Clock size={14} />{activity.time}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
 
       {/* Recently Rejected Section - Full Width at Bottom */}
       <div className="card" style={{ marginTop: '24px' }}>
