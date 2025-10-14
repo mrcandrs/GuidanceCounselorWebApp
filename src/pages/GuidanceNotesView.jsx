@@ -126,13 +126,10 @@ const getCurrentManilaTime = () => {
 const formatTime = (timeString) => {
   if (!timeString) return '-';
   const [hours, minutes] = timeString.split(':');
-  const date = new Date();
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date.toLocaleTimeString('en-PH', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
+  const hour24 = parseInt(hours);
+  const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
+  const ampm = hour24 >= 12 ? 'PM' : 'AM';
+  return `${hour12.toString().padStart(2, '0')}:${minutes} ${ampm}`;
 };
 
 const GuidanceNotesView = () => {
