@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Calendar, Check, X, Clock, FileText, Plus, Trash2, History, Eye, AlertCircle, Hash } from 'lucide-react';
+import { Calendar, Check, X, Clock, FileText, Plus, Trash2, History, Eye, AlertCircle, Hash, Search, SortAsc, ChevronDown, Filter as FilterIcon } from 'lucide-react';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
@@ -35,6 +35,15 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [statusFilter, setStatusFilter] = useState('all'); // all | approved | rejected | completed
   const [sortBy, setSortBy] = useState('updatedAt'); // updatedAt | date | student
   const [sortOrder, setSortOrder] = useState('desc'); // asc | desc
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortBtnRef = useRef(null);
+  const [sortMenuPos, setSortMenuPos] = useState({ top: 0, left: 0, width: 260 });
+
+  useLayoutEffect(() => {
+    if (!showSortMenu || !sortBtnRef.current) return;
+    const r = sortBtnRef.current.getBoundingClientRect();
+    setSortMenuPos({ top: r.bottom + 4, left: Math.max(8, r.right - 260), width: 260 });
+  }, [showSortMenu]);
 
   // Fetch available time slots
   useEffect(() => {
@@ -817,46 +826,85 @@ const handleToggleTimeSlot = async () => {
       {/* Left Column (when All tab) - All Appointments */}
       <div className="card" style={{ display: viewTab === 'all' ? 'block' : 'none' }}>
         <h3 className="card-title">All Appointments (recent)</h3>
-        {/* Toolbar: Search, Filter, Sort */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '8px 0 12px 0' }}>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by student, program, or reason..."
-            className="input"
-            style={{ minWidth: '260px', flex: '1 1 280px' }}
-          />
-          <select
-            className="input"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ width: '160px' }}
-          >
-            <option value="all">All Statuses</option>
-            <option value="approved">Approved</option>
-            <option value="completed">Completed</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <select
-            className="input"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            style={{ width: '160px' }}
-          >
-            <option value="updatedAt">Sort by Latest Activity</option>
-            <option value="date">Sort by Appointment Date</option>
-            <option value="student">Sort by Student Name</option>
-          </select>
-          <select
-            className="input"
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            style={{ width: '120px' }}
-          >
-            <option value="desc">Desc</option>
-            <option value="asc">Asc</option>
-          </select>
+        {/* Toolbar: matches other pages */}
+        <div className="endorsement-header-tools" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', margin: '8px 0 12px 0' }}>
+          {/* Search */}
+          <div className="search-bar" style={{ position: 'relative', flex: '1 1 320px', minWidth: '280px' }}>
+            <Search size={20} className="search-icon" style={{ position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)', color: '#6b7280' }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search students, program, reason..."
+              className="input"
+              style={{ paddingLeft: '36px' }}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="search-clear" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', cursor: 'pointer', color: '#9ca3af' }}>
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
+          {/* Status Filter */}
+          <div className="filters-group" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <FilterIcon size={18} color="#6b7280" />
+            <select
+              className="input"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ width: '180px' }}
+            >
+              <option value="all">All Statuses</option>
+              <option value="approved">Approved</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="sort-dropdown-container" style={{ position: 'relative' }}>
+            <button
+              ref={sortBtnRef}
+              className={`sort-button ${showSortMenu ? 'sort-button-active' : ''}`}
+              onClick={() => setShowSortMenu(!showSortMenu)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <SortAsc size={18} />
+              Sort
+              <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
+            </button>
+
+            {showSortMenu && (
+              <div className="sort-menu" style={{ position: 'fixed', top: `${sortMenuPos.top}px`, left: `${sortMenuPos.left}px`, width: `${sortMenuPos.width}px`, background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', zIndex: 10000 }}>
+                <div style={{ padding: '8px' }}>
+                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '6px' }}>Sort by</div>
+                  <div style={{ display: 'grid', gap: '6px' }}>
+                    <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input type="radio" name="sortBy" checked={sortBy === 'updatedAt'} onChange={() => setSortBy('updatedAt')} />
+                      <span>Latest Activity</span>
+                    </label>
+                    <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input type="radio" name="sortBy" checked={sortBy === 'date'} onChange={() => setSortBy('date')} />
+                      <span>Appointment Date</span>
+                    </label>
+                    <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input type="radio" name="sortBy" checked={sortBy === 'student'} onChange={() => setSortBy('student')} />
+                      <span>Student Name</span>
+                    </label>
+                  </div>
+                  <div style={{ height: '1px', background: '#e5e7eb', margin: '8px 0' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', color: '#6b7280' }}>Order:</span>
+                    <select className="input" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ width: '120px' }}>
+                      <option value="desc">Descending</option>
+                      <option value="asc">Ascending</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div>
           {recentActivity.length === 0 ? (
