@@ -480,6 +480,23 @@ const handleToggleTimeSlot = async () => {
           Appointment Approval
         </h2>
         <div style={{ display: 'flex', gap: '12px' }}>
+          <a
+            href="/dashboard/history-reports?tab=history&entityType=appointment"
+            className="filter-button"
+            style={{
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              position: 'relative',
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
+          >
+            <History size={16} />
+            View All Appointments
+          </a>
           <button
             onClick={() => setShowActivityModal(true)}
             className="filter-button"
@@ -799,12 +816,12 @@ const handleToggleTimeSlot = async () => {
       </div>
     </div>
 
-      {/* Rejected Appointments Section - Full Width at Bottom */}
+      {/* Recently Rejected Section - Full Width at Bottom */}
       <div className="card" style={{ marginTop: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h3 className="card-title" style={{ margin: 0 }}>
-              Rejected Appointments ({rejectedAppointments?.length || 0})
+              Recently Rejected ({rejectedAppointments?.length || 0})
             </h3>
             <button
               onClick={() => setRejectedExpanded(!rejectedExpanded)}

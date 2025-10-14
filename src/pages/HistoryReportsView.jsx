@@ -323,6 +323,19 @@ const HistoryReportsView = () => {
     filters.to
   ]);
 
+  // Initialize tab and filters from URL query params on mount
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const initTab = params.get('tab');
+      const initEntity = params.get('entityType');
+      if (initTab === 'history' || initTab === 'reports') setActiveTab(initTab);
+      if (initEntity) setFilters(prev => ({ ...prev, entityType: initEntity }));
+    } catch (e) {
+      // ignore malformed query
+    }
+  }, []);
+
   // Apply client-side filters when search or pagination changes
   useEffect(() => {
     if (activeTab !== 'history' || allHistoryData.length === 0) return;
