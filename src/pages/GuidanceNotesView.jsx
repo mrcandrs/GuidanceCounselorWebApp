@@ -495,8 +495,14 @@ const validateForm = () => {
 
   // Interview date validation (shouldn't be future date)
   const today = new Date();
+  const manilaToday = new Date(today.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
   const interviewDate = new Date(formData.interviewDate);
-  if (interviewDate > today) {
+  
+  // Compare dates only (ignore time) by setting time to midnight
+  const manilaTodayDateOnly = new Date(manilaToday.getFullYear(), manilaToday.getMonth(), manilaToday.getDate());
+  const interviewDateOnly = new Date(interviewDate.getFullYear(), interviewDate.getMonth(), interviewDate.getDate());
+  
+  if (interviewDateOnly > manilaTodayDateOnly) {
     errors.interviewDate = 'Interview date cannot be in the future';
   }
 
