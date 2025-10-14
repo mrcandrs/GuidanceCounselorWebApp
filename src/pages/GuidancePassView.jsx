@@ -26,7 +26,7 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
       clearInterval(progressTimer);
     };
   }, [onClose, duration]);
-
+   
   return (
     <div 
       style={{
