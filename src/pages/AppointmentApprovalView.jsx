@@ -30,6 +30,11 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [expandedDates, setExpandedDates] = useState({});
   const [viewTab, setViewTab] = useState('pending'); // 'pending' | 'all'
+  // Controls for All Appointments toolbar
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all'); // all | approved | rejected | completed
+  const [sortBy, setSortBy] = useState('updatedAt'); // updatedAt | date | student
+  const [sortOrder, setSortOrder] = useState('desc'); // asc | desc
 
   // Fetch available time slots
   useEffect(() => {
@@ -474,24 +479,22 @@ const handleToggleTimeSlot = async () => {
           <h2 className="page-title" style={{ margin: 0 }}>
             Appointment Approval
           </h2>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              className={`filter-button ${viewTab === 'pending' ? 'active' : ''}`}
-              onClick={() => setViewTab('pending')}
-              style={{ cursor: 'pointer' }}
-            >
-              Pending
-            </button>
-            <button
-              className={`filter-button ${viewTab === 'all' ? 'active' : ''}`}
-              onClick={() => setViewTab('all')}
-              style={{ cursor: 'pointer' }}
-            >
-              All Appointments
-            </button>
-          </div>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            className={`filter-button ${viewTab === 'pending' ? 'active' : ''}`}
+            onClick={() => setViewTab('pending')}
+            style={{ cursor: 'pointer' }}
+          >
+            Pending
+          </button>
+          <button
+            className={`filter-button ${viewTab === 'all' ? 'active' : ''}`}
+            onClick={() => setViewTab('all')}
+            style={{ cursor: 'pointer' }}
+          >
+            All Appointments
+          </button>
           <button
             onClick={() => setShowActivityModal(true)}
             className="filter-button"
@@ -814,6 +817,47 @@ const handleToggleTimeSlot = async () => {
       {/* Left Column (when All tab) - All Appointments */}
       <div className="card" style={{ display: viewTab === 'all' ? 'block' : 'none' }}>
         <h3 className="card-title">All Appointments (recent)</h3>
+        {/* Toolbar: Search, Filter, Sort */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '8px 0 12px 0' }}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by student, program, or reason..."
+            className="input"
+            style={{ minWidth: '260px', flex: '1 1 280px' }}
+          />
+          <select
+            className="input"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ width: '160px' }}
+          >
+            <option value="all">All Statuses</option>
+            <option value="approved">Approved</option>
+            <option value="completed">Completed</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <select
+            className="input"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{ width: '160px' }}
+          >
+            <option value="updatedAt">Sort by Latest Activity</option>
+            <option value="date">Sort by Appointment Date</option>
+            <option value="student">Sort by Student Name</option>
+          </select>
+          <select
+            className="input"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            style={{ width: '120px' }}
+          >
+            <option value="desc">Desc</option>
+            <option value="asc">Asc</option>
+          </select>
+        </div>
         <div>
           {recentActivity.length === 0 ? (
             <div className="empty-state">
@@ -821,7 +865,34 @@ const handleToggleTimeSlot = async () => {
               <p>No appointments found.</p>
             </div>
           ) : (
-            recentActivity.map((activity, index) => (
+            // Apply search, filter, and sort before rendering
+            [...recentActivity]
+              .filter(a => {
+                if (statusFilter !== 'all' && a.status !== statusFilter) return false;
+                if (!searchQuery) return true;
+                const q = searchQuery.toLowerCase();
+                return (
+                  (a.studentName || '').toLowerCase().includes(q) ||
+                  (a.programSection || '').toLowerCase().includes(q) ||
+                  (a.reason || '').toLowerCase().includes(q)
+                );
+              })
+              .sort((a, b) => {
+                const dir = sortOrder === 'asc' ? 1 : -1;
+                if (sortBy === 'student') {
+                  return dir * (a.studentName || '').localeCompare(b.studentName || '');
+                }
+                if (sortBy === 'date') {
+                  const ad = new Date(`${a.date} ${a.time || ''}`).getTime() || 0;
+                  const bd = new Date(`${b.date} ${b.time || ''}`).getTime() || 0;
+                  return dir * (ad - bd);
+                }
+                // updatedAt fallback to createdAt
+                const au = new Date(a.updatedAt || a.createdAt || 0).getTime();
+                const bu = new Date(b.updatedAt || b.createdAt || 0).getTime();
+                return dir * (au - bu);
+              })
+              .map((activity, index) => (
               <div key={index} className={`appointment-card ${highlightedId === activity.appointmentId ? 'highlighted-appointment' : ''}`} style={{
                 backgroundColor: highlightedId === activity.appointmentId ? '#fef3c7' : 'white',
                 border: highlightedId === activity.appointmentId ? '2px solid #f59e0b' : '1px solid #e5e7eb',
