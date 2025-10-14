@@ -523,7 +523,7 @@ const handleToggleTimeSlot = async () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 appointments-scroll-container">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 appointments-scroll-container" style={{ maxHeight: 'calc(100vh - 220px)', overflowY: 'auto', overflowX: 'hidden', paddingRight: '8px' }}>
       {/* Left Column - Pending Appointments */}
       <div className="card" style={{ display: viewTab === 'pending' ? 'block' : 'none' }}>
         <h3 className="card-title">Pending Appointments ({pendingAppointments?.length || 0})</h3>
