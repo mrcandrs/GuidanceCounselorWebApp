@@ -88,7 +88,6 @@ const Toast = ({ message, type, onClose, duration = 3000 }) => {
 const formatManilaDateTime = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString('en-PH', {
-    timeZone: 'Asia/Manila',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -101,7 +100,6 @@ const formatManilaDateTime = (dateString) => {
 const formatManilaDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-PH', {
-    timeZone: 'Asia/Manila',
     year: 'numeric',
     month: 'long',
     day: 'numeric'
