@@ -122,9 +122,13 @@ const GuidancePassView = () => {
     fetchGuidancePasses();
   }, []);
 
-  // Handle URL parameters for highlighting
+  // Handle URL parameters for initial tab and highlighting
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'history' || tabParam === 'active') {
+      setViewTab(tabParam);
+    }
     const highlightId = searchParams.get('highlightId');
     if (highlightId) {
       setHighlightedId(parseInt(highlightId));

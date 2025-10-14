@@ -541,7 +541,7 @@ const HistoryReportsView = () => {
   };
 
   // Helper function to determine navigation path based on entity type and ID
-  const getNavigationPath = (entityType, entityId, detailsJson) => {
+  const getNavigationPath = (entityType, entityId, detailsJson, action) => {
     try {
       const details = detailsJson ? JSON.parse(detailsJson) : {};
       
@@ -559,7 +559,11 @@ const HistoryReportsView = () => {
         case 'timeslot':
           return `/dashboard/appointment-approval?highlightId=${entityId}`;
         case 'guidancepass':
-          return `/dashboard/guidance-pass?highlightId=${entityId}`;
+          // Route to history tab when the action is completed; otherwise default to active
+          {
+            const tab = action === 'completed' ? 'history' : 'active';
+            return `/dashboard/guidance-pass?tab=${tab}&highlightId=${entityId}`;
+          }
         case 'consent':
         case 'inventory':
         case 'career':
@@ -580,7 +584,7 @@ const HistoryReportsView = () => {
 
   // Handle navigation to specific record
   const handleViewDetails = (item) => {
-    const path = getNavigationPath(item.entityType, item.entityId, item.detailsJson);
+    const path = getNavigationPath(item.entityType, item.entityId, item.detailsJson, item.action);
     navigate(path);
   };
 
