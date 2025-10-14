@@ -631,14 +631,8 @@ const HistoryReportsView = () => {
   // Handle navigation to specific record
   const handleViewDetails = (item) => {
     if (item.entityType === 'appointment') {
-      setActiveTab('history');
-      setFilters(prev => ({ ...prev, entityType: 'appointment' }));
-      setHighlightedApptId(item.entityId);
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', 'history');
-      url.searchParams.set('entityType', 'appointment');
-      url.searchParams.set('highlightId', String(item.entityId));
-      navigate(`${url.pathname}?${url.searchParams.toString()}`, { replace: true });
+      // Navigate directly to Appointment Approval with All Appointments tab
+      navigate(`/dashboard/appointment-approval?tab=all&highlightId=${item.entityId}`);
       return;
     }
     const path = getNavigationPath(item.entityType, item.entityId, item.detailsJson, item.action);
