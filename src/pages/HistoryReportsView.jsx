@@ -147,6 +147,22 @@ const HistoryReportsView = () => {
   // Ref for the filter panel to detect clicks outside
   const filterPanelRef = useRef(null);
 
+  // Map of entity (entityType|entityId) -> earliest deletion timestamp for quick lookup
+  const deletedTimestampsByEntity = useMemo(() => {
+    const map = new Map();
+    for (const item of allHistoryData) {
+      if (item && item.action === 'deleted' && item.entityType && item.entityId != null) {
+        const key = `${item.entityType}|${item.entityId}`;
+        const deletedAt = new Date(item.createdAt).getTime();
+        const prev = map.get(key);
+        if (prev == null || deletedAt < prev) {
+          map.set(key, deletedAt);
+        }
+      }
+    }
+    return map;
+  }, [allHistoryData]);
+
   // Client-side search function
   const searchHistoryData = useCallback((data, searchTerm) => {
     if (!searchTerm || searchTerm.trim() === '') {
@@ -589,6 +605,15 @@ const HistoryReportsView = () => {
     }
   };
 
+  const wasSubsequentlyDeleted = useCallback((item) => {
+    if (!item || item.action !== 'created' || !item.entityType || item.entityId == null) return false;
+    const key = `${item.entityType}|${item.entityId}`;
+    const deletedAt = deletedTimestampsByEntity.get(key);
+    if (deletedAt == null) return false;
+    const createdAt = new Date(item.createdAt).getTime();
+    return deletedAt >= createdAt; // deleted after or at the same time
+  }, [deletedTimestampsByEntity]);
+
   // Quick view modal for appointments
   const [showApptModal, setShowApptModal] = useState(false);
   const [apptModalData, setApptModalData] = useState(null);
@@ -1007,6 +1032,22 @@ const HistoryReportsView = () => {
                                      item.action === 'deactivated' ? '#ef4444' : '#6b7280',
                               fontWeight: '500'
                             }}>{item.action}</span>
+                            {wasSubsequentlyDeleted(item) && (
+                              <span style={{
+                                marginLeft: '8px',
+                                fontSize: '11px',
+                                color: '#9ca3af',
+                                background: '#f9fafb',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: '9999px',
+                                padding: '2px 8px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}>
+                                <XCircle size={12} /> Record Deleted
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td>
