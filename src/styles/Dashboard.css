@@ -420,6 +420,8 @@ html, body {
   flex-direction: column;
   width: 100%; /* Add this */
   background-color: #f3f4f6; /* so no gap shows */
+  min-height: 100vh; /* Ensure it spans viewport height */
+  overflow-y: auto; /* Enable page-level scrolling within content area */
 }
 
 .header {
@@ -512,11 +514,10 @@ html, body {
 }
 
 .content {
-  flex: 1;
+  flex: 1 1 auto;
   padding: 24px;
   width: 100%; /* Add this */
   max-width: 100%; /* Add this */
-  overflow-y: auto; /* Ensure page-level scrolling */
 }
 
 /* Page Layout */
