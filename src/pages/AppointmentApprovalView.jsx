@@ -125,6 +125,29 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     }
   };
 
+  // SORT UI HELPERS (restore original rich menu)
+  const sortOptions = [
+    { key: 'updatedAt', label: 'Latest Activity', direction: 'desc' },
+    { key: 'updatedAt', label: 'Latest Activity', direction: 'asc' },
+    { key: 'date', label: 'Appointment Date', direction: 'desc' },
+    { key: 'date', label: 'Appointment Date', direction: 'asc' },
+    { key: 'student', label: 'Student Name', direction: 'asc' },
+    { key: 'student', label: 'Student Name', direction: 'desc' }
+  ];
+
+  const getCurrentSortText = () => {
+    if (sortBy === 'updatedAt') return 'Latest Activity';
+    if (sortBy === 'date') return 'Appointment Date';
+    if (sortBy === 'student') return 'Student Name';
+    return 'Sort';
+  };
+
+  const handleSort = (key, direction) => {
+    setSortBy(key);
+    setSortOrder(direction);
+    setShowSortMenu(false);
+  };
+
   const fetchAvailableSlots = async () => {
     try {
       const token = localStorage.getItem('authToken');
@@ -699,43 +722,32 @@ const handleToggleTimeSlot = async () => {
               style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <SortAsc size={18} />
-              Sort
-              <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
+              Sort <span style={{ marginLeft: '8px', marginRight: '4px' }}>{getCurrentSortText()}</span> <ChevronDown size={16} className={`sort-chevron ${sortOrder === 'asc' ? 'sort-chevron-up' : ''}`} />
             </button>
 
             {showSortMenu && createPortal(
-              <div className="sort-dropdown sort-dropdown-portal" style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width, background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', zIndex: 2147483647 }}>
+              <div className="sort-dropdown sort-dropdown-portal" style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width }}>
                 <div className="sort-dropdown-header">
-                  <span className="current-sort">
-                    {sortBy === 'updatedAt' ? 'Latest Activity' : sortBy === 'date' ? 'Appointment Date' : 'Student Name'}
-                  </span>
+                  <span className="current-sort">{getCurrentSortText()}</span>
                   <button onClick={() => setShowSortMenu(false)} className="close-sort-menu"><X size={16} /></button>
                 </div>
-                <div style={{ padding: '8px' }}>
-                  <div style={{ display: 'grid', gap: '6px' }}>
-                    <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <input type="radio" name="sortBy" checked={sortBy === 'updatedAt'} onChange={() => setSortBy('updatedAt')} />
-                      <span>Latest Activity</span>
-                    </label>
-                    <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <input type="radio" name="sortBy" checked={sortBy === 'date'} onChange={() => setSortBy('date')} />
-                      <span>Appointment Date</span>
-                    </label>
-                    <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <input type="radio" name="sortBy" checked={sortBy === 'student'} onChange={() => setSortBy('student')} />
-                      <span>Student Name</span>
-                    </label>
-                  </div>
-                  <div style={{ height: '1px', background: '#e5e7eb', margin: '8px 0' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>Order:</span>
-                    <select className="input" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ width: '120px' }}>
-                      <option value="desc">Descending</option>
-                      <option value="asc">Ascending</option>
-                    </select>
-                  </div>
-                </div>
-              </div>, document.body
+                {sortOptions.map((option) => (
+                  <button
+                    key={`${option.key}-${option.direction}`}
+                    className={`sort-option ${sortBy === option.key && sortOrder === option.direction ? 'sort-option-active' : ''}`}
+                    onClick={() => handleSort(option.key, option.direction)}
+                    style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                  >
+                    <span>{option.label}</span>
+                    <span className="sort-direction">
+                      {option.key === 'updatedAt' ? (option.direction === 'asc' ? 'Oldest First' : 'Newest First') :
+                       option.key === 'date' ? (option.direction === 'asc' ? 'Oldest First' : 'Newest First') :
+                       (option.direction === 'asc' ? 'A-Z' : 'Z-A')}
+                    </span>
+                  </button>
+                ))}
+              </div>,
+              document.body
             )}
           </div>
 
