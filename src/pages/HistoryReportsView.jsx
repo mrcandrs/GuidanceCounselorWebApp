@@ -432,6 +432,17 @@ const HistoryReportsView = () => {
     applyClientSideFilters
   ]);
 
+  // Auto-close filter panel when no results found and filters are active
+  useEffect(() => {
+    if (activeTab === 'history' && historyData.length === 0 && hasActiveFilters && showFilters) {
+      // Small delay to let user see the empty state first
+      const timer = setTimeout(() => {
+        setShowFilters(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTab, historyData.length, hasActiveFilters, showFilters]);
+
   useEffect(() => {
     if (activeTab !== 'reports') return;
     fetchReports();
@@ -989,6 +1000,17 @@ const HistoryReportsView = () => {
                 <div className="empty-state">
                   <Clock size={48} className="empty-icon" />
                   <p>No history records found. Try adjusting your filters.</p>
+                  {hasActiveFilters && (
+                    <div style={{ marginTop: '16px' }}>
+                      <button 
+                        onClick={resetFilters}
+                        className="primary-button"
+                        style={{ fontSize: '14px' }}
+                      >
+                        Clear All Filters
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <table className="data-table">

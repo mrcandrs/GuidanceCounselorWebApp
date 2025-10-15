@@ -1714,9 +1714,9 @@ html, body {
 }*/
 
 .filter-panel-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed;
+  top: 120px; /* Position it below the header area */
+  right: 20px; /* Position it from the right edge of viewport */
   background: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
