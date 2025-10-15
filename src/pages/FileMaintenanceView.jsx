@@ -304,7 +304,14 @@ const ResourceManager = ({
   const startCreate = () => {
     setEditing(null);
     setForm({ ...defaults });
-    if (isTimeCsvPresent) setTimeList(parseCsvTimes(defaults.defaultTimesCsv || ''));
+    // For singleton Time Slot Defaults, seed with existing list so new save appends
+    if (isTimeCsvPresent) {
+      if (singleton && list && list[0] && list[0].defaultTimesCsv) {
+        setTimeList(parseCsvTimes(list[0].defaultTimesCsv));
+      } else {
+        setTimeList(parseCsvTimes(defaults.defaultTimesCsv || ''));
+      }
+    }
     setShowEditor(true);
   };
 
@@ -331,9 +338,19 @@ const ResourceManager = ({
     
     try {
       const payload = transformOut ? transformOut(form) : form;
-      // If editing time defaults, override CSV from timeList
+      // If editing/creating Time Slot Defaults, determine save strategy
       if (isTimeCsvPresent) {
-        payload.defaultTimesCsv = (timeList || []).join(', ');
+        if (singleton && !editing) {
+          // Create flow should append to existing list (not override)
+          const existing = parseCsvTimes(list?.[0]?.defaultTimesCsv || '');
+          const combined = [...existing, ...(timeList || [])];
+          // ensure unique order preserved
+          const unique = Array.from(new Set(combined));
+          payload.defaultTimesCsv = unique.join(', ');
+        } else {
+          // Edit flow replaces with current timeList
+          payload.defaultTimesCsv = (timeList || []).join(', ');
+        }
       }
       const inferredId = editing?.id ?? editing?.Id ?? editing?.[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
       if (singleton) {
