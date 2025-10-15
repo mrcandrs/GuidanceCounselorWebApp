@@ -91,6 +91,16 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     return () => clearInterval(interval);
   }, [onAppointmentUpdate]);
 
+  // Auto-expand today's time slots by default when slots load
+  useEffect(() => {
+    if (!availableSlots || availableSlots.length === 0) return;
+    const todayKey = new Date().toLocaleDateString();
+    const hasToday = availableSlots.some(s => new Date(s.date).toLocaleDateString() === todayKey);
+    if (hasToday) {
+      setExpandedDates(prev => (prev && prev[todayKey] ? prev : { ...prev, [todayKey]: true }));
+    }
+  }, [availableSlots]);
+
   const fetchAvailableSlots = async () => {
     try {
       const token = localStorage.getItem('authToken');
@@ -656,18 +666,7 @@ const handleToggleTimeSlot = async () => {
             )}
           </div>
 
-          {/* Filter Button */}
-          <button
-            className={`filter-button ${showFilters ? 'filter-button-active' : ''}`}
-            onClick={() => setShowFilters(!showFilters)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <FilterIcon size={18} />
-            Filter
-            <ChevronDown size={16} className={`sort-chevron ${showFilters ? 'sort-chevron-up' : ''}`} />
-          </button>
-
-          {/* Sort Dropdown */}
+          {/* Sort Dropdown (moved before Filter) */}
           <div className="sort-dropdown-container" style={{ position: 'relative' }}>
             <button
               ref={sortBtnRef}
@@ -710,6 +709,17 @@ const handleToggleTimeSlot = async () => {
               </div>
             )}
           </div>
+
+          {/* Filter Button (moved after Sort) */}
+          <button
+            className={`filter-button ${showFilters ? 'filter-button-active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <FilterIcon size={18} />
+            Filter
+            <ChevronDown size={16} className={`sort-chevron ${showFilters ? 'sort-chevron-up' : ''}`} />
+          </button>
         </div>
 
         {/* Filter Panel */}
