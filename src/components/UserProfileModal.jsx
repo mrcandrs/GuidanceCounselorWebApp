@@ -101,16 +101,6 @@ const UserProfileModal = ({ isOpen, onClose, counselor }) => {
               <div className="detail-grid">
                 <div className="detail-item">
                   <div className="detail-icon">
-                    <Calendar size={16} />
-                  </div>
-                  <div className="detail-content">
-                    <label>Account Created</label>
-                    <span>{formatDate(counselor.createdAt)}</span>
-                  </div>
-                </div>
-
-                <div className="detail-item">
-                  <div className="detail-icon">
                     <Clock size={16} />
                   </div>
                   <div className="detail-content">
@@ -131,12 +121,6 @@ const UserProfileModal = ({ isOpen, onClose, counselor }) => {
                   </div>
                 </div>
 
-                <div className="detail-item">
-                  <div className="detail-content">
-                    <label>Access Level</label>
-                    <span className="access-level">Full Access</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

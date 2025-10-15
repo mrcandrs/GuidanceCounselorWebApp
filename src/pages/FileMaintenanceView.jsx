@@ -930,54 +930,6 @@ const FileMaintenanceView = () => {
       ]
     },
     {
-      id: 'reasons',
-      label: 'Appointment Reasons',
-      endpoint: '/api/maintenance/appointment-reasons',
-      columns: [
-        { key: 'code', label: 'Code', placeholder: 'ACAD' },
-        { key: 'name', label: 'Reason', placeholder: 'Academic Concern' },
-        { key: 'description', label: 'Description', placeholder: 'Detailed description', type: 'textarea' },
-        { key: 'category', label: 'Category', placeholder: 'Academic', type: 'select', options: [
-          { value: 'ACADEMIC', label: 'Academic' },
-          { value: 'PERSONAL', label: 'Personal' },
-          { value: 'CAREER', label: 'Career' },
-          { value: 'EMERGENCY', label: 'Emergency' }
-        ]},
-        { key: 'isActive', label: 'Active', type: 'checkbox' }
-      ],
-      defaults: { code: '', name: '', description: '', category: '', isActive: true },
-      validation: {
-        code: { required: true, minLength: 2, maxLength: 10, unique: true, label: 'Code' },
-        name: { required: true, minLength: 3, maxLength: 50, label: 'Reason' },
-        category: { required: true, label: 'Category' }
-      },
-      bulkImport: true
-    },
-    {
-      id: 'referrals',
-      label: 'Referral Categories',
-      endpoint: '/api/maintenance/referral-categories',
-      columns: [
-        { key: 'code', label: 'Code', placeholder: 'EMERGENCY' },
-        { key: 'label', label: 'Label', placeholder: 'Emergency' },
-        { key: 'description', label: 'Description', placeholder: 'Category description', type: 'textarea' },
-        { key: 'defaultPriority', label: 'Default Priority', type: 'select', options: [
-          { value: 'EMERGENCY', label: 'Emergency' },
-          { value: 'ASAP', label: 'ASAP' },
-          { value: 'BEFORE_DATE', label: 'Before Date' }
-        ]},
-        { key: 'color', label: 'Color', placeholder: '#ff0000' },
-        { key: 'isActive', label: 'Active', type: 'checkbox' }
-      ],
-      defaults: { code: '', label: '', description: '', defaultPriority: '', color: '#0477BF', isActive: true },
-      validation: {
-        code: { required: true, minLength: 2, maxLength: 20, unique: true, label: 'Code' },
-        label: { required: true, minLength: 2, maxLength: 50, label: 'Label' },
-        defaultPriority: { required: true, label: 'Default Priority' }
-      },
-      bulkImport: true
-    },
-    {
       id: 'timeslot-defaults',
       label: 'Time Slot Defaults',
       endpoint: '/api/maintenance/timeslot-defaults',
