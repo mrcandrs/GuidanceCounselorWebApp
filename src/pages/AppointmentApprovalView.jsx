@@ -40,6 +40,9 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   const [showFilters, setShowFilters] = useState(false);
   const sortBtnRef = useRef(null);
   const [sortMenuPos, setSortMenuPos] = useState({ top: 0, left: 0, width: 260 });
+  // Time slot defaults (from File Maintenance)
+  const [timeSlotDefaults, setTimeSlotDefaults] = useState(null);
+  const [defaultTimes, setDefaultTimes] = useState([]);
 
   useLayoutEffect(() => {
     if (!showSortMenu || !sortBtnRef.current) return;
@@ -51,6 +54,7 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
   useEffect(() => {
     fetchAvailableSlots();
     fetchRecentActivity();
+    fetchTimeSlotDefaults();
   }, []);
 
   // Handle URL parameters for highlighting and tab
@@ -91,6 +95,34 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
 
     return () => clearInterval(interval);
   }, [onAppointmentUpdate]);
+
+  const fetchTimeSlotDefaults = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const res = await axios.get(
+        'https://guidanceofficeapi-production.up.railway.app/api/maintenance/timeslot-defaults',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const d = res.data || {};
+      setTimeSlotDefaults(d);
+      // Build times list from CSV if provided
+      let times = [];
+      if (d.defaultTimesCsv) {
+        times = String(d.defaultTimesCsv)
+          .split(',')
+          .map(t => t.trim())
+          .filter(t => t.length > 0);
+      }
+      // Fallback to previous set if nothing configured
+      if (times.length === 0) {
+        times = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'];
+      }
+      setDefaultTimes(times);
+    } catch (error) {
+      // Non-fatal; fallback to static list
+      setDefaultTimes(['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM']);
+    }
+  };
 
   // Auto-expand today's time slots by default when slots load
   useEffect(() => {
@@ -1150,7 +1182,7 @@ const handleToggleTimeSlot = async () => {
             <div className="form-group">
               <label className="label">Time Slots</label>
               <div className="time-slot-grid">
-                {['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'].map((time) => {
+                {(defaultTimes || []).map((time) => {
                   // Check if this time has passed for today
                   const isToday = selectedDate === new Date().toISOString().split('T')[0];
                   let isPastTime = false;
