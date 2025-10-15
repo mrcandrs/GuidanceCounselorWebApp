@@ -221,7 +221,7 @@ const MoodInsightsView = () => {
     }
   };
 
-  // Search by student number
+  // Search by student number and name
   const handleSearch = async () => {
     const term = (studentSearch || '').trim();
     if (!term) {
@@ -230,7 +230,10 @@ const MoodInsightsView = () => {
     }
     await ensureStudentsLoaded();
     const q = term.toLowerCase();
-    const results = students.filter(s => (s.studentno || '').toLowerCase().includes(q));
+    const results = students.filter(s => 
+      (s.studentno || '').toLowerCase().includes(q) || 
+      (s.name || '').toLowerCase().includes(q)
+    );
     setSearchResults(results);
   };
 
@@ -278,12 +281,12 @@ const MoodInsightsView = () => {
 
       {/* Search Student by Student Number - Moved above cards */}
       <div className="card" style={{ marginBottom: '24px' }}>
-        <h3 className="card-title" style={{ marginBottom: 12 }}>Search Student by Student Number</h3>
+        <h3 className="card-title" style={{ marginBottom: 12 }}>Search Student by Name or Student Number</h3>
         <div className="search-input-container" style={{ maxWidth: '420px' }}>
           <Search size={20} className="search-icon" />
           <input
             type="text"
-            placeholder="Enter student number…"
+            placeholder="Enter student name or number…"
             className="search-input"
             value={studentSearch}
             onChange={(e) => setStudentSearch(e.target.value)}
