@@ -691,11 +691,11 @@ const handleToggleTimeSlot = async () => {
           </div>
 
           {/* Sort Dropdown (moved before Filter) */}
-          <div className="sort-dropdown-container" style={{ position: 'relative' }}>
+          <div className="sort-dropdown-container" style={{ position: 'relative' }} onMouseLeave={() => setShowSortMenu(false)}>
             <button
               ref={sortBtnRef}
               className={`sort-button ${showSortMenu ? 'sort-button-active' : ''}`}
-              onClick={() => setShowSortMenu(!showSortMenu)}
+              onClick={() => { setShowFilters(false); setShowSortMenu(!showSortMenu); }}
               style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <SortAsc size={18} />
@@ -742,7 +742,7 @@ const handleToggleTimeSlot = async () => {
           {/* Filter Button (moved after Sort) */}
           <button
             className={`filter-button ${showFilters ? 'filter-button-active' : ''}`}
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => { setShowSortMenu(false); setShowFilters(!showFilters); }}
             style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <FilterIcon size={18} />
@@ -752,7 +752,7 @@ const handleToggleTimeSlot = async () => {
         </div>
 
         {/* Filter Panel */}
-        {showFilters && (
+          {showFilters && (
           <div className="filter-panel" style={{ 
             background: '#f9fafb', 
             border: '1px solid #e5e7eb', 
