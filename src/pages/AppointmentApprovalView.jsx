@@ -714,7 +714,7 @@ const handleToggleTimeSlot = async () => {
           </div>
 
           {/* Sort Dropdown (moved before Filter) */}
-          <div className="sort-dropdown-container" style={{ position: 'relative' }} onMouseLeave={() => setShowSortMenu(false)}>
+          <div className="sort-dropdown-container" style={{ position: 'relative' }}>
             <button
               ref={sortBtnRef}
               className={`sort-button ${showSortMenu ? 'sort-button-active' : ''}`}
@@ -722,13 +722,13 @@ const handleToggleTimeSlot = async () => {
               style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <SortAsc size={18} />
-              Sort <span style={{ marginLeft: '8px', marginRight: '4px' }}>{getCurrentSortText()}</span> <ChevronDown size={16} className={`sort-chevron ${sortOrder === 'asc' ? 'sort-chevron-up' : ''}`} />
+              Sort <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
             </button>
 
             {showSortMenu && createPortal(
               <div className="sort-dropdown sort-dropdown-portal" style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width }}>
                 <div className="sort-dropdown-header">
-                  <span className="current-sort">{getCurrentSortText()}</span>
+                  <span className="current-sort">Sort</span>
                   <button onClick={() => setShowSortMenu(false)} className="close-sort-menu"><X size={16} /></button>
                 </div>
                 {sortOptions.map((option) => (
@@ -805,7 +805,7 @@ const handleToggleTimeSlot = async () => {
           </div>
         )}
 
-        <div className="appointments-scroll-container">
+        <div>
           {recentActivity.length === 0 && (!pendingAppointments || pendingAppointments.length === 0) ? (
             <div className="empty-state">
               <Clock size={48} className="empty-icon" />
@@ -912,7 +912,7 @@ const handleToggleTimeSlot = async () => {
           </button>
         </div>
 
-        <div className="appointments-scroll-container">
+        <div>
           {Object.keys(groupedSlots).length > 0 ? (
             Object.entries(groupedSlots).map(([date, slots]) => (
               <div key={date} style={{ marginBottom: '20px' }}>
