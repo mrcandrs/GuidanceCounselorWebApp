@@ -1146,50 +1146,52 @@ const HistoryReportsView = () => {
               )}
             </div>
 
-            {/* Pagination */}
-            <div className="history-pagination">
-              <div>Page {page} of {totalPages} • {totalItems} records</div>
-              <div className="pager">
-                <button 
-                  disabled={page <= 1} 
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  style={{
-                    position: 'relative',
-                    zIndex: 9999,
-                    pointerEvents: 'auto',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Previous
-                </button>
-                <button 
-                  disabled={page >= totalPages} 
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  style={{
-                    position: 'relative',
-                    zIndex: 9999,
-                    pointerEvents: 'auto',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Next
-                </button>
-                <select 
-                  value={pageSize} 
-                  onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
-                  style={{
-                    position: 'relative',
-                    zIndex: 9999,
-                    pointerEvents: 'auto',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value={10}>10 per page</option>
-                  <option value={20}>20 per page</option>
-                  <option value={50}>50 per page</option>
-                </select>
+            {/* Pagination - Only show when there's data */}
+            {historyData.length > 0 && (
+              <div className="history-pagination">
+                <div>Page {page} of {totalPages} • {totalItems} records</div>
+                <div className="pager">
+                  <button 
+                    disabled={page <= 1} 
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    disabled={page >= totalPages} 
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Next
+                  </button>
+                  <select 
+                    value={pageSize} 
+                    onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      pointerEvents: 'auto',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value={10}>10 per page</option>
+                    <option value={20}>20 per page</option>
+                    <option value={50}>50 per page</option>
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 

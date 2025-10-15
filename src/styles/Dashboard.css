@@ -1690,6 +1690,11 @@ html, body {
   min-height: 100px;
 }
 
+/* Ensure filter panel doesn't overlap content */
+.filter-panel-dropdown {
+  margin-bottom: 20px; /* Add space below to prevent overlap */
+}
+
 /* Better wrapping on small screens */
 @media (max-width: 768px) {
   .history-pagination {
@@ -1724,6 +1729,8 @@ html, body {
   z-index: 10000; /* Ensure it's above other content */
   min-width: 300px; /* Ensure it's wide enough */
   max-width: calc(100vw - 48px); /* Max width to prevent overflow on small screens */
+  max-height: calc(100vh - 200px); /* Prevent cut-off by limiting height */
+  overflow-y: auto; /* Allow scrolling if content is too tall */
   transition: opacity 0.2s ease-out, transform 0.2s ease-out;
   transform-origin: top right;
 }
