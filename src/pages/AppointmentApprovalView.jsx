@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { Calendar, Check, X, Clock, FileText, Plus, Trash2, History, Eye, AlertCircle, Hash, Search, SortAsc, ChevronDown, Filter as FilterIcon } from 'lucide-react';
 import '../styles/Dashboard.css';
@@ -702,10 +703,15 @@ const handleToggleTimeSlot = async () => {
               <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
             </button>
 
-            {showSortMenu && (
-              <div className="sort-menu" style={{ position: 'fixed', top: `${sortMenuPos.top}px`, left: `${sortMenuPos.left}px`, width: `${sortMenuPos.width}px`, background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', zIndex: 10000 }}>
+            {showSortMenu && createPortal(
+              <div className="sort-dropdown sort-dropdown-portal" style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width, background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}>
+                <div className="sort-dropdown-header">
+                  <span className="current-sort">
+                    {sortBy === 'updatedAt' ? 'Latest Activity' : sortBy === 'date' ? 'Appointment Date' : 'Student Name'}
+                  </span>
+                  <button onClick={() => setShowSortMenu(false)} className="close-sort-menu"><X size={16} /></button>
+                </div>
                 <div style={{ padding: '8px' }}>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '6px' }}>Sort by</div>
                   <div style={{ display: 'grid', gap: '6px' }}>
                     <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <input type="radio" name="sortBy" checked={sortBy === 'updatedAt'} onChange={() => setSortBy('updatedAt')} />
@@ -729,7 +735,8 @@ const handleToggleTimeSlot = async () => {
                     </select>
                   </div>
                 </div>
-              </div>
+              </div>,
+              document.body
             )}
           </div>
 
