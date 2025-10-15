@@ -703,8 +703,8 @@ const handleToggleTimeSlot = async () => {
               <ChevronDown size={16} className={`sort-chevron ${showSortMenu ? 'sort-chevron-up' : ''}`} />
             </button>
 
-            {showSortMenu && (
-              <div className="sort-dropdown" style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', zIndex: 99999 }}>
+            {showSortMenu && createPortal(
+              <div className="sort-dropdown sort-dropdown-portal" style={{ position: 'fixed', top: sortMenuPos.top, left: sortMenuPos.left, width: sortMenuPos.width, background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', zIndex: 2147483647 }}>
                 <div className="sort-dropdown-header">
                   <span className="current-sort">
                     {sortBy === 'updatedAt' ? 'Latest Activity' : sortBy === 'date' ? 'Appointment Date' : 'Student Name'}
@@ -735,7 +735,7 @@ const handleToggleTimeSlot = async () => {
                     </select>
                   </div>
                 </div>
-              </div>
+              </div>, document.body
             )}
           </div>
 
