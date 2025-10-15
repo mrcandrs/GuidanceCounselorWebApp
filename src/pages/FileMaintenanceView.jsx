@@ -170,6 +170,13 @@ const ResourceManager = ({
   const [timeList, setTimeList] = useState([]);
   const isTimeCsvPresent = useMemo(() => columns.some(c => c.key === 'defaultTimesCsv'), [columns]);
 
+  // Keep form.defaultTimesCsv in sync with timeList so validation and table display work
+  useEffect(() => {
+    if (!isTimeCsvPresent) return;
+    setForm(prev => ({ ...prev, defaultTimesCsv: (timeList || []).join(', ') }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeList]);
+
   const headers = fetchAuthHeaders();
 
   // Toast helper function
@@ -264,6 +271,15 @@ const ResourceManager = ({
       const rules = validation[field];
       const value = formData[field];
       
+      // Special-case defaultTimesCsv: accept timeList length
+      if (field === 'defaultTimesCsv' && rules.required) {
+        const hasTimes = (timeList && timeList.length > 0) || (value && value.toString().trim() !== '');
+        if (!hasTimes) {
+          errors[field] = `${rules.label || field} is required`;
+        }
+        return;
+      }
+
       if (rules.required && (!value || value.toString().trim() === '')) {
         errors[field] = `${rules.label || field} is required`;
       } else if (rules.minLength && value && value.length < rules.minLength) {
@@ -695,16 +711,16 @@ const ResourceManager = ({
                       {(timeList || []).length === 0 ? (
                         <div style={{ fontSize: 12, color: '#6b7280' }}>No times added yet.</div>
                       ) : (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                           {timeList.map((t, idx) => (
-                            <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: 16, padding: '4px 8px' }}>
-                              {t}
-                              <button type="button" className="action-button" onClick={() => setTimeList(prev => prev.filter(x => x !== t))}>
-                                <X size={12} />
+                            <li key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #e5e7eb', borderRadius: 6, padding: '8px 12px', marginBottom: 6, background: '#f9fafb' }}>
+                              <span>{t}</span>
+                              <button type="button" className="action-button" onClick={() => setTimeList(prev => prev.filter(x => x !== t))} title="Remove">
+                                <X size={14} />
                               </button>
-                            </span>
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       )}
                     </div>
                   ) : col.type === 'select' ? (
