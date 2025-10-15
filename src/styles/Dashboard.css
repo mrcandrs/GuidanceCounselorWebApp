@@ -516,6 +516,7 @@ html, body {
   padding: 24px;
   width: 100%; /* Add this */
   max-width: 100%; /* Add this */
+  overflow-y: auto; /* Ensure page-level scrolling */
 }
 
 /* Page Layout */
