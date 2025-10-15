@@ -101,6 +101,29 @@ const AppointmentApprovalView = ({ pendingAppointments, onAppointmentUpdate }) =
     }
   }, [availableSlots]);
 
+  // Robust parser for appointment date and time (e.g., date: '2025-10-15', time: '10:00 AM')
+  const toTimestamp = (dateStr, timeStr) => {
+    if (!dateStr) return 0;
+    try {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      let hours = 0, minutes = 0;
+      if (timeStr) {
+        // Expect formats like '10:00 AM' or '9:30 PM'
+        const parts = timeStr.trim().split(' ');
+        const hm = parts[0]?.split(':').map(Number) || [0, 0];
+        const ampm = (parts[1] || '').toUpperCase();
+        hours = hm[0] || 0;
+        minutes = hm[1] || 0;
+        if (ampm === 'PM' && hours !== 12) hours += 12;
+        if (ampm === 'AM' && hours === 12) hours = 0;
+      }
+      const dt = new Date(year, (month || 1) - 1, day || 1, hours, minutes, 0, 0);
+      return dt.getTime();
+    } catch {
+      return 0;
+    }
+  };
+
   const fetchAvailableSlots = async () => {
     try {
       const token = localStorage.getItem('authToken');
@@ -805,8 +828,8 @@ const handleToggleTimeSlot = async () => {
                   return dir * (a.studentName || '').localeCompare(b.studentName || '');
                 }
                 if (sortBy === 'date') {
-                  const ad = new Date(`${a.date} ${a.time || ''}`).getTime() || 0;
-                  const bd = new Date(`${b.date} ${b.time || ''}`).getTime() || 0;
+                  const ad = toTimestamp(a.date, a.time);
+                  const bd = toTimestamp(b.date, b.time);
                   return dir * (ad - bd);
                 }
                 // updatedAt fallback to createdAt
