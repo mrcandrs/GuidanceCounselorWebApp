@@ -1690,10 +1690,6 @@ html, body {
   min-height: 100px;
 }
 
-/* Ensure filter panel doesn't overlap content */
-.filter-panel-dropdown {
-  margin-bottom: 20px; /* Add space below to prevent overlap */
-}
 
 /* Better wrapping on small screens */
 @media (max-width: 768px) {
@@ -1718,21 +1714,20 @@ html, body {
 }*/
 
 .filter-panel-dropdown {
-  position: absolute;
-  top: calc(100% + 8px); /* Position below the button with some gap */
-  right: 0; /* Align to the right of the button */
+  position: relative; /* Change from absolute to relative */
   background: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 10000; /* Ensure it's above other content */
+  z-index: 1000; /* Lower z-index since it's now in document flow */
   min-width: 300px; /* Ensure it's wide enough */
-  max-width: calc(100vw - 48px); /* Max width to prevent overflow on small screens */
+  max-width: 100%; /* Use full available width */
   max-height: calc(100vh - 200px); /* Prevent cut-off by limiting height */
   overflow-y: auto; /* Allow scrolling if content is too tall */
+  margin-top: 8px; /* Add space above the panel */
+  margin-bottom: 20px; /* Add space below to push content down */
   transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-  transform-origin: top right;
 }
 
 .filter-group {

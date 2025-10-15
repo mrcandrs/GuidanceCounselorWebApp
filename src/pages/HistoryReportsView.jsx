@@ -816,7 +816,7 @@ const HistoryReportsView = () => {
                 </div>
                 
                 {/* Filter button and dropdown wrapper */}
-                <div style={{ position: 'relative' }} ref={filterPanelRef}>
+                <div ref={filterPanelRef}>
                   <button
                     className={`filter-button ${showFilters ? 'active' : ''}`}
                     onClick={() => setShowFilters(!showFilters)}
@@ -831,7 +831,7 @@ const HistoryReportsView = () => {
                     Filters {hasActiveFilters ? '•' : ''}
                   </button>
 
-                  {/* Filter Panel Dropdown - Now absolutely positioned */}
+                  {/* Filter Panel Dropdown - Now in document flow */}
                   {showFilters && (
                     <div className="filter-panel-dropdown">
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
