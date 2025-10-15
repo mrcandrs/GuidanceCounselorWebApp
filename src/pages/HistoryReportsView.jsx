@@ -163,6 +163,38 @@ const HistoryReportsView = () => {
     return map;
   }, [allHistoryData]);
 
+  // Derive missing "created" entries for timeslots: if a timeslot has no
+  // explicit created action, synthesize one at its earliest event time so the
+  // history shows a Created record consistently.
+  const syntheticCreatedForTimeslots = useMemo(() => {
+    try {
+      const grouped = new Map();
+      for (const item of allHistoryData) {
+        if (!item || item.entityType !== 'timeslot' || item.entityId == null) continue;
+        const key = String(item.entityId);
+        const list = grouped.get(key) || [];
+        list.push(item);
+        grouped.set(key, list);
+      }
+      const synthetic = [];
+      grouped.forEach((items, key) => {
+        const sorted = [...items].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        const first = sorted[0];
+        const hasCreated = items.some(i => i.action === 'created');
+        if (!hasCreated && first) {
+          synthetic.push({
+            ...first,
+            id: `${first.entityType}-synthetic-${first.entityId}`,
+            action: 'created'
+          });
+        }
+      });
+      return synthetic;
+    } catch (e) {
+      return [];
+    }
+  }, [allHistoryData]);
+
   // Client-side search function
   const searchHistoryData = useCallback((data, searchTerm) => {
     if (!searchTerm || searchTerm.trim() === '') {
@@ -264,7 +296,8 @@ const HistoryReportsView = () => {
 
   // Apply client-side filters and pagination
   const applyClientSideFilters = useCallback(() => {
-    let filteredData = [...allHistoryData];
+    // Start from original history plus synthetic created rows for timeslots
+    let filteredData = [...allHistoryData, ...syntheticCreatedForTimeslots];
     
     // Apply search filter
     if (filters.search) {
@@ -309,7 +342,7 @@ const HistoryReportsView = () => {
     setHistoryData(paginatedData);
     setTotalItems(totalItems);
     setTotalPages(totalPages);
-  }, [allHistoryData, filters, page, pageSize, searchHistoryData]);
+  }, [allHistoryData, syntheticCreatedForTimeslots, filters, page, pageSize, searchHistoryData]);
 
 
   // Fetch reports data
