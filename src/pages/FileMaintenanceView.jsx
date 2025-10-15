@@ -146,7 +146,8 @@ const ResourceManager = ({
   validation = {},  // validation rules
   bulkImport = false, // enable bulk import
   relationships = [], // related data for dropdowns
-  onShowToast       // global toast function
+  onShowToast,       // global toast function
+  singleton = false  // if true, endpoint returns a single row
 }) => {
   const [list, setList] = useState([]);
   const [search, setSearch] = useState('');
@@ -180,7 +181,12 @@ const ResourceManager = ({
     setError('');
     try {
       const { data } = await axios.get(`${apiBase}${endpoint}`, { headers });
-      setList(Array.isArray(data) ? data : []);
+      if (singleton) {
+        if (data && (data.id || data.Id)) setList([data]);
+        else setList([]);
+      } else {
+        setList(Array.isArray(data) ? data : []);
+      }
     } catch (e) {
       console.error(e);
       setError(e?.response?.data?.message || 'Failed to load data.');
@@ -304,10 +310,12 @@ const ResourceManager = ({
     
     try {
       const payload = transformOut ? transformOut(form) : form;
-      if (editing?.id ?? editing?.[`${title.toLowerCase().replace(/\s+/g, '')}Id`]) {
-        const id =
-          editing.id ?? editing[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
-        await axios.put(`${apiBase}${endpoint}/${id}`, payload, { headers });
+      const inferredId = editing?.id ?? editing?.Id ?? editing?.[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
+      if (singleton) {
+        await axios.post(`${apiBase}${endpoint}`, payload, { headers });
+        showToast(`${title} saved successfully!`);
+      } else if (inferredId) {
+        await axios.put(`${apiBase}${endpoint}/${inferredId}`, payload, { headers });
         showToast(`${title} updated successfully!`);
       } else {
         await axios.post(`${apiBase}${endpoint}`, payload, { headers });
@@ -326,11 +334,12 @@ const ResourceManager = ({
   };
 
   const handleDelete = async (item) => {
+    if (singleton) return; // no delete for singleton resources
     if (!window.confirm('Delete this record?')) return;
     setBusy(true);
     setError('');
     try {
-      const id = item.id ?? item[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
+      const id = item.id ?? item.Id ?? item[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
       await axios.delete(`${apiBase}${endpoint}/${id}`, { headers });
       await load();
       showToast(`${title} deleted successfully!`);
@@ -479,7 +488,7 @@ const ResourceManager = ({
 
 
       {/* Bulk Actions */}
-      {selectedItems.length > 0 && (
+      {!singleton && selectedItems.length > 0 && (
         <div className="bulk-actions" style={{ 
           background: '#f3f4f6', 
           padding: '12px', 
@@ -541,13 +550,15 @@ const ResourceManager = ({
           <table className="forms-table">
             <thead>
               <tr>
-                <th style={{ width: '40px' }}>
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.length === filtered.length && filtered.length > 0}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                  />
-                </th>
+                {!singleton && (
+                  <th style={{ width: '40px' }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.length === filtered.length && filtered.length > 0}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                    />
+                  </th>
+                )}
                 {columns.map(col => (
                   <th 
                     key={col.key}
@@ -567,14 +578,16 @@ const ResourceManager = ({
             </thead>
             <tbody>
               {filtered.map(item => (
-                <tr key={item.id ?? item.code ?? item.name ?? JSON.stringify(item)}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.some(selected => selected.id === item.id)}
-                      onChange={(e) => handleSelectItem(item, e.target.checked)}
-                    />
-                  </td>
+                <tr key={item.id ?? item.Id ?? item.code ?? item.name ?? JSON.stringify(item)}>
+                  {!singleton && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.some(selected => selected.id === item.id)}
+                        onChange={(e) => handleSelectItem(item, e.target.checked)}
+                      />
+                    </td>
+                  )}
                   {columns.map(col => (
                     <td key={col.key}>
                       {col.render ? col.render(item[col.key], item) : String(item[col.key] ?? '')}
@@ -600,15 +613,17 @@ const ResourceManager = ({
                       >
                         <Edit size={16} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(item)}
-                        className="action-button delete-button"
-                        title="Delete"
-                        disabled={busy}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {!singleton && (
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(item)}
+                          className="action-button delete-button"
+                          title="Delete"
+                          disabled={busy}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -852,31 +867,23 @@ const FileMaintenanceView = () => {
       id: 'timeslot-defaults',
       label: 'Time Slot Defaults',
       endpoint: '/api/maintenance/timeslot-defaults',
+      singleton: true,
       columns: [
         { key: 'maxAppointments', label: 'Max per Slot', placeholder: '3' },
         { key: 'defaultTimesCsv', label: 'Default Times (CSV)', placeholder: '9:00 AM, 10:00 AM, 1:00 PM', type: 'textarea' },
-        { key: 'slotDuration', label: 'Slot Duration (minutes)', placeholder: '30' },
-        { key: 'breakTime', label: 'Break Time (minutes)', placeholder: '15' },
+        // Removed duration/break from UI per request; kept stored if backend needs it
         { key: 'isActive', label: 'Active', type: 'checkbox' }
       ],
       defaults: { 
         maxAppointments: 3, 
         defaultTimesCsv: '9:00 AM, 10:00 AM, 1:00 PM', 
-        slotDuration: 30,
-        breakTime: 15,
         isActive: true 
       },
       validation: {
         maxAppointments: { required: true, minLength: 1, maxLength: 2, label: 'Max per Slot' },
         defaultTimesCsv: { required: true, label: 'Default Times' },
-        slotDuration: { required: true, label: 'Slot Duration' }
       },
-      transformOut: (f) => ({
-        ...f,
-        maxAppointments: parseInt(f.maxAppointments || 0, 10),
-        slotDuration: parseInt(f.slotDuration || 30, 10),
-        breakTime: parseInt(f.breakTime || 15, 10),
-      }),
+      transformOut: (f) => ({ ...f, maxAppointments: parseInt(f.maxAppointments || 0, 10) }),
       bulkImport: false
     },
     /*{
@@ -939,6 +946,7 @@ const FileMaintenanceView = () => {
             bulkImport={tab.bulkImport}
             relationships={tab.relationships}
             onShowToast={showGlobalToast}
+            singleton={tab.singleton}
           />
         )}
       </div>
