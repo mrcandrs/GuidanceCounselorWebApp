@@ -432,17 +432,6 @@ const HistoryReportsView = () => {
     applyClientSideFilters
   ]);
 
-  // Auto-close filter panel when no results found and filters are active
-  useEffect(() => {
-    if (activeTab === 'history' && historyData.length === 0 && hasActiveFilters && showFilters) {
-      // Small delay to let user see the empty state first
-      const timer = setTimeout(() => {
-        setShowFilters(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [activeTab, historyData.length, hasActiveFilters, showFilters]);
-
   useEffect(() => {
     if (activeTab !== 'reports') return;
     fetchReports();
@@ -1000,17 +989,6 @@ const HistoryReportsView = () => {
                 <div className="empty-state">
                   <Clock size={48} className="empty-icon" />
                   <p>No history records found. Try adjusting your filters.</p>
-                  {hasActiveFilters && (
-                    <div style={{ marginTop: '16px' }}>
-                      <button 
-                        onClick={resetFilters}
-                        className="primary-button"
-                        style={{ fontSize: '14px' }}
-                      >
-                        Clear All Filters
-                      </button>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <table className="data-table">
@@ -1168,52 +1146,50 @@ const HistoryReportsView = () => {
               )}
             </div>
 
-            {/* Pagination - Only show when there's data */}
-            {historyData.length > 0 && (
-              <div className="history-pagination">
-                <div>Page {page} of {totalPages} • {totalItems} records</div>
-                <div className="pager">
-                  <button 
-                    disabled={page <= 1} 
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    style={{
-                      position: 'relative',
-                      zIndex: 9999,
-                      pointerEvents: 'auto',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Previous
-                  </button>
-                  <button 
-                    disabled={page >= totalPages} 
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    style={{
-                      position: 'relative',
-                      zIndex: 9999,
-                      pointerEvents: 'auto',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Next
-                  </button>
-                  <select 
-                    value={pageSize} 
-                    onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
-                    style={{
-                      position: 'relative',
-                      zIndex: 9999,
-                      pointerEvents: 'auto',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <option value={10}>10 per page</option>
-                    <option value={20}>20 per page</option>
-                    <option value={50}>50 per page</option>
-                  </select>
-                </div>
+            {/* Pagination */}
+            <div className="history-pagination">
+              <div>Page {page} of {totalPages} • {totalItems} records</div>
+              <div className="pager">
+                <button 
+                  disabled={page <= 1} 
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Previous
+                </button>
+                <button 
+                  disabled={page >= totalPages} 
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Next
+                </button>
+                <select 
+                  value={pageSize} 
+                  onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    pointerEvents: 'auto',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value={10}>10 per page</option>
+                  <option value={20}>20 per page</option>
+                  <option value={50}>50 per page</option>
+                </select>
               </div>
-            )}
+            </div>
           </div>
         )}
 
