@@ -588,89 +588,110 @@ const ResourceManager = ({
         </div>
       ) : (
         <div className="forms-table-container">
-          <table className="forms-table">
-            <thead>
-              <tr>
-                {!singleton && (
-                  <th style={{ width: '40px' }}>
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.length === filtered.length && filtered.length > 0}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                    />
-                  </th>
-                )}
-                {columns.map(col => (
-                  <th 
-                    key={col.key}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                    onClick={() => handleSort(col.key)}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      {col.label}
-                      {sortField === col.key && (
-                        sortDirection === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
-                      )}
-                    </div>
-                  </th>
-                ))}
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(item => (
-                <tr key={item.id ?? item.Id ?? item.code ?? item.name ?? JSON.stringify(item)}>
+          {/* Special table for Time Slot Defaults (one time per row) */}
+          {singleton && isTimeCsvPresent ? (
+            (() => {
+              const currentCsv = (filtered?.[0]?.defaultTimesCsv) || '';
+              const currentTimes = parseCsvTimes(currentCsv);
+              const saveTimes = async (newTimes) => {
+                try {
+                  setBusy(true);
+                  await axios.post(`${apiBase}${endpoint}`, { ...filtered[0], defaultTimesCsv: newTimes.join(', '), isActive: filtered[0]?.isActive ?? true }, { headers });
+                  await load();
+                } catch (e) { console.error(e); }
+                finally { setBusy(false); }
+              };
+              const removeTime = async (t) => {
+                const next = currentTimes.filter(x => x !== t);
+                await saveTimes(next);
+              };
+              const editTime = async (t) => {
+                const input = window.prompt('Edit time (HH:MM, 24-hour):', '08:00');
+                if (!input) return;
+                const [hh,mm] = (input || '').split(':');
+                if (isNaN(Number(hh)) || isNaN(Number(mm))) return;
+                const nextLabel = toAmPm(hh, mm);
+                const next = currentTimes.map(x => x === t ? nextLabel : x);
+                await saveTimes(next);
+              };
+              return (
+                <table className="forms-table">
+                  <thead>
+                    <tr>
+                      <th>Default Times</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentTimes.length === 0 ? (
+                      <tr><td colSpan={2} style={{ color: '#9ca3af' }}>—</td></tr>
+                    ) : (
+                      currentTimes.map((t, idx) => (
+                        <tr key={`${t}-${idx}`}>
+                          <td>{t}</td>
+                          <td>
+                            <div className="action-buttons">
+                              <button type="button" className="action-button view-button" title="View" onClick={() => window.alert(t)}><Eye size={16} /></button>
+                              <button type="button" className="action-button edit-button" title="Edit" onClick={() => editTime(t)}><Edit size={16} /></button>
+                              <button type="button" className="action-button delete-button" title="Delete" onClick={() => removeTime(t)}><Trash2 size={16} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              );
+            })()
+          ) : (
+            <table className="forms-table">
+              <thead>
+                <tr>
                   {!singleton && (
-                    <td>
+                    <th style={{ width: '40px' }}>
                       <input
                         type="checkbox"
-                        checked={selectedItems.some(selected => selected.id === item.id)}
-                        onChange={(e) => handleSelectItem(item, e.target.checked)}
+                        checked={selectedItems.length === filtered.length && filtered.length > 0}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
                       />
-                    </td>
+                    </th>
                   )}
                   {columns.map(col => (
-                    <td key={col.key}>
-                      {col.render ? col.render(item[col.key], item) : String(item[col.key] ?? '')}
-                    </td>
+                    <th key={col.key} style={{ cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort(col.key)}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {col.label}
+                        {sortField === col.key && (sortDirection === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />)}
+                      </div>
+                    </th>
                   ))}
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        type="button"
-                        onClick={() => handleView(item)}
-                        className="action-button view-button"
-                        title="View Details"
-                        disabled={busy}
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => startEdit(item)}
-                        className="action-button edit-button"
-                        title="Edit"
-                        disabled={busy}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      {!singleton && (
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(item)}
-                          className="action-button delete-button"
-                          title="Delete"
-                          disabled={busy}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      )}
-                    </div>
-                  </td>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map(item => (
+                  <tr key={item.id ?? item.Id ?? item.code ?? item.name ?? JSON.stringify(item)}>
+                    {!singleton && (
+                      <td>
+                        <input type="checkbox" checked={selectedItems.some(selected => selected.id === item.id)} onChange={(e) => handleSelectItem(item, e.target.checked)} />
+                      </td>
+                    )}
+                    {columns.map(col => (
+                      <td key={col.key}>{col.render ? col.render(item[col.key], item) : String(item[col.key] ?? '')}</td>
+                    ))}
+                    <td>
+                      <div className="action-buttons">
+                        <button type="button" onClick={() => handleView(item)} className="action-button view-button" title="View Details" disabled={busy}><Eye size={16} /></button>
+                        <button type="button" onClick={() => startEdit(item)} className="action-button edit-button" title="Edit" disabled={busy}><Edit size={16} /></button>
+                        {!singleton && (
+                          <button type="button" onClick={() => handleDelete(item)} className="action-button delete-button" title="Delete" disabled={busy}><Trash2 size={16} /></button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
 
