@@ -945,7 +945,26 @@ const FileMaintenanceView = () => {
       endpoint: '/api/maintenance/timeslot-defaults',
       singleton: true,
       columns: [
-        { key: 'defaultTimesCsv', label: 'Default Times', placeholder: '', type: 'timepickerlist' },
+        { 
+          key: 'defaultTimesCsv', 
+          label: 'Default Times', 
+          placeholder: '', 
+          type: 'timepickerlist',
+          render: (val) => {
+            const items = String(val || '')
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean);
+            if (items.length === 0) return <span style={{ color: '#9ca3af' }}>—</span>;
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {items.map((t, i) => (
+                  <span key={i}>{t}</span>
+                ))}
+              </div>
+            );
+          }
+        },
         { key: 'isActive', label: 'Active', type: 'checkbox' }
       ],
       defaults: { 
