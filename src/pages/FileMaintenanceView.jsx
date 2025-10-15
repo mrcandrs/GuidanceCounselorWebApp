@@ -166,6 +166,9 @@ const ResourceManager = ({
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingItem, setViewingItem] = useState(null);
   const [relationshipData, setRelationshipData] = useState({});
+  // Special handling for time list editor (for defaultTimesCsv)
+  const [timeList, setTimeList] = useState([]);
+  const isTimeCsvPresent = useMemo(() => columns.some(c => c.key === 'defaultTimesCsv'), [columns]);
 
   const headers = fetchAuthHeaders();
 
@@ -285,6 +288,7 @@ const ResourceManager = ({
   const startCreate = () => {
     setEditing(null);
     setForm({ ...defaults });
+    if (isTimeCsvPresent) setTimeList(parseCsvTimes(defaults.defaultTimesCsv || ''));
     setShowEditor(true);
   };
 
@@ -292,6 +296,7 @@ const ResourceManager = ({
     setEditing(item);
     const base = transformIn ? transformIn(item) : item;
     setForm({ ...defaults, ...base });
+    if (isTimeCsvPresent) setTimeList(parseCsvTimes(base.defaultTimesCsv || ''));
     setShowEditor(true);
   };
 
@@ -310,6 +315,10 @@ const ResourceManager = ({
     
     try {
       const payload = transformOut ? transformOut(form) : form;
+      // If editing time defaults, override CSV from timeList
+      if (isTimeCsvPresent) {
+        payload.defaultTimesCsv = (timeList || []).join(', ');
+      }
       const inferredId = editing?.id ?? editing?.Id ?? editing?.[`${title.toLowerCase().replace(/\s+/g, '')}Id`];
       if (singleton) {
         await axios.post(`${apiBase}${endpoint}`, payload, { headers });
@@ -332,6 +341,22 @@ const ResourceManager = ({
       setBusy(false);
     }
   };
+
+  // Utilities for time CSV → list and back
+  function parseCsvTimes(csv) {
+    if (!csv) return [];
+    return String(csv)
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean);
+  }
+  function toAmPm(h, m) {
+    const hours = Number(h);
+    const minutes = Number(m);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const h12 = hours % 12 === 0 ? 12 : hours % 12;
+    return `${h12}:${minutes.toString().padStart(2,'0')} ${ampm}`;
+  }
 
   const handleDelete = async (item) => {
     if (singleton) return; // no delete for singleton resources
@@ -647,7 +672,42 @@ const ResourceManager = ({
                     {col.label}
                     {validation[col.key]?.required && <span style={{ color: 'red' }}> *</span>}
                   </label>
-                  {col.type === 'select' ? (
+                  {/* Replace Default Times (CSV) with a time picker list */}
+                  {col.key === 'defaultTimesCsv' ? (
+                    <div>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                        <input type="time" id="newTimeInput" className="input" style={{ width: 180 }} />
+                        <button
+                          className="filter-button"
+                          type="button"
+                          onClick={() => {
+                            const el = document.getElementById('newTimeInput');
+                            if (!el || !el.value) return;
+                            const [hh, mm] = el.value.split(':');
+                            const label = toAmPm(hh, mm);
+                            if (!timeList.includes(label)) setTimeList(prev => [...prev, label]);
+                            el.value = '';
+                          }}
+                        >
+                          Add Time
+                        </button>
+                      </div>
+                      {(timeList || []).length === 0 ? (
+                        <div style={{ fontSize: 12, color: '#6b7280' }}>No times added yet.</div>
+                      ) : (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                          {timeList.map((t, idx) => (
+                            <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: 16, padding: '4px 8px' }}>
+                              {t}
+                              <button type="button" className="action-button" onClick={() => setTimeList(prev => prev.filter(x => x !== t))}>
+                                <X size={12} />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : col.type === 'select' ? (
                     <select
                       className={`input ${validationErrors[col.key] ? 'error' : ''}`}
                       value={form[col.key] ?? ''}
