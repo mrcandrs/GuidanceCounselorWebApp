@@ -590,7 +590,7 @@ const handleToggleTimeSlot = async () => {
       {/* Left Column - Pending Appointments */}
       <div className="card" style={{ display: viewTab === 'pending' ? 'block' : 'none' }}>
         <h3 className="card-title">Pending Appointments ({pendingAppointments?.length || 0})</h3>
-        <div className="appointments-scroll-container">
+        <div>
           {pendingAppointments && pendingAppointments.length > 0 ? (
             pendingAppointments.map((appointment) => (
               <div 
