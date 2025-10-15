@@ -929,21 +929,17 @@ const FileMaintenanceView = () => {
       endpoint: '/api/maintenance/timeslot-defaults',
       singleton: true,
       columns: [
-        { key: 'maxAppointments', label: 'Max per Slot', placeholder: '3' },
-        { key: 'defaultTimesCsv', label: 'Default Times (CSV)', placeholder: '9:00 AM, 10:00 AM, 1:00 PM', type: 'textarea' },
-        // Removed duration/break from UI per request; kept stored if backend needs it
+        { key: 'defaultTimesCsv', label: 'Default Times', placeholder: '', type: 'timepickerlist' },
         { key: 'isActive', label: 'Active', type: 'checkbox' }
       ],
       defaults: { 
-        maxAppointments: 3, 
-        defaultTimesCsv: '9:00 AM, 10:00 AM, 1:00 PM', 
+        defaultTimesCsv: '', 
         isActive: true 
       },
       validation: {
-        maxAppointments: { required: true, minLength: 1, maxLength: 2, label: 'Max per Slot' },
         defaultTimesCsv: { required: true, label: 'Default Times' },
       },
-      transformOut: (f) => ({ ...f, maxAppointments: parseInt(f.maxAppointments || 0, 10) }),
+      transformOut: (f) => ({ ...f }),
       bulkImport: false
     },
     /*{
