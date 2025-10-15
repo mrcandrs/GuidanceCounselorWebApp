@@ -1714,20 +1714,21 @@ html, body {
 }*/
 
 .filter-panel-dropdown {
-  position: relative; /* Change from absolute to relative */
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
   background: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 1000; /* Lower z-index since it's now in document flow */
-  min-width: 300px; /* Ensure it's wide enough */
-  max-width: 100%; /* Use full available width */
-  max-height: calc(100vh - 200px); /* Prevent cut-off by limiting height */
-  overflow-y: auto; /* Allow scrolling if content is too tall */
-  margin-top: 8px; /* Add space above the panel */
-  margin-bottom: 20px; /* Add space below to push content down */
+  z-index: 10000;
+  min-width: 300px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
   transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  transform-origin: top right;
 }
 
 .filter-group {
