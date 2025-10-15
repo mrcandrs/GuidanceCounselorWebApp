@@ -528,6 +528,8 @@ html, body {
   width: 100%;
   max-width: none;
   min-width: 0; /* Add this - prevents flex items from overflowing */
+  max-height: calc(100vh - 120px); /* match Guidance Pass list behavior */
+  overflow-y: auto; /* enable scroll inside page container */
 }
 
 .page-header {
