@@ -973,10 +973,9 @@ const FileMaintenanceView = () => {
       endpoint: '/api/maintenance/quotes',
       columns: [
         { key: 'text', label: 'Quote Text', placeholder: 'Enter inspirational quote...', type: 'textarea' },
-        { key: 'author', label: 'Author', placeholder: 'Quote author name' },
-        { key: 'isActive', label: 'Active', type: 'checkbox' }
+        { key: 'author', label: 'Author', placeholder: 'Quote author name' }
       ],
-      defaults: { text: '', author: '', isActive: true },
+      defaults: { text: '', author: '' },
       validation: {
         text: { required: true, minLength: 10, maxLength: 500, label: 'Quote Text' },
         author: { required: true, minLength: 2, maxLength: 100, label: 'Author' }
