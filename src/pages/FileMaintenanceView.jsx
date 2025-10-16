@@ -967,6 +967,22 @@ const FileMaintenanceView = () => {
       transformOut: (f) => ({ ...f }),
       bulkImport: false
     },
+    {
+      id: 'quotes',
+      label: 'Inspirational Quotes',
+      endpoint: '/api/maintenance/quotes',
+      columns: [
+        { key: 'text', label: 'Quote Text', placeholder: 'Enter inspirational quote...', type: 'textarea' },
+        { key: 'author', label: 'Author', placeholder: 'Quote author name' },
+        { key: 'isActive', label: 'Active', type: 'checkbox' }
+      ],
+      defaults: { text: '', author: '', isActive: true },
+      validation: {
+        text: { required: true, minLength: 10, maxLength: 500, label: 'Quote Text' },
+        author: { required: true, minLength: 2, maxLength: 100, label: 'Author' }
+      },
+      bulkImport: true
+    },
     /*{
       id: 'mood-thresholds',
       label: 'Mood Alert Thresholds',
