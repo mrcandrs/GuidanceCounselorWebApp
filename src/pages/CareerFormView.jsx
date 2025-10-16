@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, TrendingUp, Calendar, CheckCircle, Target, Star, BookOpen, Briefcase } from 'lucide-react';
-import jsPDF from 'jspdf';
+import axios from 'axios';
 import '../styles/FormViews.css';
 
 const CareerFormView = ({ data, onBack }) => {
@@ -28,141 +28,27 @@ const CareerFormView = ({ data, onBack }) => {
     { id: 'plans', label: 'Future Plans', icon: Briefcase }
   ];
 
-//Handling downloadable PDF
-const handleDownloadPDF = () => {
-  const doc = new jsPDF();
-  let yPosition = 20;
-
-  // Helper function to add text with automatic page breaks
-  const addText = (text, x, y, fontSize = 10) => {
-    doc.setFontSize(fontSize);
-    if (y > 280) { // If near bottom of page
-      doc.addPage();
-      y = 20;
-    }
-    doc.text(text, x, y);
-    return y + (fontSize === 16 ? 10 : fontSize === 12 ? 8 : 6);
-  };
-
-  // Helper function to add wrapped text for long content
-  const addWrappedText = (text, x, y, maxWidth = 170, fontSize = 10) => {
-    doc.setFontSize(fontSize);
-    const lines = doc.splitTextToSize(text || 'N/A', maxWidth);
-    lines.forEach((line, index) => {
-      if (y > 280) {
-        doc.addPage();
-        y = 20;
-      }
-      doc.text(line, x, y);
-      y += fontSize === 12 ? 8 : 6;
+//Handling downloadable PDF (use server-filled STI template)
+const handleDownloadPDF = async () => {
+  try {
+    const API_BASE = 'https://guidanceofficeapi-production.up.railway.app';
+    const token = localStorage.getItem('authToken');
+    const studentId = data?.studentId || data?.student?.studentId;
+    if (!studentId) return;
+    const res = await axios.get(`${API_BASE}/api/careerplanning/${studentId}/pdf`, {
+      responseType: 'blob',
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
-    return y;
-  };
-
-  // Header
-  yPosition = addText("Career Planning Form", 20, yPosition, 16);
-  yPosition = addText(`Generated on: ${new Date().toLocaleDateString()}`, 20, yPosition, 10);
-  yPosition += 5;
-
-  // Personal Information
-  yPosition = addText("PERSONAL INFORMATION", 20, yPosition, 12);
-  yPosition = addText(`Student Number: ${data.studentNo || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Full Name: ${data.fullName || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Program: ${data.program || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Grade/Year: ${data.gradeYear || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Section: ${data.section || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Gender: ${data.gender || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Contact Number: ${data.contactNumber || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Birthday: ${data.birthday || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Submitted At: ${data.submittedAt ? new Date(data.submittedAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long', 
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }) : 'N/A'}`, 25, yPosition);
-  yPosition += 5;
-
-  // Self Assessment
-  yPosition = addText("SELF ASSESSMENT", 20, yPosition, 12);
-  
-  yPosition = addText("Top Values:", 25, yPosition, 11);
-  yPosition = addText(`1. ${data.topValue1 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`2. ${data.topValue2 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`3. ${data.topValue3 || 'N/A'}`, 30, yPosition);
-  
-  yPosition = addText("Top Strengths:", 25, yPosition, 11);
-  yPosition = addText(`1. ${data.topStrength1 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`2. ${data.topStrength2 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`3. ${data.topStrength3 || 'N/A'}`, 30, yPosition);
-  
-  yPosition = addText("Top Skills:", 25, yPosition, 11);
-  yPosition = addText(`1. ${data.topSkill1 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`2. ${data.topSkill2 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`3. ${data.topSkill3 || 'N/A'}`, 30, yPosition);
-  
-  yPosition = addText("Top Interests:", 25, yPosition, 11);
-  yPosition = addText(`1. ${data.topInterest1 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`2. ${data.topInterest2 || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`3. ${data.topInterest3 || 'N/A'}`, 30, yPosition);
-  yPosition += 5;
-
-  // Career Choices & Program Information
-  yPosition = addText("CAREER CHOICES & PROGRAM INFORMATION", 20, yPosition, 12);
-  
-  yPosition = addText("Program Choice:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.programChoice, 30, yPosition);
-  
-  yPosition = addText("Program Choice Reason:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.programChoiceReason, 30, yPosition);
-  
-  yPosition = addText(`First Choice: ${data.firstChoice || 'N/A'}`, 25, yPosition);
-  yPosition = addText(`Original Choice: ${data.originalChoice || 'N/A'}`, 25, yPosition);
-  
-  yPosition = addText("Nature of Job 1:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.natureJob1, 30, yPosition);
-  
-  yPosition = addText("Nature of Job 2:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.natureJob2, 30, yPosition);
-  
-  yPosition = addText("Program Expectation:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.programExpectation, 30, yPosition);
-  
-  yPosition = addText("Enrollment Reason:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.enrollmentReason, 30, yPosition);
-  
-  yPosition = addText("Future Vision:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.futureVision, 30, yPosition);
-  yPosition += 5;
-
-  // Future Plans
-  yPosition = addText("FUTURE PLANS", 20, yPosition, 12);
-  
-  yPosition = addText("Main Plan After Graduation:", 25, yPosition, 11);
-  yPosition = addWrappedText(data.mainPlan, 30, yPosition);
-  
-  // Education Plans
-  yPosition = addText("Education Plans:", 25, yPosition, 11);
-  yPosition = addText(`Another Course: ${data.anotherCourse ? 'Yes' : 'No'}`, 30, yPosition);
-  yPosition = addText(`Masters Program: ${data.mastersProgram ? 'Yes' : 'No'}`, 30, yPosition);
-  yPosition = addText(`Course Field: ${data.courseField || 'N/A'}`, 30, yPosition);
-  
-  // Employment Plans
-  yPosition = addText("Employment Plans:", 25, yPosition, 11);
-  yPosition = addText(`Local Employment: ${data.localEmployment ? 'Yes' : 'No'}`, 30, yPosition);
-  yPosition = addText(`Work Abroad: ${data.workAbroad ? 'Yes' : 'No'}`, 30, yPosition);
-  yPosition = addText(`Employment Nature: ${data.employmentNature || 'N/A'}`, 30, yPosition);
-  yPosition = addText(`Aim for Promotion: ${data.aimPromotion ? 'Yes' : 'No'}`, 30, yPosition);
-  yPosition = addText(`Current Work Abroad: ${data.currentWorkAbroad ? 'Yes' : 'No'}`, 30, yPosition);
-  yPosition = addText(`Current Work Nature: ${data.currentWorkNature || 'N/A'}`, 30, yPosition);
-  
-  // Business Plans
-  yPosition = addText("Business Plans:", 25, yPosition, 11);
-  yPosition = addText(`Business Nature: ${data.businessNature || 'N/A'}`, 30, yPosition);
-
-  // Save the PDF
-  const fileName = `CareerPlanningForm_${data.fullName || 'Student'}_${new Date().toISOString().split('T')[0]}.pdf`;
-  doc.save(fileName);
+    const blob = new Blob([res.data], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `CareerPlanningForm_${studentId}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error('Failed to download career planning PDF', e);
+  }
 };
 
   const renderPersonalInfo = () => (
