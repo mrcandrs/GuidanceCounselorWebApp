@@ -21,8 +21,8 @@ import '../styles/Dashboard.css';
 const GuidanceDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // Session timeout configuration (1 minute timeout, 30 seconds warning)
-  const { isWarning, timeLeft, isActive, extendSession, forceLogout } = useSessionTimeout(1, 0.5);
+  // Session timeout configuration (5 minute timeout, 30 seconds warning)
+  const { isWarning, timeLeft, isActive, extendSession, forceLogout } = useSessionTimeout(5, 0.5);
   
   // Map URL paths to tab IDs
   const pathToTabMap = {
