@@ -982,6 +982,24 @@ const FileMaintenanceView = () => {
       },
       bulkImport: true
     },
+    {
+      id: 'year-levels',
+      label: 'Year Levels',
+      endpoint: '/api/maintenance/year-levels',
+      columns: [
+        { key: 'name', label: 'Year Level Name', placeholder: '1st Year' },
+        { key: 'value', label: 'Value', placeholder: '1' },
+        { key: 'description', label: 'Description', placeholder: 'First year students', type: 'textarea' },
+        { key: 'isActive', label: 'Active', type: 'checkbox' }
+      ],
+      defaults: { name: '', value: '', description: '', isActive: true },
+      validation: {
+        name: { required: true, minLength: 3, maxLength: 50, unique: true, label: 'Year Level Name' },
+        value: { required: true, minLength: 1, maxLength: 10, unique: true, label: 'Value' },
+        description: { required: false, maxLength: 200, label: 'Description' }
+      },
+      bulkImport: true
+    },
     /*{
       id: 'mood-thresholds',
       label: 'Mood Alert Thresholds',
